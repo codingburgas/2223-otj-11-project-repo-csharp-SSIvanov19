@@ -10,9 +10,11 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="7.0.3" />
     <PackageReference Include="Microsoft.Identity.Web" Version="2.5.0" />
+    <PackageReference Include="Tailwind.Extensions.AspNetCore" Version="1.0.0-beta3" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CBCanteen.Client.ComponentLibrary\CBCanteen.Client.ComponentLibrary.csproj" />
     <ProjectReference Include="..\CBCanteen.Shared\CBCanteen.Shared.csproj" />
     <ProjectReference Include="..\CBCanteen.Client.Web\CBCanteen.Client.Web.csproj" />
   </ItemGroup>

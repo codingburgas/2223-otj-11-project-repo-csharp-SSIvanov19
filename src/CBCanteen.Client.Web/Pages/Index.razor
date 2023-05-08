@@ -1,24 +1,21 @@
 ﻿@page "/"
+@using CBCanteen.Client.ComponentLibrary.Pages;
 
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
-@inject NavigationManager Navigation
+
 <CascadingAuthenticationState>
     <AuthorizeView>
         <Authorized>
-            Hello, @context.User.Identity?.Name!
-            <button class="nav-link btn btn-link" @onclick="BeginLogOut">Log out</button>
+            <DashboardPage/>
         </Authorized>
         <NotAuthorized>
-            <a href="authentication/login">Log in</a>
+            <WelcomePage/>
         </NotAuthorized>
     </AuthorizeView>
 </CascadingAuthenticationState>
 
 @code {
-    public void BeginLogOut()
-    {
-        Navigation.NavigateToLogout("authentication/logout");
-    }
+
 }
 

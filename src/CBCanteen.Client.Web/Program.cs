@@ -1,4 +1,5 @@
 using CBCanteen.Client.Web;
+using CBCanteen.Client.Services;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
@@ -16,5 +17,12 @@ builder.Services.AddMsalAuthentication(options =>
     builder.Configuration.Bind("AzureAd", options.ProviderOptions.Authentication);
     options.ProviderOptions.DefaultAccessTokenScopes.Add("api://a503036b-8481-4108-ac8a-5219c254f913/API.Access");
 });
+
+var baseUrl = builder.Configuration.GetSection("MicrosoftGraph")["BaseUrl"];
+var scopes = builder.Configuration.GetSection("MicrosoftGraph:Scopes")
+    .Get<List<string>>();
+
+builder.Services.AddGraphClient(baseUrl, scopes);
+builder.Services.AddServices();
 
 await builder.Build().RunAsync();

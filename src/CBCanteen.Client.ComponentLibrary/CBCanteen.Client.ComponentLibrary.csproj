@@ -6,6 +6,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="Layouts\Navbar.razor.js" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <SupportedPlatform Include="browser" />
@@ -13,10 +17,15 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.3" />
+    <PackageReference Include="Microsoft.Graph" Version="5.9.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\" />
+    <ProjectReference Include="..\CBCanteen.Client.Services\CBCanteen.Client.Services.csproj" />
   </ItemGroup>
+
+	<PropertyGroup>
+		<StaticWebAssetBasePath Condition="$(StaticWebAssetBasePath) == ''">/CBCanteen.Client.ComponentLibrary</StaticWebAssetBasePath>
+	</PropertyGroup>
 
 </Project>

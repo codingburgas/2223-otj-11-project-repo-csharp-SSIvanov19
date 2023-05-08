@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Identity.Web;
+using Tailwind;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,10 +15,13 @@ builder.Services.AddRazorPages();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment()) {
+if (app.Environment.IsDevelopment())
+{
+    app.RunTailwind("tailwind", "../CBCanteen.Client.ComponentLibrary");
     app.UseWebAssemblyDebugging();
 }
-else {
+else
+{
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
