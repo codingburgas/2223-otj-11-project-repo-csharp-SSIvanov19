@@ -17,4 +17,9 @@ internal class UserService : IUserService
     {
         return await this.graphClient.Me.GetAsync();
     }
+
+    public async Task<Stream?> GetCurrentUserProfilePhotoAsync()
+    {
+        return await this.graphClient.Me.Photo.Content.GetAsync();
+    }
 }

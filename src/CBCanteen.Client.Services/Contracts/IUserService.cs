@@ -10,4 +10,6 @@ namespace CBCanteen.Client.Services.Contracts;
 public interface IUserService
 {
     Task<User?> GetCurrentUserInfoAsync();
+
+    Task<Stream?> GetCurrentUserProfilePhotoAsync();
 }
