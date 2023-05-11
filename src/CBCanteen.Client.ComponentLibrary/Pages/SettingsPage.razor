@@ -1,0 +1,29 @@
+﻿<div class="flex flex-row">
+    <div class="flex flex-col">
+        <button>Account</button>
+        <button>Lunch</button>
+        <button>API Keys</button>
+    </div>
+    <div>
+        @switch (CurrentTab)
+        {
+            case Tabs.Account:
+                break;
+            case Tabs.LunchTime:
+                break;
+            case Tabs.APIKeys:
+                break;
+        }
+    </div>
+</div>
+
+@code {
+    private enum Tabs
+    {
+        Account,
+        LunchTime,
+        APIKeys
+    };
+
+    private Tabs CurrentTab = Tabs.Account;
+}
