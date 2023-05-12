@@ -1,17 +1,38 @@
-﻿<div class="flex flex-row">
-    <div class="flex flex-col">
-        <button>Account</button>
-        <button>Lunch</button>
-        <button>API Keys</button>
+﻿@using CBCanteen.Client.ComponentLibrary.Layouts;
+@using CBCanteen.Client.ComponentLibrary.Components;
+
+<Navbar/>
+<hr />
+<div class="flex flex-row">
+    <div class="flex flex-col mt-2 ml-2">
+        <BackButton/>
+        @switch (CurrentTab)
+        {
+            case Tabs.Account:
+                <TimeButton OnClickCallback="@(e => ChangeTabTo(Tabs.LunchTime))" />
+                <APIButton OnClickCallback="@(e => ChangeTabTo(Tabs.APIKeys))" />
+                break;
+            case Tabs.LunchTime:
+                <AccountButton OnClickCallback="@(e => ChangeTabTo(Tabs.Account))" />
+                <APIButton OnClickCallback="@(e => ChangeTabTo(Tabs.APIKeys))" />
+                break;
+            case Tabs.APIKeys:
+                <AccountButton OnClickCallback="@(e => ChangeTabTo(Tabs.Account))" />
+                <TimeButton OnClickCallback="@(e => ChangeTabTo(Tabs.LunchTime))" />
+                break;
+        }
     </div>
     <div>
         @switch (CurrentTab)
         {
             case Tabs.Account:
+                <h1>Account tab</h1>
                 break;
             case Tabs.LunchTime:
+                <h1>Lunch tab</h1>
                 break;
             case Tabs.APIKeys:
+                <h1>Api tab</h1>
                 break;
         }
     </div>
@@ -26,4 +47,9 @@
     };
 
     private Tabs CurrentTab = Tabs.Account;
+
+    private void ChangeTabTo(Tabs tab)
+    {
+        this.CurrentTab = tab;
+    }
 }

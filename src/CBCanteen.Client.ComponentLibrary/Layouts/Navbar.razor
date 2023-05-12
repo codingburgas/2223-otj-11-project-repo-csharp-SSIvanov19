@@ -39,7 +39,7 @@
                         }
                         <hr />
                         
-                        <a href="#" class="block text px-4 py-2 text-lg text-[#434343]" role="menuitem">Настройки на профила</a>
+                        <button @onmousedown="NavigateToSettingsPage" class="block text px-4 py-2 text-lg text-[#434343]" role="menuitem">Настройки на профила</button>
                         <hr />
                         <a href="#" class="block text px-4 py-2 text-lg text-[#434343]" role="menuitem">Изход</a>
                     </div>
@@ -71,5 +71,10 @@
         {
             await JS.InvokeVoidAsync("initNavbar");
         }
+    }
+
+    private void NavigateToSettingsPage()
+    {
+        Navigation.NavigateTo("/settings");
     }
 }
