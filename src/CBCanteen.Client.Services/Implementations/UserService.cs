@@ -15,7 +15,10 @@ internal class UserService : IUserService
     
     public async Task<User?> GetCurrentUserInfoAsync()
     {
-        return await this.graphClient.Me.GetAsync();
+        return await graphClient.Me.GetAsync((requestConfiguration) =>
+        {
+            requestConfiguration.QueryParameters.Select = new string[] { "displayName", "mail", "jobTitle", "department" };
+        });
     }
 
     public async Task<Stream?> GetCurrentUserProfilePhotoAsync()

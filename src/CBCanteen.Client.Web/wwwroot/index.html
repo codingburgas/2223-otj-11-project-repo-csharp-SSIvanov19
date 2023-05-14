@@ -42,17 +42,21 @@
     <script src="_framework/aspnetcore-browser-refresh.js"></script>
     <script src="/CBCanteen.Client.ComponentLibrary/script/navbar.js"></script>
     <script>
-      window.setImage = async (imageElementId, imageStream) => {
-        const arrayBuffer = await imageStream.arrayBuffer();
-        const blob = new Blob([arrayBuffer]);
-        const url = URL.createObjectURL(blob);
-        const image = document.getElementById(imageElementId);
-        image.onload = () => {
-          URL.revokeObjectURL(url);
+        window.setImage = async (imageElementId, imageStream) => {
+            const arrayBuffer = await imageStream.arrayBuffer();
+            const blob = new Blob([arrayBuffer]);
+            const url = URL.createObjectURL(blob);
+            const image = document.getElementById(imageElementId);
+            image.onload = () => {
+                URL.revokeObjectURL(url);
+            }
+            image.src = url;
         }
-        image.src = url;
-      }
+
+        window.setImageSource = (imageElementId, imageURL) => {
+            const image = document.getElementById(imageElementId);
+            image.src = imageURL;
+        }
     </script>
 </body>
-
 </html>
