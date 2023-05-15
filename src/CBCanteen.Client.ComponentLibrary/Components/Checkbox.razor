@@ -1,4 +1,4 @@
-<div class="flex items-center select-none">
+<div class="flex items-center select-none @StyleClass">
     <div class="@GetStyleClass()" @onmousedown="Toggle">
         @if(isChecked)
         {
@@ -10,7 +10,11 @@
         }
     </div>
     <p class="text text-2xl text-[#474747]">@Text</p>
-    <TooltipSign StyleClass="w-6 h-6 ml-2" TooltipText="@TooltipText" />
+    @if (!string.IsNullOrEmpty(TooltipText))
+    {
+        <TooltipSign StyleClass="w-6 h-6 ml-2" TooltipText="@TooltipText" />
+    }
+
 </div>
 
 @code {
@@ -19,6 +23,9 @@
 
     [Parameter]
     public string TooltipText { get; set; } = string.Empty;
+
+    [Parameter]
+    public string StyleClass { get; set; } = string.Empty;
 
     private bool isChecked = false;
 

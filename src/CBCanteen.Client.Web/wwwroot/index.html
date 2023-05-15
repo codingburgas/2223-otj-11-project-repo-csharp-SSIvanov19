@@ -47,10 +47,12 @@
             const blob = new Blob([arrayBuffer]);
             const url = URL.createObjectURL(blob);
             const image = document.getElementById(imageElementId);
-            image.onload = () => {
-                URL.revokeObjectURL(url);
+            if (image != null) {
+                image.onload = () => {
+                    URL.revokeObjectURL(url);
+                }
+                image.src = url;
             }
-            image.src = url;
         }
 
         window.setImageSource = (imageElementId, imageURL) => {

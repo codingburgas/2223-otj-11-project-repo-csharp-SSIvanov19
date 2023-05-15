@@ -1,0 +1,51 @@
+﻿@using CBCanteen.Client.ComponentLibrary.Components
+@using CBCanteen.Client.Services.Contracts;
+@using Microsoft.Graph.Models;
+@using Microsoft.Graph.Models.ODataErrors;
+@using Microsoft.JSInterop;
+@inject IJSRuntime JS
+@inject IUserService userService
+@inject NavigationManager Navigation
+
+<h1 class="text text-[#474747] text-4xl font-bold">Управлявайте времето за обяд</h1>
+<h1 class="text text-[#474747] text-2xl font-medium mt-2">Кога е вашият обяд?</h1>
+<Checkbox StyleClass="mt-4" Text="Имам едно и също време за обяд всеки ден" />
+<div class="flex mt-6 flex-row space-x-4">
+    <InputTime Text="Начало" />
+    <InputTime Text="Край" />
+</div>
+
+@code {
+    private User? currentUser;
+    private Stream? currentUserPhotoStream;
+
+    protected override async Task OnInitializedAsync()
+    {
+        currentUser = await this.userService.GetCurrentUserInfoAsync();
+
+        try
+        {
+            currentUserPhotoStream = await this.userService.GetCurrentUserProfilePhotoAsync();
+
+            if (currentUserPhotoStream is not null)
+            {
+                var dotnetImageStream = new DotNetStreamReference(currentUserPhotoStream);
+                await JS.InvokeVoidAsync("setImage", "userProfilePic", dotnetImageStream);
+            }
+
+        }
+        catch (ODataError)
+        {
+            currentUserPhotoStream = new MemoryStream();
+
+            if (currentUser is not null)
+            {
+                await JS.InvokeVoidAsync("setImageSource", "userProfilePic", $"https://api.dicebear.com/6.x/initials/svg?seed={currentUser.DisplayName}");
+            }
+            else
+            {
+                await JS.InvokeVoidAsync("setImageSource", "userProfilePic", $"https://api.dicebear.com/6.x/identicon/svg");
+            }
+        }
+    }
+}

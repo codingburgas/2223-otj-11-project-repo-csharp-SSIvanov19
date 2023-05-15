@@ -1,0 +1,9 @@
+﻿<div class="p-2 w-fit rounded-2xl border-2 border-[#94A3B8]">
+    <h1 class="w-fit mt-[-22px] ml-[6px] bg-white pr-[2px] pl-[1px] text-[#94A3B8]">@Text</h1>
+    <input required type="time" class="outline-none w-fit border-none bg-transparent text-[#94A3B8] px-1" />
+</div>
+
+@code {
+    [Parameter]
+    public string Text { get; set; } = string.Empty;
+}

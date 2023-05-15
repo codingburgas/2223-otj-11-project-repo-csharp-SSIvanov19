@@ -1,4 +1,4 @@
-@using CBCanteen.Client.ComponentLibrary.Components
+п»ї@using CBCanteen.Client.ComponentLibrary.Components
 @using CBCanteen.Client.Services.Contracts;
 @using Microsoft.Graph.Models;
 @using Microsoft.Graph.Models.ODataErrors;
@@ -7,8 +7,8 @@
 @inject IUserService userService
 @inject NavigationManager Navigation
 
-<h1 class="text text-[#474747] text-4xl font-bold">Управлявайте вашия акаунт</h1>
-<h1 class="text text-[#474747] text-2xl font-medium mt-2">Променете настройките на вашия профил</h1>
+<h1 class="text text-[#474747] text-4xl font-bold">РЈРїСЂР°РІР»СЏРІР°Р№С‚Рµ РІР°С€РёСЏ Р°РєР°СѓРЅС‚</h1>
+<h1 class="text text-[#474747] text-2xl font-medium mt-2">РџСЂРѕРјРµРЅРµС‚Рµ РЅР°СЃС‚СЂРѕР№РєРёС‚Рµ РЅР° РІР°С€РёСЏ РїСЂРѕС„РёР»</h1>
 <div class="flex mt-12 mr-12 space-x-8">
     <div>
         <img class="@((currentUserPhotoStream is not null ? "rounded-full w-80" : "hidden"))" id="userProfilePic" alt="User profile picture">
@@ -32,9 +32,9 @@
             <div class="animate-pulse h-2 bg-slate-200 rounded w-80 mx-4 my-2 h-6"></div>
             <div class="animate-pulse h-2 bg-slate-200 rounded w-80 mx-4 my-2 h-6"></div>
         }
-        <Checkbox Text="Показване на срещи в календара" TooltipText="Ако тази опция е изключена, във вашия календар няма да се показват вашите срещи." />
-        <Checkbox Text="Изпращане на имейл при нов обяд" TooltipText="Ако тази опция е включена, ще получите имейл, когато може да запазите обяд." />
-        <Checkbox Text="Създаване на напомняне при резервиране на обяд" TooltipText="Ако тази опция е включена, когато запазите обяд, автоматично ще се създаде напомняне." />
+        <Checkbox Text="РџРѕРєР°Р·РІР°РЅРµ РЅР° СЃСЂРµС‰Рё РІ РєР°Р»РµРЅРґР°СЂР°" TooltipText="РђРєРѕ С‚Р°Р·Рё РѕРїС†РёСЏ Рµ РёР·РєР»СЋС‡РµРЅР°, РІСЉРІ РІР°С€РёСЏ РєР°Р»РµРЅРґР°СЂ РЅСЏРјР° РґР° СЃРµ РїРѕРєР°Р·РІР°С‚ РІР°С€РёС‚Рµ СЃСЂРµС‰Рё. " />
+        <Checkbox Text="РР·РїСЂР°С‰Р°РЅРµ РЅР° РёРјРµР№Р» РїСЂРё РЅРѕРІ РѕР±СЏРґ" TooltipText="РђРєРѕ С‚Р°Р·Рё РѕРїС†РёСЏ Рµ РІРєР»СЋС‡РµРЅР°, С‰Рµ РїРѕР»СѓС‡РёС‚Рµ РёРјРµР№Р», РєРѕРіР°С‚Рѕ РјРѕР¶Рµ РґР° Р·Р°РїР°Р·РёС‚Рµ РѕР±СЏРґ." />
+        <Checkbox Text="РЎСЉР·РґР°РІР°РЅРµ РЅР° РЅР°РїРѕРјРЅСЏРЅРµ РїСЂРё СЂРµР·РµСЂРІРёСЂР°РЅРµ РЅР° РѕР±СЏРґ" TooltipText="РђРєРѕ С‚Р°Р·Рё РѕРїС†РёСЏ Рµ РІРєР»СЋС‡РµРЅР°, РєРѕРіР°С‚Рѕ Р·Р°РїР°Р·РёС‚Рµ РѕР±СЏРґ, Р°РІС‚РѕРјР°С‚РёС‡РЅРѕ С‰Рµ СЃРµ СЃСЉР·РґР°РґРµ РЅР°РїРѕРјРЅСЏРЅРµ." />
     </div>
 </div>
 

@@ -1,11 +1,13 @@
 ﻿@using CBCanteen.Client.ComponentLibrary.Layouts;
 @using CBCanteen.Client.ComponentLibrary.Components;
+@inject NavigationManager Navigator
+
 
 <Navbar/>
 <hr />
 <div class="flex flex-row">
     <div class="flex flex-col mt-4 ml-12 space-y-4">
-        <BackButton StyleClass="cursor-pointer" />
+        <BackButton OnClickCallback="NavigateBackwards" StyleClass="cursor-pointer" />
         @switch (CurrentTab)
         {
             case Tabs.Account:
@@ -29,7 +31,7 @@
                 <AccountTab />
                 break;
             case Tabs.LunchTime:
-                <h1>Lunch tab</h1>
+                <LunchTimeTab />
                 break;
             case Tabs.APIKeys:
                 <h1>Api tab</h1>
@@ -51,5 +53,10 @@
     private void ChangeTabTo(Tabs tab)
     {
         this.CurrentTab = tab;
+    }
+
+    private void NavigateBackwards()
+    {
+        Navigator.NavigateTo("/");
     }
 }
