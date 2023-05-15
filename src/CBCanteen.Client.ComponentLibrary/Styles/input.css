@@ -8,7 +8,7 @@
     cursor: help;
 }
 
-span {
+.tooltip-text {
     visibility: hidden;
     position: absolute;
     width: 240px;
@@ -23,7 +23,7 @@ span {
     z-index: 1;
 }
 
-span::after {
+.tooltip-text::after {
     content: "";
     position: absolute;
     top: 100%;
