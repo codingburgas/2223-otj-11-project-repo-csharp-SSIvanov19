@@ -1,6 +1,6 @@
 <div class="flex items-center select-none @StyleClass">
     <div class="@GetStyleClass()" @onmousedown="Toggle">
-        @if(isChecked)
+        @if(IsChecked)
         {
             <Tick StyleClass="w-4 h-4" />
         }
@@ -27,15 +27,20 @@
     [Parameter]
     public string StyleClass { get; set; } = string.Empty;
 
-    private bool isChecked = false;
+    [Parameter]
+    public bool IsChecked { get; set; } = false;
 
-    private void Toggle()
+    [Parameter]
+    public EventCallback<bool> OnButtonChange { get; set; }
+
+    private async void Toggle()
     {
-        isChecked = !isChecked;
+        IsChecked = !IsChecked;
+        await OnButtonChange.InvokeAsync(IsChecked);
     }
 
     private string GetStyleClass()
     {
-        return isChecked ? "w-7 h-7 rounded-lg border-2 border-[#6EC700] mr-2 cursor-pointer bg-[#6EC700] bg-opacity-25 flex items-center justify-center" : "w-7 h-7 rounded-lg border-2 border-[#FF0000] mr-2 cursor-pointer bg-[#FF0000] bg-opacity-25 flex items-center justify-center";
+        return IsChecked ? "w-7 h-7 rounded-lg border-2 border-[#6EC700] mr-2 cursor-pointer bg-[#6EC700] bg-opacity-25 flex items-center justify-center" : "w-7 h-7 rounded-lg border-2 border-[#FF0000] mr-2 cursor-pointer bg-[#FF0000] bg-opacity-25 flex items-center justify-center";
     }
 }

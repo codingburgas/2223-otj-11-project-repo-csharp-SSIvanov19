@@ -9,15 +9,56 @@
 
 <h1 class="text text-[#474747] text-4xl font-bold">Управлявайте времето за обяд</h1>
 <h1 class="text text-[#474747] text-2xl font-medium mt-2">Кога е вашият обяд?</h1>
-<Checkbox StyleClass="mt-4" Text="Имам едно и също време за обяд всеки ден" />
-<div class="flex mt-6 flex-row space-x-4">
-    <InputTime Text="Начало" />
-    <InputTime Text="Край" />
-</div>
+
+<Checkbox 
+    OnButtonChange="UpdateButtonState"
+    IsChecked="haveLunchOnSameTime" 
+    StyleClass="mt-4" 
+    Text="Имам едно и също време за обяд всеки ден" />
+
+@if (haveLunchOnSameTime)
+{
+    <div class="flex mt-6 flex-row space-x-4">
+        <InputTime Text="Начало" />
+        <InputTime Text="Край" />
+    </div>
+}
+else
+{
+    <div class="grid grid-cols-3 gap-4 mt-6">
+        <div class="flex items-center justify-center justify-self-start">
+            <p class="text text-xl text-[#94A3B8]">Понеделник</p>
+        </div>
+        <InputTime Text="Начало" />
+        <InputTime Text="Край" />
+        <div class="flex items-center justify-center justify-self-start">
+            <p class="text text-xl text-[#94A3B8]">Вторник</p>
+        </div>
+        <InputTime Text="Начало" />
+        <InputTime Text="Край" />
+        <div class="flex items-center justify-center justify-self-start">
+            <p class="text text-xl text-[#94A3B8]">Сряда</p>
+        </div>
+        <InputTime Text="Начало" />
+        <InputTime Text="Край" />
+        <div class="flex items-center justify-center justify-self-start">
+            <p class="text text-xl text-[#94A3B8]">Четвъртък</p>
+        </div>
+        <InputTime Text="Начало" />
+        <InputTime Text="Край" />
+        <div class="flex items-center justify-center justify-self-start">
+            <p class="text text-xl text-[#94A3B8]">Петък</p>
+        </div>
+        <InputTime Text="Начало" />
+        <InputTime Text="Край" />
+    </div>
+}
+<button class="rounded-lg border-2 border-[#6EC700] mr-2 bg-[#6EC700] bg-opacity-25 flex items-center justify-center text-[#6EC700] py-1 px-4 mt-6 font-semibold">Запази</button>
 
 @code {
     private User? currentUser;
     private Stream? currentUserPhotoStream;
+    private bool haveLunchOnSameTime = true;
 
     protected override async Task OnInitializedAsync()
     {
@@ -47,5 +88,10 @@
                 await JS.InvokeVoidAsync("setImageSource", "userProfilePic", $"https://api.dicebear.com/6.x/identicon/svg");
             }
         }
+    }
+
+    private void UpdateButtonState(bool newState)
+    {
+        haveLunchOnSameTime = newState;
     }
 }
