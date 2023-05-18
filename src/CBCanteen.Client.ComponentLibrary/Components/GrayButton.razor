@@ -1,4 +1,4 @@
-﻿<button class="border-2 rounded-lg border-[#94A3B8] text text-[#94A3B8] font-semibold @StyleClass">@Text</button>
+﻿<button @onclick="OnClickCallback" class="border-2 rounded-lg border-[#94A3B8] text text-[#94A3B8] font-semibold @StyleClass">@Text</button>
 
 @code {
     [Parameter]
@@ -6,5 +6,8 @@
 
     [Parameter]
     public string StyleClass { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnClickCallback { get; set; }
 }
 
