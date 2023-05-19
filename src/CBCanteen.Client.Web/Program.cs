@@ -1,8 +1,10 @@
 using CBCanteen.Client.Web;
 using CBCanteen.Client.Services;
+using CBCanteen.Client.Web.Models;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Blazored.Modal;
+using Syncfusion.Blazor;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -26,5 +28,7 @@ var scopes = builder.Configuration.GetSection("MicrosoftGraph:Scopes")
 builder.Services.AddGraphClient(baseUrl, scopes);
 builder.Services.AddServices();
 builder.Services.AddBlazoredModal();
+builder.Services.AddSyncfusionBlazor();
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 await builder.Build().RunAsync();

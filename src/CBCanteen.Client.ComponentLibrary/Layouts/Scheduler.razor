@@ -1,0 +1,51 @@
+@using AutoMapper;
+@using AutoMapper.QueryableExtensions;
+@using CBCanteen.Client.Services.Contracts;
+@using CBCanteen.Shared.Models;
+@using Microsoft.Graph.Models;
+@using Syncfusion.Blazor
+@using Syncfusion.Blazor.Schedule
+@using System.Globalization;
+
+@inject ICalendarService calendarService
+@inject IMapper mapper
+
+<SfSchedule TValue=CalendarEvent Readonly="true" Height="calc(100vh - 65px)">
+    <ScheduleViews>
+        <ScheduleView Option="View.WorkWeek" EnableVirtualMask="true"/>
+    </ScheduleViews>
+    <ScheduleEventSettings DataSource="DataSource">
+    </ScheduleEventSettings>
+</SfSchedule>
+
+@code {
+    private List<CalendarEvent>? DataSource { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        var startOfWeek = GetCurrentWeekStart();
+        var events = await calendarService.GetEventsBetweenTwoDatesAsync(startOfWeek, startOfWeek.AddDays(5));
+
+        if (events is not null && events.Value is not null)
+        {
+            DataSource = new();
+
+            foreach(var @event in events.Value)
+            {
+                DataSource.Add(this.mapper.Map<CalendarEvent>(@event));
+            }
+        }
+
+        StateHasChanged();
+    }
+
+    private static DateTime GetCurrentWeekStart()
+    {
+        var datetimeNow = DateTime.Now;
+
+        var startOfWeek = datetimeNow.AddDays(
+            (int)CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek - (int)datetimeNow.DayOfWeek);
+
+        return startOfWeek.Date;
+    }
+}

@@ -1,11 +1,12 @@
 ﻿@using Blazored.Modal.Services;
+@using Blazored.Modal;
 @using CBCanteen.Client.ComponentLibrary.Components
 
 <h1 class="text text-[#474747] text-4xl font-bold">Управлявайте вашите API ключове</h1>
 <h1 class="text text-[#474747] text-2xl font-medium mt-2">На тази страница може да създавате API ключове, които да използвате във ваши аппликации</h1>
 
 <div class="flex max-w-6xl items-center justify-end w-[72rem] space-x-4 mt-6">
-    <GrayButton OnClickCallback="() => Modal.Show<AddAPIKeyModal>()" Text="Генериране на нов ключ" StyleClass="px-4 py-1"/>
+    <GrayButton OnClickCallback="() => Modal.Show<AddAPIKeyModal>()" Text="Генериране на нов ключ" StyleClass="px-4 py-1" />
     <RedButton Text="Изтрий всички" StyleClass="px-4 py-1" />
 </div>
 

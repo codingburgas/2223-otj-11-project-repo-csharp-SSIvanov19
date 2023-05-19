@@ -1,5 +1,71 @@
-﻿<h3>AddAPIKeyModal</h3>
+﻿@using Blazored.Modal;
+@using CBCanteen.Client.ComponentLibrary.Components;
+
+<div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all w-28 sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+        <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+            Добави API Ключ
+        </h3>
+        <div class="mt-4">
+            <div class="mb-4">
+                <label for="name" class="block text-gray-700 font-bold mb-2">Име:</label>
+                <input type="text" id="name" name="name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Въведете име за API ключа" @bind-value="Name">
+            </div>
+            <div class="mb-4">
+                <label for="expiration" class="block text-gray-700 font-bold mb-2">Изтичащ срок:</label>
+                <select id="expiration" name="expiration" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" @onchange="ShowCustomDate">
+                    <option value="7">7 дни</option>
+                    <option value="30">30 дни</option>
+                    <option value="60">60 дни</option>
+                    <option value="90">90 дни</option>
+                    <option value="custom">Друг период</option>
+                    <option value="never">Никога</option>
+                </select>
+            </div>
+            <div id="custom-date" class="mb-4" style="@CustomDateStyle">
+                <label for="date" class="block text-gray-700 font-bold mb-2">Друг период:</label>
+                <input type="date" id="date" name="date" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" @bind-value="CustomDate">
+            </div>
+        </div>
+    </div>
+    <div class="bg-gray-50 py-3 px-6 flex flex-row-reverse">
+        <GreenButton Text="Генерирай" StyleClass="ml-2 py-1 px-3" OnClickCallback="GenerateApiKey"/>
+        <GrayButton Text="Откажи" StyleClass="py-1 px-3" OnClickCallback="CloseModal"/>
+    </div>
+</div>
 
 @code {
 
+    private string Name = "";
+    private string Expiration = "7";
+    private string CustomDateStyle = "display: none;";
+    private DateOnly CustomDate = DateOnly.FromDateTime(DateTime.Now);
+
+    [CascadingParameter] 
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    private async void GenerateApiKey()
+    {
+        // Code to generate API Key
+        await BlazoredModal.CloseAsync();
+    }
+
+    private async void CloseModal()
+    {
+        await BlazoredModal.CloseAsync();
+    }
+
+    private void ShowCustomDate(ChangeEventArgs e)
+    {
+        Expiration = e.Value.ToString()!;
+
+        if (Expiration == "custom")
+        {
+            CustomDateStyle = "";
+        }
+        else
+        {
+            CustomDateStyle = "display: none;";
+        }
+    }
 }
