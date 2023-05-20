@@ -2,10 +2,13 @@
 @using Microsoft.Graph.Models;
 @using Microsoft.Graph.Models.ODataErrors;
 @using Microsoft.JSInterop;
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+
+@inject IAuthorizationService AuthorizationService
 @inject IJSRuntime JS
 @inject IUserService userService
 @inject NavigationManager Navigation
-
 <nav>
     <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
         <div class="relative flex h-16 items-center justify-between">
@@ -15,6 +18,12 @@
                 </div>
             </div>
             <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+                @if (isUserAdmin)
+                {
+                    <div>
+                        Admin
+                    </div>
+                }
                 <div class="relative ml-3">
                     <div>
                         <button id="user-menu-button" tabindex="0" class="flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800" aria-expanded="false" aria-haspopup="true">
@@ -53,9 +62,25 @@
 @code {
     private User? currentUser;
     private Stream? currentUserPhotoStream;
+    private bool isUserAdmin = false;
+
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationState { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
+        if (authenticationState is not null)
+        {
+            var authState = await authenticationState;
+            var user = authState?.User;
+
+            if (user is not null)
+            {
+                isUserAdmin = user.IsInRole("Admin");
+            }
+        }
+
         currentUser = await userService.GetCurrentUserInfoAsync();
         
         try

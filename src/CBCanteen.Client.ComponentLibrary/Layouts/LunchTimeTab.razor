@@ -56,39 +56,7 @@ else
 <GreenButton Text="Запази" StyleClass="mr-2 flex items-center justify-center py-1 px-4 mt-6" />
 
 @code {
-    private User? currentUser;
-    private Stream? currentUserPhotoStream;
     private bool haveLunchOnSameTime = true;
-
-    protected override async Task OnInitializedAsync()
-    {
-        currentUser = await this.userService.GetCurrentUserInfoAsync();
-
-        try
-        {
-            currentUserPhotoStream = await this.userService.GetCurrentUserProfilePhotoAsync();
-
-            if (currentUserPhotoStream is not null)
-            {
-                var dotnetImageStream = new DotNetStreamReference(currentUserPhotoStream);
-                await JS.InvokeVoidAsync("setImage", "userProfilePic", dotnetImageStream);
-            }
-
-        }
-        catch (ODataError)
-        {
-            currentUserPhotoStream = new MemoryStream();
-
-            if (currentUser is not null)
-            {
-                await JS.InvokeVoidAsync("setImageSource", "userProfilePic", $"https://api.dicebear.com/6.x/initials/svg?seed={currentUser.DisplayName}");
-            }
-            else
-            {
-                await JS.InvokeVoidAsync("setImageSource", "userProfilePic", $"https://api.dicebear.com/6.x/identicon/svg");
-            }
-        }
-    }
 
     private void UpdateButtonState(bool newState)
     {
