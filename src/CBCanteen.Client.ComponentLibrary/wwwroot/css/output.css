@@ -559,6 +559,11 @@ video {
   z-index: 10;
 }
 
+.mx-24 {
+  margin-left: 6rem;
+  margin-right: 6rem;
+}
+
 .mx-4 {
   margin-left: 1rem;
   margin-right: 1rem;
@@ -682,8 +687,25 @@ video {
   height: 20rem;
 }
 
+.h-min {
+  height: -moz-min-content;
+  height: min-content;
+}
+
 .h-screen {
   height: 100vh;
+}
+
+.w-14 {
+  width: 3.5rem;
+}
+
+.w-16 {
+  width: 4rem;
+}
+
+.w-24 {
+  width: 6rem;
 }
 
 .w-28 {
@@ -714,6 +736,10 @@ video {
   width: 24rem;
 }
 
+.w-\[38rem\] {
+  width: 38rem;
+}
+
 .w-\[72rem\] {
   width: 72rem;
 }
@@ -737,6 +763,10 @@ video {
 
 .max-w-7xl {
   max-width: 80rem;
+}
+
+.max-w-\[18rem\] {
+  max-width: 18rem;
 }
 
 .flex-1 {
@@ -869,6 +899,12 @@ video {
 
 .overflow-hidden {
   overflow: hidden;
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .rounded {
@@ -1298,10 +1334,115 @@ video {
   line-height: 100%;
 }
 
-.modalClass {
+.smallModalClass {
   max-width: 500px;
   margin-left: auto;
   margin-right: auto;
+}
+
+.bigModalClass {
+  max-width: 1250px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/*add this to avoid flickering*/
+
+.plk-dd-inprogess > * {
+  pointer-events: none;
+}
+
+/*dropzone style style*/
+
+.plk-dd-dropzone {
+  min-height: 50px;
+}
+
+/*drag drop styles*/
+
+.plk-dd-spacing {
+  height: 10px;
+}
+
+.plk-dd-spacing-dragged-over {
+  padding: 25px;
+}
+
+.plk-dd-dragged-over {
+  background-color: lightgray;
+  opacity: 0.6;
+  animation: blinker 1s linear infinite;
+}
+
+.plk-dd-dragged-over > div {
+  background-color: lightgray;
+  opacity: 0.6;
+  animation: blinker 1s linear infinite;
+}
+
+.plk-dd-dragged-over-denied {
+  background-color: red;
+  opacity: 0.6;
+  animation: blinker 1s linear infinite;
+}
+
+.plk-dd-in-transit {
+  opacity: 0;
+}
+
+.plk-dd-in-transit > div {
+  opacity: 0;
+}
+
+@keyframes blinker {
+  50% {
+    opacity: 0;
+  }
+}
+
+.blink_me {
+  animation: blinker 1s linear infinite;
+}
+
+/*for flex demo*/
+
+.plk-flex .plk-dd-spacing {
+  width: 20px;
+  height: auto;
+}
+
+.plk-flex .plk-dd-dragged-over {
+  background-color: lightgray;
+  opacity: 0.6;
+  animation: blinker 1s linear infinite;
+}
+
+.plk-flex .plk-dd-dragged-over > div {
+  background-color: lightgray;
+  opacity: 0.9;
+  animation: blinker 1s linear infinite;
+}
+
+.plk-flex .plk-dd-in-transit {
+  background-color: orangered;
+}
+
+.plk-flex .plk-dd-in-transit > div {
+  background-color: orangered;
+}
+
+.plk-dd-noselect {
+  -webkit-touch-callout: none;
+  /* iOS Safari */
+  -webkit-user-select: none;
+  /* Safari */
+  /* Konqueror HTML */
+  -moz-user-select: none;
+  /* Old versions of Firefox */
+  /* Internet Explorer/Edge */
+  user-select: none;
+  /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
 }
 
 .focus\:outline-none:focus {

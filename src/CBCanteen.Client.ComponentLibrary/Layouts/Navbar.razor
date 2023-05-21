@@ -1,4 +1,5 @@
 ﻿@using CBCanteen.Client.Services.Contracts;
+@using CBCanteen.Client.ComponentLibrary.Components;
 @using Microsoft.Graph.Models;
 @using Microsoft.Graph.Models.ODataErrors;
 @using Microsoft.JSInterop;
@@ -9,20 +10,19 @@
 @inject IJSRuntime JS
 @inject IUserService userService
 @inject NavigationManager Navigation
+
 <nav>
     <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
         <div class="relative flex h-16 items-center justify-between">
             <div class="flex flex-1 items-stretch justify-start">
                 <div class="flex flex-shrink-0 items-center">
-                    <img class="block h-8 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500" alt="CB-Canteen">
+                    <img @onclick="NavigateToHomePage" class="block h-8 w-auto cursor-pointer" src="https://th.bing.com/th/id/R.cec0a44cf710981e721612d238ac2659?rik=%2f1FnTB85X2s%2bDA&pid=ImgRaw&r=0" alt="CB-Canteen">
                 </div>
             </div>
             <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                 @if (isUserAdmin)
                 {
-                    <div>
-                        Admin
-                    </div>
+                    <GrayButton Text="Админ" StyleClass="px-2 mr-2" OnClickCallback="NavigateToAdminPage"/>
                 }
                 <div class="relative ml-3">
                     <div>
@@ -64,7 +64,6 @@
     private Stream? currentUserPhotoStream;
     private bool isUserAdmin = false;
 
-
     [CascadingParameter]
     private Task<AuthenticationState>? authenticationState { get; set; }
 
@@ -82,7 +81,7 @@
         }
 
         currentUser = await userService.GetCurrentUserInfoAsync();
-        
+
         try
         {
             currentUserPhotoStream = await this.userService.GetCurrentUserProfilePhotoAsync();
@@ -120,5 +119,15 @@
     private void NavigateToSettingsPage()
     {
         Navigation.NavigateTo("/settings");
+    }
+
+    private void NavigateToAdminPage()
+    {
+        Navigation.NavigateTo("/admin");
+    }
+
+    private void NavigateToHomePage()
+    {
+        Navigation.NavigateTo("/");
     }
 }

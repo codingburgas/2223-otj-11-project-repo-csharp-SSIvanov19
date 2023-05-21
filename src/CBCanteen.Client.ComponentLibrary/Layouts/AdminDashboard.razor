@@ -1,0 +1,17 @@
+﻿@using CBCanteen.Client.ComponentLibrary.Components
+@inject NavigationManager Navigator
+
+<div class="mx-24 mt-6 justify-between flex">
+    <div class="flex flex space-x-4">
+        <DatePicker Text="Начало на справката" />
+        <DatePicker Text="Край на справката" />
+    </div>
+    <GrayButton Text="Добави меню" StyleClass="px-4 py-2 h-min" OnClickCallback="NavigateToAddMenu" />
+</div>
+
+@code {
+    private void NavigateToAddMenu()
+    {
+        Navigator.NavigateTo("/admin/addmenu");
+    }
+}

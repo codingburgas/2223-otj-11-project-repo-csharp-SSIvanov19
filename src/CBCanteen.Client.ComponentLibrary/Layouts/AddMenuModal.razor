@@ -1,0 +1,96 @@
+﻿@using Blazored.Modal
+@using CBCanteen.Client.ComponentLibrary.Components
+@using Syncfusion.Blazor.Grids
+@using CBCanteen.Shared.Models.Canteen
+@using Plk.Blazor.DragDrop
+
+<div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all w-full sm:my-8 sm:align-middle">
+    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+        <h3 class="text-lg leading-6 font-medium text-gray-900 text" id="modal-title">
+            Обяд за @(MenuDate.ToString("d MMM yyyy"))
+        </h3>
+        <div class="mt-4">
+            <div class="flex flex-row space-x-4">
+                <div class="w-[38rem]">
+                    <MealGrid Meals="Meals" />
+                </div>
+                <div class="flex flex-col w-[38rem]">
+                    <p class="mb-2">Меню 1</p>
+                    <MealGrid Meals="MenuOneMeals" HasMaxItem=true AllowCopy=true />
+
+                    <p class="mb-2 mt-4">Меню 2</p>
+                    <MealGrid Meals="MenuTwoMeals" HasMaxItem=true AllowCopy=true />
+                    
+                    <p class="mb-2 mt-4">Свободна консумация</p>
+                    <MealGrid Meals="FreeConsumptionMeals" AllowCopy=true />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="py-3 px-6 flex flex-row-reverse">
+        <GreenButton Text="Генерирай" StyleClass="ml-2 py-1 px-3" OnClickCallback="GenerateApiKey"/>
+        <GrayButton Text="Откажи" StyleClass="py-1 px-3" OnClickCallback="CloseModal"/>
+    </div>
+</div>
+
+@code {
+    private List<MealVM> Meals = new List<MealVM>() {
+        new MealVM()
+        {
+            Id = Guid.NewGuid().ToString(),
+            Name = "Кюфте / кебапче с топла гарнитура - 3 бр.",
+            UnitPrice = 9.99,
+            Weight = 250,
+            Category = "Осн."
+        },
+        new MealVM()
+        {
+            Id = Guid.NewGuid().ToString(),
+            Name = "Margherita Pizza",
+            UnitPrice = 8.99,
+            Weight = 200,
+            Category = "Осн."
+        },
+        new MealVM()
+        {
+            Id = Guid.NewGuid().ToString(),
+            Name = "Grilled Salmon",
+            UnitPrice = 14.99,
+            Weight = 250,
+            Category = "Осн."
+        },
+        new MealVM()
+        {
+            Id = Guid.NewGuid().ToString(),
+            Name = "Caesar Salad",
+            UnitPrice = 6.99,
+            Weight = 150,
+            Category ="Пред."
+        }
+    };
+
+    private List<MealVM> MenuOneMeals = new List<MealVM>();
+
+    private List<MealVM> MenuTwoMeals = new List<MealVM>();
+
+    private List<MealVM> FreeConsumptionMeals = new List<MealVM>();
+
+   
+    [Parameter]
+    public DateTime MenuDate { get; set; }
+
+    [CascadingParameter] 
+    private BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    private async void GenerateApiKey()
+    {
+        // Code to generate API Key
+        await BlazoredModal.CloseAsync();
+    }
+
+    private async void CloseModal()
+    {
+        await BlazoredModal.CloseAsync();
+    }
+
+}

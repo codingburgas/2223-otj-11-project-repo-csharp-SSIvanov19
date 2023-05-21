@@ -1,0 +1,48 @@
+﻿@using CBCanteen.Shared.Models.Canteen;
+@using Plk.Blazor.DragDrop
+
+<div class="flex space-x-4 w-full justify-between">
+    <div class="w-fit flex justify-center items-center">
+        <p class="text truncate">Име</p>
+    </div>
+    <div class="flex space-x-4">
+        <div class="w-16 flex justify-center items-center">
+            <p class="text truncate">Грамаж</p>
+        </div>
+        <div class="w-16 flex justify-center items-center">
+            <p class="text truncate">Цена</p>
+        </div>
+        <div class="w-24 flex justify-center items-center">
+            <p class="text truncate">Категория</p>
+        </div>
+    </div>
+</div>
+<Dropzone Items="Meals" MaxItems=@(HasMaxItem ? 3 : null) CopyItem="@(AllowCopy ? (item)=> { return item; } : null)">
+    <div class="flex space-x-4 rounded-lg border-2 w-full justify-between p-2">
+        <div class="w-fit flex justify-center items-center max-w-[18rem]">
+            <p class="text truncate" title=@context.Name>@context.Name</p>
+        </div>
+        <div class="flex space-x-4">
+            <div class="w-14 flex justify-center items-center max-w-[18rem]">
+                <p class="text truncate" title=@context.Name>@context.Weight</p>
+            </div>
+            <div class="w-14 flex justify-center items-center max-w-[18rem]">
+                <p class="text truncate" title=@context.Name>@context.UnitPrice</p>
+            </div>
+            <div class="w-24 flex justify-center items-center max-w-[18rem]">
+                <p class="text truncate" title=@context.Name>@context.Category</p>
+            </div>
+        </div>
+    </div>
+</Dropzone>
+
+@code {
+    [Parameter]
+    public List<MealVM> Meals { get; set; } = new List<MealVM>();
+
+    [Parameter]
+    public bool AllowCopy { get; set; } = false;
+
+    [Parameter]
+    public bool HasMaxItem { get; set; } = false;
+}

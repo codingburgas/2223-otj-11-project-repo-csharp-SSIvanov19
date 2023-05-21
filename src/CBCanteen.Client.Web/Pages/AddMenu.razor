@@ -1,0 +1,7 @@
+﻿@page "/admin/addmenu"
+@using CBCanteen.Client.ComponentLibrary.Pages
+@using Microsoft.AspNetCore.Authorization;
+
+@attribute [Authorize(Roles = "Admin")]
+
+<AddMenuPage />

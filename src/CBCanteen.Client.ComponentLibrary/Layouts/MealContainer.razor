@@ -1,0 +1,22 @@
+﻿@using CBCanteen.Shared.Models.Canteen;
+
+<CascadingValue Value="this">
+    <div class="flex flex-row space-x-4"> 
+        @ChildContent
+    </div>
+</CascadingValue>
+
+
+@code {
+    [Parameter] 
+    public List<MealVM> Meals { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter] 
+    public EventCallback<MealVM> OnStatusUpdated { get; set; }
+
+
+    public MealVM Payload { get; set; }
+}

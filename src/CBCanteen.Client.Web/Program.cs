@@ -7,6 +7,7 @@ using Blazored.Modal;
 using Syncfusion.Blazor;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using CBCanteen.Client.Web.UserFactory;
+using Plk.Blazor.DragDrop;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -36,5 +37,6 @@ builder.Services.AddServices();
 builder.Services.AddBlazoredModal();
 builder.Services.AddSyncfusionBlazor();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
+builder.Services.AddBlazorDragDrop();
 
 await builder.Build().RunAsync();

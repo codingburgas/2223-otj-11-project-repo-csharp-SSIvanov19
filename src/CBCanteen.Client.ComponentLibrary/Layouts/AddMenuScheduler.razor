@@ -1,0 +1,96 @@
+﻿@using Blazored.Modal.Services;
+@using Blazored.Modal;
+@using CBCanteen.Shared.Models;
+@using Syncfusion.Blazor.Schedule
+@using System.Globalization;
+@using Syncfusion.Blazor.Schedule.Internal;
+
+<SfSchedule TValue=CalendarEvent Readonly="true" Height="calc(100vh - 65px)" @bind-SelectedDate="@CurrentDate">
+    <ScheduleTimeScale Enable="false" />
+    <ScheduleViews>
+        <ScheduleView Option="View.WorkWeek" EnableVirtualMask="true" />
+    </ScheduleViews>
+    <ScheduleEvents TValue="CalendarEvent" ActionCompleted="OnActionCompleted" OnEventClick="OnEventClicked" />
+    <ScheduleEventSettings DataSource="DataSource" />
+</SfSchedule>
+
+@code {
+    [CascadingParameter]
+    private IModalService Modal { get; set; } = default!;
+
+    private List<CalendarEvent> DataSource { get; set; } = new List<CalendarEvent>();
+    private DateTime CurrentDate = DateTime.Now;
+
+    protected override void OnInitialized()
+    {
+        Console.WriteLine("Slava na Preslava");
+        var startDate = GetWeekStart(CurrentDate);
+
+        while (startDate.DayOfWeek != DayOfWeek.Saturday)
+        {
+            DataSource.Add(new CalendarEvent()
+            {
+                Subject = $"Обяд за {startDate.ToString("d MMM yyyy")}",
+                IsAllDay = true,
+                StartTime = startDate,
+                EndTime = startDate.AddHours(1),
+            });
+
+            startDate = startDate.AddDays(1);
+        }
+
+        StateHasChanged();
+        base.OnInitialized();
+    }
+
+    private void OnEventClicked(EventClickArgs<CalendarEvent> args)
+    {
+        args.Cancel = true;
+        var parameter = new ModalParameters()
+            .Add(nameof(AddMenuModal.MenuDate), args.Event.StartTime!);
+
+        var options = new ModalOptions()
+        {
+            Class = "bigModalClass" 
+        };
+
+        Modal.Show<AddMenuModal>($"Обяд за {args.Event.StartTime!}", parameter, options);
+    }
+
+    private void OnActionCompleted(ActionEventArgs<CalendarEvent> args)
+    {
+        if (args.ActionType == ActionType.DateNavigate)
+        {
+            var startDate = GetWeekStart(CurrentDate);
+
+            if (DataSource.Where(e => e.Subject == "Обяд за " + startDate.ToString("d MMM yyyy")).Count() != 0)
+            {
+                return;
+            }
+            
+            while (startDate.DayOfWeek != DayOfWeek.Saturday)
+            {    
+                DataSource.Add(new CalendarEvent()
+                    {
+                        Subject = "Обяд за " + startDate.ToString("d MMM yyyy"),
+                        IsAllDay = true,
+                        StartTime = startDate,
+                        EndTime = startDate.AddHours(1),
+                    });
+
+                startDate = startDate.AddDays(1);
+            }
+
+            StateHasChanged();
+            base.OnInitialized();
+        }
+    }
+
+    private static DateTime GetWeekStart(DateTime datetimeNow)
+    {
+        var startOfWeek = datetimeNow.AddDays(
+            (int)CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek - (int)datetimeNow.DayOfWeek);
+
+        return startOfWeek.Date;
+    }
+}
