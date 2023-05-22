@@ -86,6 +86,8 @@
     min-height: 50px;
 }
 
+
+
 /*drag drop styles*/
 
 .plk-dd-spacing {
@@ -115,11 +117,11 @@
 }
 
 .plk-dd-in-transit {
-    opacity: 0;
+    opacity: 0.5;
 }
 
     .plk-dd-in-transit > div {
-        opacity: 0;
+        opacity: 0.5;
     }
 
 @keyframes blinker {

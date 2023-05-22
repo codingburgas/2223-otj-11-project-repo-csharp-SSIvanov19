@@ -1083,6 +1083,10 @@ video {
   padding-bottom: 1rem;
 }
 
+.pl-2 {
+  padding-left: 0.5rem;
+}
+
 .pl-\[1px\] {
   padding-left: 1px;
 }
@@ -1226,6 +1230,10 @@ video {
 .text-white {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity));
+}
+
+.underline {
+  text-decoration-line: underline;
 }
 
 .shadow {
@@ -1387,11 +1395,11 @@ video {
 }
 
 .plk-dd-in-transit {
-  opacity: 0;
+  opacity: 0.5;
 }
 
 .plk-dd-in-transit > div {
-  opacity: 0;
+  opacity: 0.5;
 }
 
 @keyframes blinker {

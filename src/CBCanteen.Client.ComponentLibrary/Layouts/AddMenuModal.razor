@@ -1,4 +1,5 @@
 ﻿@using Blazored.Modal
+@using Blazored.Modal.Services;
 @using CBCanteen.Client.ComponentLibrary.Components
 @using Syncfusion.Blazor.Grids
 @using CBCanteen.Shared.Models.Canteen
@@ -11,8 +12,10 @@
         </h3>
         <div class="mt-4">
             <div class="flex flex-row space-x-4">
-                <div class="w-[38rem]">
-                    <MealGrid Meals="Meals" />
+                <div class="w-[38rem] flex items-center flex-col space-y-2">
+                    <input type="text" placeholder="Търсене..." class="w-full p-2 border-2 rounded-lg"/>
+                    <MealGrid Meals="Meals" OnItemDropped=@(new EventCallback(this, OnItemDropped)) />
+                    <button @onclick=@OpenCreateMenuModal class="underline text text-[#474747]">Добави ястие?</button>
                 </div>
                 <div class="flex flex-col w-[38rem]">
                     <p class="mb-2">Меню 1</p>
@@ -75,12 +78,26 @@
 
     private List<MealVM> FreeConsumptionMeals = new List<MealVM>();
 
-   
+    private EventCallback<MealVM> OnItemDropped(MealVM meal)
+    {
+        MenuOneMeals.Remove(meal);
+        MenuTwoMeals.Remove(meal);
+        FreeConsumptionMeals.Remove(meal);
+
+        return EventCallback.Factory.Create<MealVM>(this, (meal) =>
+        {
+            StateHasChanged();
+        });
+    }
+
     [Parameter]
     public DateTime MenuDate { get; set; }
 
     [CascadingParameter] 
     private BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    [CascadingParameter]
+    private IModalService Modal { get; set; } = default!;
 
     private async void GenerateApiKey()
     {
@@ -91,6 +108,16 @@
     private async void CloseModal()
     {
         await BlazoredModal.CloseAsync();
+    }
+
+    private void OpenCreateMenuModal()
+    {
+        var modalOptions = new ModalOptions()
+            {
+                Class = "smallModalClass"
+            };
+
+        Modal.Show<AddMealModal>("", modalOptions);
     }
 
 }

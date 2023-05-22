@@ -3,7 +3,7 @@
 
 <div class="flex space-x-4 w-full justify-between">
     <div class="w-fit flex justify-center items-center">
-        <p class="text truncate">Име</p>
+        <p class="text truncate pl-2">Име</p>
     </div>
     <div class="flex space-x-4">
         <div class="w-16 flex justify-center items-center">
@@ -17,20 +17,20 @@
         </div>
     </div>
 </div>
-<Dropzone Items="Meals" MaxItems=@(HasMaxItem ? 3 : null) CopyItem="@(AllowCopy ? (item)=> { return item; } : null)">
+<Dropzone Items="Meals" MaxItems=@(HasMaxItem ? 3 : null) CopyItem="@(AllowCopy ? (item)=> { return item; } : null)" OnItemDrop=@OnItemDropped Class="w-full">
     <div class="flex space-x-4 rounded-lg border-2 w-full justify-between p-2">
         <div class="w-fit flex justify-center items-center max-w-[18rem]">
             <p class="text truncate" title=@context.Name>@context.Name</p>
         </div>
         <div class="flex space-x-4">
             <div class="w-14 flex justify-center items-center max-w-[18rem]">
-                <p class="text truncate" title=@context.Name>@context.Weight</p>
+                <p class="text truncate" title=@context.Weight>@context.Weight</p>
             </div>
             <div class="w-14 flex justify-center items-center max-w-[18rem]">
-                <p class="text truncate" title=@context.Name>@context.UnitPrice</p>
+                <p class="text truncate" title=@context.UnitPrice>@($"{context.UnitPrice:F2} лв.")</p>
             </div>
             <div class="w-24 flex justify-center items-center max-w-[18rem]">
-                <p class="text truncate" title=@context.Name>@context.Category</p>
+                <p class="text truncate" title=@context.Category>@context.Category</p>
             </div>
         </div>
     </div>
@@ -45,4 +45,7 @@
 
     [Parameter]
     public bool HasMaxItem { get; set; } = false;
+
+    [Parameter]
+    public EventCallback<MealVM> OnItemDropped { get; set; } 
 }
