@@ -39,9 +39,19 @@
 </div>
 
 @code {
+    /// <summary>
+    /// Get or set a user instance.
+    /// </summary>
     private User? currentUser;
+
+    /// <summary>
+    /// Stream representing current user photo.
+    /// </summary>
     private Stream? currentUserPhotoStream;
 
+    /// <summary>
+    /// Function triggered when component is initialized.
+    /// </summary>
     protected override async Task OnInitializedAsync()
     {
         currentUser = await this.userService.GetCurrentUserInfoAsync();

@@ -1,5 +1,5 @@
-﻿// <copyright file="MappingProfile.cs" company="MapIt">
-// Copyright (c) MapIt. All rights reserved.
+﻿// <copyright file="MappingProfile.cs" company="CB-Canteen">
+// Copyright (c) CB-Canteen. All rights reserved.
 // </copyright>
 
 using AutoMapper;

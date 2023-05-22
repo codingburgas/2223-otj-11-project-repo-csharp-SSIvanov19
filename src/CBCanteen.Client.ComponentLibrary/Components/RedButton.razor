@@ -1,12 +1,21 @@
 ﻿<button @onclick="OnClickCallback" class="rounded-lg border-2 border-[#FF0000] bg-[#FF0000] bg-opacity-25 flex items-center justify-center text-[#FF0000] font-semibold @StyleClass">@Text</button>
 
 @code {
+    /// <summary>
+    /// The text to display inside the button.
+    /// </summary>
     [Parameter]
     public string Text { get; set; } = string.Empty;
 
+    /// <summary>
+    /// The CSS class to be used for styling the button.
+    /// </summary>
     [Parameter]
     public string StyleClass { get; set; } = string.Empty;
 
+    /// <summary>
+    /// The callback to be executed when the button is clicked.
+    /// </summary>
     [Parameter]
     public EventCallback<MouseEventArgs> OnClickCallback { get; set; }
 }

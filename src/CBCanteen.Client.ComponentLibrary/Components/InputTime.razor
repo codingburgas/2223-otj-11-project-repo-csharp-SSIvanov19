@@ -4,9 +4,15 @@
 </div>
 
 @code {
+    /// <summary>
+    /// The text to display next to the input field.
+    /// </summary>
     [Parameter]
     public string Text { get; set; } = string.Empty;
 
+    /// <summary>
+    /// The class string used to style the input field.
+    /// </summary>
     [Parameter]
     public string StyleCalss { get; set; } = string.Empty;
 }

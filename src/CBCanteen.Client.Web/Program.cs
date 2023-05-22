@@ -1,3 +1,4 @@
+// File: C:\Users\SSIvanov19\source\repos\2223-otj-11-project-repo-csharp-SSIvanov19\src\CBCanteen.Client.Web\Program.cs
 using CBCanteen.Client.Web;
 using CBCanteen.Client.Services;
 using CBCanteen.Client.Web.Models;
@@ -19,13 +20,21 @@ builder.Services.AddHttpClient("CBCanteen.Client.Web.ServerAPI", client => clien
 builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("CBCanteen.Client.Web.ServerAPI"));
 
 builder.Services
-    .AddMsalAuthentication<RemoteAuthenticationState, CustomUserAccount>(options =>
-    {
-        builder.Configuration.Bind("AzureAd", options.ProviderOptions.Authentication);
-        options.ProviderOptions.DefaultAccessTokenScopes.Add("api://a503036b-8481-4108-ac8a-5219c254f913/API.Access");
-        options.ProviderOptions.LoginMode = "redirect";
-        options.UserOptions.RoleClaim = "role";
-    })
+    .AddMsalAuthentication<RemoteAuthenticationState, CustomUserAccount>(
+        options =>
+        {
+            // Bind the "AzureAd" section of appsettings.json file to options.ProviderOptions.Authentication property
+            builder.Configuration.Bind("AzureAd", options.ProviderOptions.Authentication);
+
+            // Add the default access token scope
+            options.ProviderOptions.DefaultAccessTokenScopes.Add("api://a503036b-8481-4108-ac8a-5219c254f913/API.Access");
+
+            // Set authentication flow to "redirect"
+            options.ProviderOptions.LoginMode = "redirect";
+
+            // Set role claim type to "role"
+            options.UserOptions.RoleClaim = "role";
+        })
     .AddAccountClaimsPrincipalFactory<RemoteAuthenticationState, CustomUserAccount, CustomUserFactory>();
 
 var baseUrl = builder.Configuration.GetSection("MicrosoftGraph")["BaseUrl"];
@@ -40,3 +49,4 @@ builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddBlazorDragDrop();
 
 await builder.Build().RunAsync();
+

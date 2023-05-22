@@ -12,9 +12,15 @@
 </div>
 
 @code {
+    /// <summary>
+    /// The CSS class to be used for styling the tooltip icon.
+    /// </summary>
     [Parameter]
     public string StyleClass { get; set; } = string.Empty;
 
+    /// <summary>
+    /// The text to display as tooltip.
+    /// </summary>
     [Parameter]
     public string TooltipText { get; set; } = string.Empty;
 }

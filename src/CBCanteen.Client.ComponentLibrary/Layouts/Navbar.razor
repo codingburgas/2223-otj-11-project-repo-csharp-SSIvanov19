@@ -60,13 +60,30 @@
 </nav>
 
 @code {
+    /// <summary>
+    /// The current user object.
+    /// </summary>
     private User? currentUser;
+
+    /// <summary>
+    /// The current user's profile photo.
+    /// </summary>
     private Stream? currentUserPhotoStream;
+    
+    /// <summary>
+    /// Whether the current user is an Admin or not.
+    /// </summary>
     private bool isUserAdmin = false;
 
+    /// <summary>
+    /// The current authentication state provided by the 'CascadingParameter' attribute.
+    /// </summary>
     [CascadingParameter]
     private Task<AuthenticationState>? authenticationState { get; set; }
 
+    /// <summary>
+    /// Called when the component is initialized. Initializes the user and profile photo.
+    /// </summary>
     protected override async Task OnInitializedAsync()
     {
         if (authenticationState is not null)
@@ -108,6 +125,9 @@
         }
     }
 
+    /// <summary>
+    /// Called after the component is rendered. Initializes the navbar.
+    /// </summary>
     protected async override void OnAfterRender(bool firstRender)
     {
         if(firstRender)
@@ -116,16 +136,25 @@
         }
     }
 
+    /// <summary>
+    /// Redirects to the settings page.
+    /// </summary>
     private void NavigateToSettingsPage()
     {
         Navigation.NavigateTo("/settings");
     }
 
+    /// <summary>
+    /// Redirects to the Admin page.
+    /// </summary>
     private void NavigateToAdminPage()
     {
         Navigation.NavigateTo("/admin");
     }
 
+    /// <summary>
+    /// Redirects to the home page.
+    /// </summary>
     private void NavigateToHomePage()
     {
         Navigation.NavigateTo("/");

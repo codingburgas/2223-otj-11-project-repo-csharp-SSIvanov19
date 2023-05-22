@@ -31,7 +31,7 @@
         </div>
     </div>
     <div class="bg-gray-50 py-3 px-6 flex flex-row-reverse">
-        <GreenButton Text="Добави" StyleClass="ml-2 py-1 px-3" OnClickCallback="GenerateApiKey" />
+        <GreenButton Text="Добави" StyleClass="ml-2 py-1 px-3" OnClickCallback="CreateMeal" />
         <GrayButton Text="Откажи" StyleClass="py-1 px-3" OnClickCallback="CloseModal" />
     </div>
 </div>
@@ -40,12 +40,17 @@
     [CascadingParameter]
     private BlazoredModalInstance BlazoredModal { get; set; } = default!;
 
-    private async void GenerateApiKey()
+    /// <summary>
+    /// Function that creates a new meal
+    /// </summary>
+    private async void CreateMeal()
     {
-        // Code to generate API Key
         await BlazoredModal.CloseAsync();
     }
 
+    /// <summary>
+    /// Function that closes the modal window
+    /// </summary>
     private async void CloseModal()
     {
         await BlazoredModal.CloseAsync();

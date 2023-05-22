@@ -37,15 +37,27 @@
 </Dropzone>
 
 @code {
+    /// <summary>
+    /// The meals to be displayed in the meal grid.
+    /// </summary>
     [Parameter]
     public List<MealVM> Meals { get; set; } = new List<MealVM>();
 
+    /// <summary>
+    /// Whether to allow copying of meal items in the grid.
+    /// </summary>
     [Parameter]
     public bool AllowCopy { get; set; } = false;
 
+    /// <summary>
+    /// Whether the dropzone has a maximum number of items.
+    /// </summary>
     [Parameter]
     public bool HasMaxItem { get; set; } = false;
 
+    /// <summary>
+    /// The callback executed when a meal item is dropped into the dropzone.
+    /// </summary>
     [Parameter]
     public EventCallback<MealVM> OnItemDropped { get; set; } 
 }

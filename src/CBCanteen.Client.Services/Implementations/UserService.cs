@@ -4,15 +4,26 @@ using Microsoft.Graph.Models;
 
 namespace CBCanteen.Client.Services.Implementations;
 
+/// <summary>
+/// This class implements methods used to interact with Microsoft Graph API and retrieve calendar events information.
+/// </summary>
 internal class UserService : IUserService
 {
+    /// <summary>
+    /// The GraphServiceClient instance.
+    /// </summary>
     private readonly GraphServiceClient graphClient;
 
+    /// <summary>
+    /// The constructor
+    /// </summary>
+    /// <param name="graphClient">The GraphServiceClient instance</param>
     public UserService(GraphServiceClient graphClient)
     {
         this.graphClient = graphClient;    
     }
     
+    /// <inheritdoc/>
     public async Task<User?> GetCurrentUserInfoAsync()
     {
         return await graphClient.Me.GetAsync((requestConfiguration) =>
@@ -21,6 +32,7 @@ internal class UserService : IUserService
         });
     }
 
+    /// <inheritdoc/>
     public async Task<Stream?> GetCurrentUserProfilePhotoAsync()
     {
         return await this.graphClient.Me.Photo.Content.GetAsync();

@@ -19,8 +19,14 @@
 </SfSchedule>
 
 @code {
+    ///<summary>
+    /// Holds the list of events.
+    ///</summary>
     private List<CalendarEvent>? DataSource { get; set; }
 
+    ///<summary>
+    /// Method called during initialization.
+    ///</summary>
     protected async override Task OnInitializedAsync()
     {
         var startOfWeek = GetCurrentWeekStart();
@@ -39,6 +45,9 @@
         StateHasChanged();
     }
 
+    ///<summary>
+    /// Returns the current weeks start.
+    ///</summary>
     private static DateTime GetCurrentWeekStart()
     {
         var datetimeNow = DateTime.Now;

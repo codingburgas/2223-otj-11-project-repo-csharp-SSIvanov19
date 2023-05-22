@@ -50,11 +50,17 @@
 
     private Tabs CurrentTab = Tabs.Account;
 
+    ///<summary>
+    /// Getter/setter for the CurrentTab field.
+    ///</summary>
     private void ChangeTabTo(Tabs tab)
     {
         this.CurrentTab = tab;
     }
 
+    ///<summary>
+    /// Navigates backwards to the home page.
+    ///</summary>
     private void NavigateBackwards()
     {
         Navigator.NavigateTo("/");

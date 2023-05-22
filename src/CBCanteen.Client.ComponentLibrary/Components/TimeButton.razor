@@ -3,9 +3,15 @@
 </svg>
 
 @code {
+    /// <summary>
+    /// The CSS class to be used for styling the button.
+    /// </summary>
     [Parameter]
     public EventCallback<MouseEventArgs> OnClickCallback { get; set; }
 
+    /// <summary>
+    /// The callback function to execute when the button is clicked.
+    /// </summary>
     [Parameter]
     public string StyleClass { get; set; } = string.Empty;
 }

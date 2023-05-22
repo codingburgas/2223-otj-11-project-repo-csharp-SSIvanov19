@@ -19,6 +19,9 @@
     [CascadingParameter] 
     public IModalService Modal { get; set; } = default!;
 
+    /// <summary>
+    /// Opens the modal for generating a new API key.
+    /// </summary>
     private void OpenModal()
     {
         var modalOptions = new ModalOptions()

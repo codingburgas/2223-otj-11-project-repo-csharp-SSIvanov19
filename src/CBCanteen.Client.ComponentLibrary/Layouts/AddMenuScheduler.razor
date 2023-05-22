@@ -21,6 +21,9 @@
     private List<CalendarEvent> DataSource { get; set; } = new List<CalendarEvent>();
     private DateTime CurrentDate = DateTime.Now;
 
+    /// <summary> 
+    /// Initializes the DataSource and updates presentation if any changes were occured.
+    /// </summary>
     protected override void OnInitialized()
     {
         Console.WriteLine("Slava na Preslava");
@@ -43,6 +46,9 @@
         base.OnInitialized();
     }
 
+    /// <summary> 
+    /// Displays selected menu item modal that contains its data.
+    /// </summary>
     private void OnEventClicked(EventClickArgs<CalendarEvent> args)
     {
         args.Cancel = true;
@@ -57,6 +63,9 @@
         Modal.Show<AddMenuModal>($"Обяд за {args.Event.StartTime!}", parameter, options);
     }
 
+    /// <summary> 
+    /// Updates DataSource to match the current date and remembers its previous state.
+    /// </summary>
     private void OnActionCompleted(ActionEventArgs<CalendarEvent> args)
     {
         if (args.ActionType == ActionType.DateNavigate)
@@ -67,7 +76,7 @@
             {
                 return;
             }
-            
+
             while (startDate.DayOfWeek != DayOfWeek.Saturday)
             {    
                 DataSource.Add(new CalendarEvent()
@@ -86,6 +95,9 @@
         }
     }
 
+    /// <summary> 
+    /// Calculates the starting date of the current week.
+    /// </summary>
     private static DateTime GetWeekStart(DateTime datetimeNow)
     {
         var startOfWeek = datetimeNow.AddDays(

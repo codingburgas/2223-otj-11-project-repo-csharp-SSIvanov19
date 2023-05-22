@@ -31,7 +31,7 @@
         </div>
     </div>
     <div class="py-3 px-6 flex flex-row-reverse">
-        <GreenButton Text="Генерирай" StyleClass="ml-2 py-1 px-3" OnClickCallback="GenerateApiKey"/>
+        <GreenButton Text="Генерирай" StyleClass="ml-2 py-1 px-3" OnClickCallback="CreateDailyMenu"/>
         <GrayButton Text="Откажи" StyleClass="py-1 px-3" OnClickCallback="CloseModal"/>
     </div>
 </div>
@@ -78,6 +78,51 @@
 
     private List<MealVM> FreeConsumptionMeals = new List<MealVM>();
 
+    [Parameter]
+    public DateTime MenuDate { get; set; }
+
+    [CascadingParameter] 
+    private BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    [CascadingParameter]
+    private IModalService Modal { get; set; } = default!;
+
+    /// <summary>
+    /// Create daily menu
+    /// </summary>
+    private async void CreateDailyMenu()
+    {
+        // Code to generate API Key
+        await BlazoredModal.CloseAsync();
+    }
+
+    /// <summary>
+    /// Closes the modal window
+    /// </summary>
+    private async void CloseModal()
+    {
+        await BlazoredModal.CloseAsync();
+    }
+
+    /// <summary>
+    /// Opens the add meal modal
+    /// </summary>
+    private void OpenCreateMenuModal()
+    {
+        var modalOptions = new ModalOptions()
+            {
+                Class = "smallModalClass"
+            };
+
+        Modal.Show<AddMealModal>("", modalOptions);
+    }
+
+    
+    /// <summary>
+    /// Handles an item being dropped
+    /// </summary>
+    /// <param name="meal">The meal to be dropped</param>
+    /// <returns>An EventCallback for the item dropped</returns>
     private EventCallback<MealVM> OnItemDropped(MealVM meal)
     {
         MenuOneMeals.Remove(meal);
@@ -89,35 +134,4 @@
             StateHasChanged();
         });
     }
-
-    [Parameter]
-    public DateTime MenuDate { get; set; }
-
-    [CascadingParameter] 
-    private BlazoredModalInstance BlazoredModal { get; set; } = default!;
-
-    [CascadingParameter]
-    private IModalService Modal { get; set; } = default!;
-
-    private async void GenerateApiKey()
-    {
-        // Code to generate API Key
-        await BlazoredModal.CloseAsync();
-    }
-
-    private async void CloseModal()
-    {
-        await BlazoredModal.CloseAsync();
-    }
-
-    private void OpenCreateMenuModal()
-    {
-        var modalOptions = new ModalOptions()
-            {
-                Class = "smallModalClass"
-            };
-
-        Modal.Show<AddMealModal>("", modalOptions);
-    }
-
 }

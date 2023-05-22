@@ -35,7 +35,6 @@
 </div>
 
 @code {
-
     private string Name = "";
     private string Expiration = "7";
     private string CustomDateStyle = "display: none;";
@@ -44,17 +43,26 @@
     [CascadingParameter] 
     BlazoredModalInstance BlazoredModal { get; set; } = default!;
 
+    /// <summary>
+    /// Function that generates the API Key
+    /// </summary>
     private async void GenerateApiKey()
     {
         // Code to generate API Key
         await BlazoredModal.CloseAsync();
     }
 
+    /// <summary>
+    /// Function that closes the modal window
+    /// </summary>
     private async void CloseModal()
     {
         await BlazoredModal.CloseAsync();
     }
 
+    /// <summary>
+    /// Callback that shows or hides the custom date input, when the user selects an option other than custom.
+    /// </summary>
     private void ShowCustomDate(ChangeEventArgs e)
     {
         Expiration = e.Value.ToString()!;

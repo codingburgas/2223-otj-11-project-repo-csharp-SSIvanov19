@@ -18,27 +18,48 @@
 </div>
 
 @code {
+    /// <summary>
+    /// The text displayed next to the Checkbox
+    /// </summary>
     [Parameter]
     public string Text { get; set; } = string.Empty;
 
+    /// <summary>
+    /// The Tooltip text displayed when the mouse hovers over the Checkbox
+    /// </summary>
     [Parameter]
     public string TooltipText { get; set; } = string.Empty;
 
+    /// <summary>
+    /// The class string used to style the Checkbox
+    /// </summary>
     [Parameter]
     public string StyleClass { get; set; } = string.Empty;
 
+    /// <summary>
+    /// The boolean value indicating whether the Checkbox is checked or not
+    /// </summary>
     [Parameter]
     public bool IsChecked { get; set; } = false;
 
+    /// <summary>
+    /// The Event Callback function called when the Checkbox is toggled
+    /// </summary>
     [Parameter]
     public EventCallback<bool> OnButtonChange { get; set; }
 
+    /// <summary>
+    /// The Toggle function which sets IsChecked to its opposite value and Invokes the OnButtonChange Event Callback
+    /// </summary>
     private async void Toggle()
     {
         IsChecked = !IsChecked;
         await OnButtonChange.InvokeAsync(IsChecked);
     }
 
+    /// <summary>
+    /// The function returning the class string styled according to the IsChecked state
+    /// </summary>
     private string GetStyleClass()
     {
         return IsChecked ? "w-7 h-7 rounded-lg border-2 border-[#6EC700] mr-2 cursor-pointer bg-[#6EC700] bg-opacity-25 flex items-center justify-center" : "w-7 h-7 rounded-lg border-2 border-[#FF0000] mr-2 cursor-pointer bg-[#FF0000] bg-opacity-25 flex items-center justify-center";
