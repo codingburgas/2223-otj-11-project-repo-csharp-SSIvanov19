@@ -1,36 +1,36 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
-  <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="Layouts\Navbar.razor.js" />
-  </ItemGroup>
+	<ItemGroup>
+		<None Remove="Layouts\Navbar.razor.js" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <SupportedPlatform Include="browser" />
-  </ItemGroup>
+	<ItemGroup>
+		<SupportedPlatform Include="browser" />
+	</ItemGroup>
 
-  <ItemGroup>
-	<PackageReference Include="AutoMapper" Version="12.0.1" />
-	<PackageReference Include="blazor-dragdrop" Version="2.4.0" />
-    <PackageReference Include="Blazored.Modal" Version="7.1.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components" Version="7.0.5" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="7.0.5" />
-	<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.3" />
-    <PackageReference Include="Microsoft.Graph" Version="5.9.0" />
-    <PackageReference Include="Syncfusion.Blazor.Calendars" Version="21.2.3" />
-    <PackageReference Include="Syncfusion.Blazor.Grid" Version="21.2.3" />
-    <PackageReference Include="Syncfusion.Blazor.Schedule" Version="21.2.3" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="AutoMapper" Version="12.0.1" />
+		<PackageReference Include="blazor-dragdrop" Version="2.4.0" />
+		<PackageReference Include="Blazored.Modal" Version="7.1.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Components" Version="7.0.5" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="7.0.5" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.3" />
+		<PackageReference Include="Microsoft.Graph" Version="5.9.0" />
+		<PackageReference Include="Syncfusion.Blazor.Calendars" Version="21.2.3" />
+		<PackageReference Include="Syncfusion.Blazor.Grid" Version="21.2.3" />
+		<PackageReference Include="Syncfusion.Blazor.Schedule" Version="21.2.3" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\CBCanteen.Client.Services\CBCanteen.Client.Services.csproj" />
-    <ProjectReference Include="..\CBCanteen.Shared\CBCanteen.Shared.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\CBCanteen.Client.Services\CBCanteen.Client.Services.csproj" />
+		<ProjectReference Include="..\CBCanteen.Shared\CBCanteen.Shared.csproj" />
+	</ItemGroup>
 
 	<PropertyGroup>
 		<StaticWebAssetBasePath Condition="$(StaticWebAssetBasePath) == ''">/CBCanteen.Client.ComponentLibrary</StaticWebAssetBasePath>
