@@ -1,4 +1,5 @@
-﻿using Foundation;
+﻿using CBCanteen.Client.Mobile;
+using Foundation;
 
 namespace CBCanteen.MobileClient {
     [Register("AppDelegate")]

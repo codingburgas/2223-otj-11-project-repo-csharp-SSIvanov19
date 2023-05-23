@@ -1,5 +1,9 @@
-﻿using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
+﻿// <copyright file="CustomUserAccount.cs" company="CBCanteen">
+// Copyright (c) CBCanteen. All rights reserved.
+// </copyright>
+
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 
 namespace CBCanteen.Client.Web.UserFactory;
 

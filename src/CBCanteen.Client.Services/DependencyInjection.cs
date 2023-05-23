@@ -1,4 +1,8 @@
-﻿using CBCanteen.Client.Services.Contracts;
+﻿// <copyright file="DependencyInjection.cs" company="CBCanteen">
+// Copyright (c) CBCanteen. All rights reserved.
+// </copyright>
+
+using CBCanteen.Client.Services.Contracts;
 using CBCanteen.Client.Services.Implementations;
 using Microsoft.Extensions.DependencyInjection;
 

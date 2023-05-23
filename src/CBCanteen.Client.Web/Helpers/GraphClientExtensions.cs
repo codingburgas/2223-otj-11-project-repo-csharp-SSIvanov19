@@ -1,4 +1,8 @@
-﻿using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
+﻿// <copyright file="GraphClientExtensions.cs" company="CBCanteen">
+// Copyright (c) CBCanteen. All rights reserved.
+// </copyright>
+
+using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.Authentication.WebAssembly.Msal.Models;
 using Microsoft.Graph;
 using Microsoft.IdentityModel.Tokens;
@@ -54,24 +58,28 @@ internal static class GraphClientExtensions
     /// </summary>
     private class GraphAuthenticationProvider : IAuthenticationProvider
     {
+        /// <summary>
+        /// Configuration for the GraphAuthenticationProvider.
+        /// </summary>
         private readonly IConfiguration config;
 
         /// <summary>
-        /// The provider for access tokens.
-        /// </summary>
-        public IAccessTokenProvider TokenProvider { get; }
-        
-        /// <summary>
-        /// Instantiates a new instance of GraphAuthenticationProvider.
+        /// Initializes a new instance of the <see cref="GraphAuthenticationProvider"/> class.
         /// </summary>
         /// <param name="tokenProvider">The IAccessTokenProvider for access tokens.</param>
         /// <param name="config">The IConfiguration for the GraphAuthenticationProvider.</param>
-        public GraphAuthenticationProvider(IAccessTokenProvider tokenProvider,
+        public GraphAuthenticationProvider(
+            IAccessTokenProvider tokenProvider,
             IConfiguration config)
         {
-            TokenProvider = tokenProvider;
+            this.TokenProvider = tokenProvider;
             this.config = config;
         }
+
+        /// <summary>
+        /// Gets the provider for access tokens.
+        /// </summary>
+        public IAccessTokenProvider TokenProvider { get; }
 
         /// <summary>
         /// Authenticates the request to the Graph API.
@@ -79,20 +87,22 @@ internal static class GraphClientExtensions
         /// <param name="request">The request to authenticate.</param>
         /// <param name="additionalAuthenticationContext">Dictionary of additional authentication parameters.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
-        public async Task AuthenticateRequestAsync(RequestInformation request,
+        public async Task AuthenticateRequestAsync(
+            RequestInformation request,
             Dictionary<string, object>? additionalAuthenticationContext = null,
             CancellationToken cancellationToken = default)
         {
-            var result = await TokenProvider.RequestAccessToken(
+            var result = await this.TokenProvider.RequestAccessToken(
                 new AccessTokenRequestOptions()
                 {
                     Scopes =
-                        config.GetSection("MicrosoftGraph:Scopes").Get<string[]>()
+                        this.config.GetSection("MicrosoftGraph:Scopes").Get<string[]>(),
                 });
 
             if (result.TryGetToken(out var token))
             {
-                request.Headers.Add("Authorization",
+                request.Headers.Add(
+                    "Authorization",
                     $"{CoreConstants.Headers.Bearer} {token.Value}");
             }
         }

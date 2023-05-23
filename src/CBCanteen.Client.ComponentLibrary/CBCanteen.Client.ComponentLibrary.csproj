@@ -35,4 +35,8 @@
 	<PropertyGroup>
 		<StaticWebAssetBasePath Condition="$(StaticWebAssetBasePath) == ''">/CBCanteen.Client.ComponentLibrary</StaticWebAssetBasePath>
 	</PropertyGroup>
+
+	<ItemGroup>
+		<AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
+	</ItemGroup>
 </Project>

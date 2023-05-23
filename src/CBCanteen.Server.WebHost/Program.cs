@@ -1,9 +1,22 @@
+// <copyright file="Program.cs" company="CBCanteen">
+// Copyright (c) CBCanteen. All rights reserved.
+// </copyright>
+
+using CBCanteen.Server.Data.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
 using Tailwind;
 
 var builder = WebApplication.CreateBuilder(args);
+var configuration = builder.Configuration;
+
+builder.Services.AddDbContext<ApplicationDBContext>(options =>
+   options.UseSqlServer(configuration.GetConnectionString("DefaultConnection") !, o =>
+   {
+       o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+       o.MigrationsAssembly(typeof(Program).Assembly.FullName);
+   }));
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
@@ -16,7 +29,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.RunTailwind("tailwind", "../CBCanteen.Client.ComponentLibrary");
+    await app.RunTailwind("tailwind", "../CBCanteen.Client.ComponentLibrary");
     app.UseWebAssemblyDebugging();
 }
 else

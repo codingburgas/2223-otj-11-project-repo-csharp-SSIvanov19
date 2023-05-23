@@ -1,14 +1,17 @@
-// File: C:\Users\SSIvanov19\source\repos\2223-otj-11-project-repo-csharp-SSIvanov19\src\CBCanteen.Client.Web\Program.cs
-using CBCanteen.Client.Web;
-using CBCanteen.Client.Services;
-using CBCanteen.Client.Web.Models;
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+// <copyright file="Program.cs" company="CBCanteen">
+// Copyright (c) CBCanteen. All rights reserved.
+// </copyright>
+
 using Blazored.Modal;
-using Syncfusion.Blazor;
-using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
+using CBCanteen.Client.Services;
+using CBCanteen.Client.Web;
+using CBCanteen.Client.Web.Models;
 using CBCanteen.Client.Web.UserFactory;
+using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Plk.Blazor.DragDrop;
+using Syncfusion.Blazor;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -49,4 +52,3 @@ builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddBlazorDragDrop();
 
 await builder.Build().RunAsync();
-

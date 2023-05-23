@@ -1,4 +1,8 @@
-﻿using CBCanteen.Client.Services.Contracts;
+﻿// <copyright file="UserService.cs" company="CBCanteen">
+// Copyright (c) CBCanteen. All rights reserved.
+// </copyright>
+
+using CBCanteen.Client.Services.Contracts;
 using Microsoft.Graph;
 using Microsoft.Graph.Models;
 
@@ -15,18 +19,18 @@ internal class UserService : IUserService
     private readonly GraphServiceClient graphClient;
 
     /// <summary>
-    /// The constructor
+    /// Initializes a new instance of the <see cref="UserService"/> class.
     /// </summary>
-    /// <param name="graphClient">The GraphServiceClient instance</param>
+    /// <param name="graphClient">The GraphServiceClient instance.</param>
     public UserService(GraphServiceClient graphClient)
     {
-        this.graphClient = graphClient;    
+        this.graphClient = graphClient;
     }
-    
+
     /// <inheritdoc/>
     public async Task<User?> GetCurrentUserInfoAsync()
     {
-        return await graphClient.Me.GetAsync((requestConfiguration) =>
+        return await this.graphClient.Me.GetAsync((requestConfiguration) =>
         {
             requestConfiguration.QueryParameters.Select = new string[] { "displayName", "mail", "jobTitle", "department" };
         });

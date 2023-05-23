@@ -1,6 +1,10 @@
-﻿using Microsoft.AspNetCore.Components.WebAssembly.Authentication.Internal;
-using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
+﻿// <copyright file="CustomUserFactory.cs" company="CBCanteen">
+// Copyright (c) CBCanteen. All rights reserved.
+// </copyright>
+
 using System.Security.Claims;
+using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
+using Microsoft.AspNetCore.Components.WebAssembly.Authentication.Internal;
 
 namespace CBCanteen.Client.Web.UserFactory;
 
@@ -17,7 +21,6 @@ public class CustomUserFactory : AccountClaimsPrincipalFactory<CustomUserAccount
     public CustomUserFactory(IAccessTokenProviderAccessor accessor)
         : base(accessor)
     {
-
     }
 
     /// <summary>
@@ -41,6 +44,7 @@ public class CustomUserFactory : AccountClaimsPrincipalFactory<CustomUserAccount
                     userIdentity.AddClaim(new Claim("role", role));
                 }
             }
+
             if (account?.Groups?.Length > 0)
             {
                 foreach (var group in account?.Groups)

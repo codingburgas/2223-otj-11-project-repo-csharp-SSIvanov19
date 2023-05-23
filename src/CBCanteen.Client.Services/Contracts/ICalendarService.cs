@@ -1,4 +1,8 @@
-﻿using Microsoft.Graph.Models;
+﻿// <copyright file="ICalendarService.cs" company="CBCanteen">
+// Copyright (c) CBCanteen. All rights reserved.
+// </copyright>
+
+using Microsoft.Graph.Models;
 
 namespace CBCanteen.Client.Services.Contracts;
 
@@ -10,8 +14,8 @@ public interface ICalendarService
     /// <summary>
     /// Retrieves events between two dates from Microsoft Graph API.
     /// </summary>
-    /// <param name="startDate">The starting date</param>
-    /// <param name="endDate">The ending date</param>
-    /// <returns>The events</returns>
+    /// <param name="startDate">The starting date.</param>
+    /// <param name="endDate">The ending date.</param>
+    /// <returns>The events.</returns>
     Task<EventCollectionResponse?> GetEventsBetweenTwoDatesAsync(DateTime startDate, DateTime endDate);
 }
