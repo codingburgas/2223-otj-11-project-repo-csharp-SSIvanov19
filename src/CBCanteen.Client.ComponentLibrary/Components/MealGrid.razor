@@ -1,47 +1,44 @@
-﻿@using CBCanteen.Shared.Models.Canteen;
+﻿@using AutoMapper;
+@using Blazored.Modal;
+@using Blazored.Modal.Services;
+@using CBCanteen.Client.ComponentLibrary.Layouts
+@using CBCanteen.Client.Services.Contracts;
+@using CBCanteen.Shared.Models.Canteen;
 @using Plk.Blazor.DragDrop
+@using Syncfusion.Blazor.Grids
+@using System.Collections.ObjectModel;
 
-<div class="flex space-x-4 w-full justify-between">
-    <div class="w-fit flex justify-center items-center">
-        <p class="text truncate pl-2">Име</p>
-    </div>
-    <div class="flex space-x-4">
-        <div class="w-16 flex justify-center items-center">
-            <p class="text truncate">Грамаж</p>
-        </div>
-        <div class="w-16 flex justify-center items-center">
-            <p class="text truncate">Цена</p>
-        </div>
-        <div class="w-24 flex justify-center items-center">
-            <p class="text truncate">Категория</p>
-        </div>
-    </div>
-</div>
-<Dropzone Items="Meals" MaxItems=@(HasMaxItem ? 3 : null) CopyItem="@(AllowCopy ? (item)=> { return item; } : null)" OnItemDrop=@OnItemDropped Class="w-full">
-    <div class="flex space-x-4 rounded-lg border-2 w-full justify-between p-2">
-        <div class="w-fit flex justify-center items-center max-w-[18rem]">
-            <p class="text truncate" title=@context.Name>@context.Name</p>
-        </div>
-        <div class="flex space-x-4">
-            <div class="w-14 flex justify-center items-center max-w-[18rem]">
-                <p class="text truncate" title=@context.Weight>@context.Weight</p>
-            </div>
-            <div class="w-14 flex justify-center items-center max-w-[18rem]">
-                <p class="text truncate" title=@context.UnitPrice>@($"{context.UnitPrice:F2} лв.")</p>
-            </div>
-            <div class="w-24 flex justify-center items-center max-w-[18rem]">
-                <p class="text truncate" title=@context.Category>@context.Category</p>
-            </div>
-        </div>
-    </div>
-</Dropzone>
+@inject IMapper mapper
+@inject IMealService mealService
+
+<SfGrid DataSource=@Meals ID=@Id AllowSelection="true" AllowRowDragAndDrop="true" Toolbar=@Tool EnableAdaptiveUI="true" AllowPaging=@AllowPaging>
+    <GridPageSettings PageSize="10" />
+    <GridRowDropSettings TargetID=@TargetId></GridRowDropSettings>
+    <GridEvents RowDropped=@RowDroppedHandler RowDropping=@RowDroppingHandler TValue="MealVM" OnRecordDoubleClick=@OnDoubleClickEditMeal></GridEvents>
+    <GridSelectionSettings Type="Syncfusion.Blazor.Grids.SelectionType.Single"></GridSelectionSettings>
+    <GridTemplates>
+        <EmptyRecordTemplate>
+            <span>Няма добавения ястия</span>
+        </EmptyRecordTemplate>
+    </GridTemplates>
+    <GridColumns>
+        <GridColumn Field=@nameof(MealVM.Id) HeaderText="ID" Width="0" IsPrimaryKey="true" AllowSearching="false">
+            <Template>
+            </Template>
+        </GridColumn>
+        <GridColumn Field=@nameof(MealVM.Name) HeaderText="Име"></GridColumn>
+        <GridColumn Field=@nameof(MealVM.Weight) HeaderText="Грамаж" Width="70"></GridColumn>
+        <GridColumn Field=@nameof(MealVM.UnitPrice) HeaderText="Цена" Format="C2" Width="70"></GridColumn>
+        <GridColumn Field=@nameof(MealVM.Category) HeaderText="Категория" Width="100"></GridColumn>
+    </GridColumns>
+</SfGrid>
 
 @code {
     /// <summary>
     /// The meals to be displayed in the meal grid.
     /// </summary>
     [Parameter]
-    public List<MealVM> Meals { get; set; } = new List<MealVM>();
+    public ObservableCollection<MealVM> Meals { get; set; } = new ();
 
     /// <summary>
     /// Whether to allow copying of meal items in the grid.
@@ -55,9 +52,78 @@
     [Parameter]
     public bool HasMaxItem { get; set; } = false;
 
-    /// <summary>
-    /// The callback executed when a meal item is dropped into the dropzone.
-    /// </summary>
     [Parameter]
-    public EventCallback<MealVM> OnItemDropped { get; set; } 
+    public string Id { get; set; } = string.Empty;
+
+    [Parameter]
+    public string TargetId { get; set; } = string.Empty;
+
+    [Parameter]
+    public List<string> Tool { get; set; } = new ();
+
+    [CascadingParameter]
+    private IModalService Modal { get; set; } = default!;
+
+    private bool AllowPaging => Id == "AllMeals";
+
+    /// <summary>
+    /// Prevents the grid from having duplicate items.
+    /// </summary>
+    /// <param name="args">Argument.</param>
+    private void RowDroppingHandler(RowDroppingEventArgs<MealVM> args)
+    {
+        if (Id == "DestGrid")
+        {
+            args.Cancel = true;
+        }
+
+
+        if (Meals.Contains(args.Data.FirstOrDefault()))
+        {   
+            return;
+        }
+
+        if (Id == "DestGrid" && (!HasMaxItem || Meals.Count < 3))
+        {
+            Meals.Add(args.Data.FirstOrDefault());
+        }
+    }
+
+    private void RowDroppedHandler(RowDroppedEventArgs<MealVM> args)
+    {
+        if (Id != "AllMeals")
+        {
+            return;
+        }
+
+        if (Meals.Where(el => el == args.Data.FirstOrDefault()).Count() > 1)
+        {
+            Meals.Remove(args.Data.FirstOrDefault());
+        }
+    }
+
+    private void OnDoubleClickEditMeal(RecordDoubleClickEventArgs<MealVM> args)
+    {
+        if (Id == "DestGrid")
+        {
+            return;
+        }
+
+        var parameters = new ModalParameters()
+           .Add(nameof(EditMealModal.Meal), mapper.Map<MealIM>(args.RowData))
+           .Add(nameof(EditMealModal.Id), args.RowData.Id)
+           .Add(nameof(EditMealModal.OnMealCreatedSuccessfully), EventCallback.Factory.Create(this, UpdateMealsAsync));
+
+        var modalOptions = new ModalOptions()
+            {
+                Class = "smallModalClass"
+            };
+
+        Modal.Show<EditMealModal>("", parameters, modalOptions);
+    }
+
+    private async Task UpdateMealsAsync()
+    {
+        this.Meals = new(await this.mealService.GetAllMealsAsync());
+    }
 }

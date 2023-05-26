@@ -17,7 +17,8 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-builder.Services.AddHttpClient("CBCanteen.Client.Web.ServerAPI", client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress));
+builder.Services.AddHttpClient("CBCanteen.Client.Web.ServerAPI", client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress))
+    .AddHttpMessageHandler<BaseAddressAuthorizationMessageHandler>();
 
 // Supply HttpClient instances that include access tokens when making requests to the server project
 builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("CBCanteen.Client.Web.ServerAPI"));

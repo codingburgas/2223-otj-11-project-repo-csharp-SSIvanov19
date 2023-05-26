@@ -1,9 +1,13 @@
 ﻿@using Blazored.Modal
 @using Blazored.Modal.Services;
 @using CBCanteen.Client.ComponentLibrary.Components
+@using CBCanteen.Client.Services.Contracts;
 @using Syncfusion.Blazor.Grids
 @using CBCanteen.Shared.Models.Canteen
 @using Plk.Blazor.DragDrop
+@using System.Collections.ObjectModel;
+
+@inject IMealService mealService
 
 <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all w-full sm:my-8 sm:align-middle">
     <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
@@ -13,70 +17,39 @@
         <div class="mt-4">
             <div class="flex flex-row space-x-4">
                 <div class="w-[38rem] flex items-center flex-col space-y-2">
-                    <input type="text" placeholder="Търсене..." class="w-full p-2 border-2 rounded-lg"/>
-                    <MealGrid Meals="Meals" OnItemDropped=@(new EventCallback(this, OnItemDropped)) />
+                    @{
+                        var Tool = (new List<string>() { "Search" });
+                    }
+                    <MealGrid Meals="Meals" Tool=@Tool Id="AllMeals" TargetId="DestGrid" />
                     <button @onclick=@OpenCreateMenuModal class="underline text text-[#474747]">Добави ястие?</button>
                 </div>
                 <div class="flex flex-col w-[38rem]">
                     <p class="mb-2">Меню 1</p>
-                    <MealGrid Meals="MenuOneMeals" HasMaxItem=true AllowCopy=true />
-
+                    <MealGrid Meals="MenuOneMeals" Id="DestGrid" TargetId="AllMeals" HasMaxItem=@true />
+  
                     <p class="mb-2 mt-4">Меню 2</p>
-                    <MealGrid Meals="MenuTwoMeals" HasMaxItem=true AllowCopy=true />
+                    <MealGrid Meals="MenuTwoMeals" Id="DestGrid" TargetId="AllMeals" HasMaxItem=@true />
                     
                     <p class="mb-2 mt-4">Свободна консумация</p>
-                    <MealGrid Meals="FreeConsumptionMeals" AllowCopy=true />
+                    <MealGrid Meals="FreeConsumptionMeals" Id="DestGrid" TargetId="AllMeals" />
                 </div>
             </div>
         </div>
     </div>
     <div class="py-3 px-6 flex flex-row-reverse">
-        <GreenButton Text="Генерирай" StyleClass="ml-2 py-1 px-3" OnClickCallback="CreateDailyMenu"/>
+        <GreenButton Text="Добави" StyleClass="ml-2 py-1 px-3" OnClickCallback="CreateDailyMenu"/>
         <GrayButton Text="Откажи" StyleClass="py-1 px-3" OnClickCallback="CloseModal"/>
     </div>
 </div>
 
 @code {
-    private List<MealVM> Meals = new List<MealVM>() {
-        new MealVM()
-        {
-            Id = Guid.NewGuid().ToString(),
-            Name = "Кюфте / кебапче с топла гарнитура - 3 бр.",
-            UnitPrice = 9.99,
-            Weight = 250,
-            Category = "Осн."
-        },
-        new MealVM()
-        {
-            Id = Guid.NewGuid().ToString(),
-            Name = "Margherita Pizza",
-            UnitPrice = 8.99,
-            Weight = 200,
-            Category = "Осн."
-        },
-        new MealVM()
-        {
-            Id = Guid.NewGuid().ToString(),
-            Name = "Grilled Salmon",
-            UnitPrice = 14.99,
-            Weight = 250,
-            Category = "Осн."
-        },
-        new MealVM()
-        {
-            Id = Guid.NewGuid().ToString(),
-            Name = "Caesar Salad",
-            UnitPrice = 6.99,
-            Weight = 150,
-            Category ="Пред."
-        }
-    };
+    private ObservableCollection<MealVM> Meals = new ObservableCollection<MealVM>();
 
-    private List<MealVM> MenuOneMeals = new List<MealVM>();
+    private ObservableCollection<MealVM> MenuOneMeals = new ObservableCollection<MealVM>();
 
-    private List<MealVM> MenuTwoMeals = new List<MealVM>();
+    private ObservableCollection<MealVM> MenuTwoMeals = new ObservableCollection<MealVM>();
 
-    private List<MealVM> FreeConsumptionMeals = new List<MealVM>();
+    private ObservableCollection<MealVM> FreeConsumptionMeals = new ObservableCollection<MealVM>();
 
     [Parameter]
     public DateTime MenuDate { get; set; }
@@ -86,6 +59,11 @@
 
     [CascadingParameter]
     private IModalService Modal { get; set; } = default!;
+
+    protected async override Task OnInitializedAsync()
+    {
+        this.Meals = new(await this.mealService.GetAllMealsAsync());
+    }
 
     /// <summary>
     /// Create daily menu
@@ -104,17 +82,25 @@
         await BlazoredModal.CloseAsync();
     }
 
+    private async Task UpdateMealsList()
+    {
+        this.Meals = new(await this.mealService.GetAllMealsAsync());
+    }
+
     /// <summary>
     /// Opens the add meal modal
     /// </summary>
     private void OpenCreateMenuModal()
     {
+        var parameters = new ModalParameters()
+            .Add(nameof(AddMealModal.OnMealCreatedSuccessfully), EventCallback.Factory.Create(this, UpdateMealsList));
+
         var modalOptions = new ModalOptions()
             {
                 Class = "smallModalClass"
             };
 
-        Modal.Show<AddMealModal>("", modalOptions);
+        Modal.Show<AddMealModal>("", parameters, modalOptions);
     }
 
 

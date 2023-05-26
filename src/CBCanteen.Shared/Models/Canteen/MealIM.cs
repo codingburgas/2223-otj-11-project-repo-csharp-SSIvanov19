@@ -1,4 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿// <copyright file="MealIM.cs" company="CBCanteen">
+// Copyright (c) CBCanteen. All rights reserved.
+// </copyright>
+
+using System.ComponentModel.DataAnnotations;
 
 namespace CBCanteen.Shared.Models.Canteen;
 
@@ -8,26 +12,29 @@ namespace CBCanteen.Shared.Models.Canteen;
 public class MealIM
 {
     /// <summary>
-    /// The name of the meal.
+    /// Gets or sets the name of the meal.
     /// </summary>
-    [Required(ErrorMessage = "Please enter a name for the meal.")]
+    [Required(ErrorMessage = "Моля, въведете име на ястието.")]
     public string Name { get; set; } = string.Empty;
 
     /// <summary>
-    /// The unit price of the meal.
+    /// Gets or sets the unit price of the meal.
     /// </summary>
-    [Required(ErrorMessage = "Please enter a unit price for the meal.")]
-    public double UnitPrice { get; set; } = 0d;
+    [Range(0.1, double.MaxValue, ErrorMessage = "Полето за цена трябва да бъде по-голямо от {1}.")]
+    [Required(ErrorMessage = "Моля, въведете единична цена на ястието.")]
+    public double UnitPrice { get; set; } = 0.1d;
 
     /// <summary>
-    /// The weight of the meal.
+    /// Gets or sets the weight of the meal.
     /// </summary>
-    [Required(ErrorMessage = "Please enter a weight for the meal.")]
-    public int Weight { get; set; } = 0;
+    [Required(ErrorMessage = "Моля, въведете тегло на ястието.")]
+    [Range(1, int.MaxValue, ErrorMessage = "Полето за грамаж трябва да бъде по-голямо от {1}.")]
+    public int Weight { get; set; } = 1;
 
     /// <summary>
-    /// The category of the meal.
+    /// Gets or sets the category of the meal.
     /// </summary>
-    [Required(ErrorMessage = "Please select a category for the meal.")]
-    public MealCategories Category { get; set; }
+    [Required(ErrorMessage = "Моля, изберете категория на ястието.")]
+    public MealCategories Category { get; set; } = MealCategories.Appetizer;
 }
+

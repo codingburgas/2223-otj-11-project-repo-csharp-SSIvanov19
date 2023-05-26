@@ -1,7 +1,10 @@
-﻿
-using CBCanteen.Server.Services.Contracts;
-using Microsoft.Extensions.DependencyInjection;
+﻿// <copyright file="DependencyInjection.cs" company="CBCanteen">
+// Copyright (c) CBCanteen. All rights reserved.
+// </copyright>
 
+using CBCanteen.Server.Services.Contracts;
+using CBCanteen.Server.Services.Implementations;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CBCanteen.Server.Services;
 
@@ -17,6 +20,6 @@ public static class DependencyInjection
     public static void AddServices(this IServiceCollection services)
     {
         services
-            .AddScoped<IMealService, IMealService>();
+            .AddScoped<IMealService, MealService>();
     }
 }

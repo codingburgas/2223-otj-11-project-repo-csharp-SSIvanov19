@@ -18,4 +18,8 @@
 	<ItemGroup>
 		<AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\CBCanteen.Shared\CBCanteen.Shared.csproj" />
+	</ItemGroup>
 </Project>

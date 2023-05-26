@@ -2,7 +2,11 @@
 // Copyright (c) CBCanteen. All rights reserved.
 // </copyright>
 
+using System.Text.Json.Serialization;
 using CBCanteen.Server.Data.Data;
+using CBCanteen.Server.Services;
+using CBCanteen.Server.WebHost.Models;
+using CBCanteen.Server.WebHost.SwaggerConfiguration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
@@ -21,16 +25,26 @@ builder.Services.AddDbContext<ApplicationDBContext>(options =>
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddServices();
+
+builder.Services
+    .AddControllersWithViews()
+    .AddJsonOptions(options =>
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 builder.Services.AddRazorPages();
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+builder.Services.AddSwagger();
 
 var app = builder.Build();
+
+app.UseSwagger();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    await app.RunTailwind("tailwind", "../CBCanteen.Client.ComponentLibrary");
+    _ = app.RunTailwind("tailwind", "../CBCanteen.Client.ComponentLibrary");
     app.UseWebAssemblyDebugging();
+    app.UseSwaggerUI();
 }
 else
 {
