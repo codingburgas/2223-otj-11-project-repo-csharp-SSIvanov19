@@ -4,7 +4,7 @@
 
 using AutoMapper;
 using CBCanteen.Server.Services.Contracts;
-using CBCanteen.Shared.Models.Canteen;
+using CBCanteen.Shared.Models.Canteen.Meal;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

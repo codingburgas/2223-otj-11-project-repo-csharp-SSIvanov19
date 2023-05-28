@@ -20,6 +20,9 @@ public static class DependencyInjection
     public static void AddServices(this IServiceCollection services)
     {
         services
-            .AddScoped<IMealService, MealService>();
+            .AddScoped<IMealService, MealService>()
+            .AddScoped<IMenuService, MenuService>()
+            .AddScoped<IMenuPriceService, MenuPriceService>()
+            .AddScoped<IDailyOrderService, DailyOrderService>();
     }
 }

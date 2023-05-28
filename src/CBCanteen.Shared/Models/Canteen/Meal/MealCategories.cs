@@ -4,7 +4,7 @@
 
 using System.ComponentModel;
 
-namespace CBCanteen.Shared.Models.Canteen;
+namespace CBCanteen.Shared.Models.Canteen.Meal;
 
 /// <summary>
 /// Represents the categories of meals available in the canteen.

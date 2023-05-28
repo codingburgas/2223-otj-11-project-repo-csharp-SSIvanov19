@@ -15,7 +15,7 @@ internal class CalendarService : ICalendarService
     private readonly GraphServiceClient graphClient;
 
     /// <summary>
-    /// The constructor
+    /// Initializes a new instance of the <see cref="CalendarService"/> class.
     /// </summary>
     /// <param name="graphClient">The GraphServiceClient instance</param>
     public CalendarService(GraphServiceClient graphClient)

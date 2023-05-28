@@ -1432,6 +1432,14 @@ video {
                                   supported by Chrome, Edge, Opera and Firefox */
 }
 
+.past-lunch {
+  background-color: #CBD5E1 !important;
+}
+
+.lunch {
+  background-color: #d4edda !important;
+}
+
 .focus\:outline-none:focus {
   outline: 2px solid transparent;
   outline-offset: 2px;

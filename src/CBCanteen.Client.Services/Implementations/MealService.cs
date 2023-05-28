@@ -2,7 +2,7 @@
 using System.Text;
 using System.Text.Json;
 using CBCanteen.Client.Services.Contracts;
-using CBCanteen.Shared.Models.Canteen;
+using CBCanteen.Shared.Models.Canteen.Meal;
 
 namespace CBCanteen.Client.Services.Implementations;
 

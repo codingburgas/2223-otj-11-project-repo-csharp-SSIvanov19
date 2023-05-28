@@ -3,7 +3,7 @@
 // </copyright>
 
 using CBCanteen.Server.Data.Models.Canteen;
-using CBCanteen.Shared.Models.Canteen;
+using CBCanteen.Shared.Models.Canteen.Meal;
 
 namespace CBCanteen.Server.Services.Contracts;
 

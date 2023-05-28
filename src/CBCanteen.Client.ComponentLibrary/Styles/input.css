@@ -170,3 +170,11 @@
     user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome, Edge, Opera and Firefox */
 }
+
+.past-lunch {
+    background-color: #CBD5E1 !important;
+}
+
+.lunch {
+    background-color: #d4edda !important;
+}

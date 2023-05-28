@@ -2,7 +2,7 @@
 // Copyright (c) CBCanteen. All rights reserved.
 // </copyright>
 
-namespace CBCanteen.Shared.Models.Canteen;
+namespace CBCanteen.Shared.Models.Canteen.Meal;
 
 /// <summary>
 /// Represents the view model for a meal in the canteen.

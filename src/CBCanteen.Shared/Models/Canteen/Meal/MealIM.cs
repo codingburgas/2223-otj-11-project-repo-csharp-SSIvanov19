@@ -4,7 +4,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace CBCanteen.Shared.Models.Canteen;
+namespace CBCanteen.Shared.Models.Canteen.Meal;
 
 /// <summary>
 /// Represents an order-able meal in the canteen.
@@ -37,4 +37,3 @@ public class MealIM
     [Required(ErrorMessage = "Моля, изберете категория на ястието.")]
     public MealCategories Category { get; set; } = MealCategories.Appetizer;
 }
-

@@ -7,7 +7,7 @@ using AutoMapper.QueryableExtensions;
 using CBCanteen.Server.Data.Data;
 using CBCanteen.Server.Data.Models.Canteen;
 using CBCanteen.Server.Services.Contracts;
-using CBCanteen.Shared.Models.Canteen;
+using CBCanteen.Shared.Models.Canteen.Meal;
 using Microsoft.EntityFrameworkCore;
 
 namespace CBCanteen.Server.Services.Implementations;

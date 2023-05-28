@@ -4,6 +4,7 @@ using CBCanteen.Server.Data.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CBCanteen.Server.WebHost.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20230528053915_UpdateDailyOrderModel")]
+    partial class UpdateDailyOrderModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -45,21 +48,6 @@ namespace CBCanteen.Server.WebHost.Migrations
                     b.HasIndex("MenuTwoId");
 
                     b.ToTable("DailyOrders");
-                });
-
-            modelBuilder.Entity("CBCanteen.Server.Data.Models.Canteen.DailyOrderMeal", b =>
-                {
-                    b.Property<string>("DailyOrderId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("MealId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("DailyOrderId", "MealId");
-
-                    b.HasIndex("MealId");
-
-                    b.ToTable("DailyOrderMeals");
                 });
 
             modelBuilder.Entity("CBCanteen.Server.Data.Models.Canteen.Meal", b =>
@@ -129,6 +117,21 @@ namespace CBCanteen.Server.WebHost.Migrations
                     b.ToTable("MenuPrices");
                 });
 
+            modelBuilder.Entity("DailyOrderMeal", b =>
+                {
+                    b.Property<string>("DailyOrdersId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("FreeConsumptionId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("DailyOrdersId", "FreeConsumptionId");
+
+                    b.HasIndex("FreeConsumptionId");
+
+                    b.ToTable("DailyOrderMeal");
+                });
+
             modelBuilder.Entity("CBCanteen.Server.Data.Models.Canteen.DailyOrder", b =>
                 {
                     b.HasOne("CBCanteen.Server.Data.Models.Canteen.Menu", "MenuOne")
@@ -146,25 +149,6 @@ namespace CBCanteen.Server.WebHost.Migrations
                     b.Navigation("MenuOne");
 
                     b.Navigation("MenuTwo");
-                });
-
-            modelBuilder.Entity("CBCanteen.Server.Data.Models.Canteen.DailyOrderMeal", b =>
-                {
-                    b.HasOne("CBCanteen.Server.Data.Models.Canteen.DailyOrder", "DailyOrder")
-                        .WithMany()
-                        .HasForeignKey("DailyOrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CBCanteen.Server.Data.Models.Canteen.Meal", "Meal")
-                        .WithMany()
-                        .HasForeignKey("MealId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("DailyOrder");
-
-                    b.Navigation("Meal");
                 });
 
             modelBuilder.Entity("CBCanteen.Server.Data.Models.Canteen.Menu", b =>
@@ -192,6 +176,21 @@ namespace CBCanteen.Server.WebHost.Migrations
                     b.Navigation("Dessert");
 
                     b.Navigation("MainDish");
+                });
+
+            modelBuilder.Entity("DailyOrderMeal", b =>
+                {
+                    b.HasOne("CBCanteen.Server.Data.Models.Canteen.DailyOrder", null)
+                        .WithMany()
+                        .HasForeignKey("DailyOrdersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CBCanteen.Server.Data.Models.Canteen.Meal", null)
+                        .WithMany()
+                        .HasForeignKey("FreeConsumptionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

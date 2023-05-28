@@ -6,7 +6,10 @@
         <DatePicker Text="Начало на справката" />
         <DatePicker Text="Край на справката" />
     </div>
-    <GrayButton Text="Добави меню" StyleClass="px-4 py-2 h-min" OnClickCallback="NavigateToAddMenu" />
+    <div class="flex flex space-x-4">
+        <GrayButton Text="Настройки" StyleClass="px-4 py-2 h-min" OnClickCallback="NavigateToSettings" />
+        <GrayButton Text="Добави меню" StyleClass="px-4 py-2 h-min" OnClickCallback="NavigateToAddMenu" />
+    </div>
 </div>
 
 @code {
@@ -16,5 +19,14 @@
     private void NavigateToAddMenu()
     {
         Navigator.NavigateTo("/admin/addmenu");
+    }
+
+
+    /// <summary>
+    /// Navigates to the Settings page.
+    /// </summary>
+    private void NavigateToSettings()
+    {
+        Navigator.NavigateTo("/admin/settings");
     }
 }

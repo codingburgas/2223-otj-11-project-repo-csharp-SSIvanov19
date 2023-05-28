@@ -3,7 +3,7 @@
 // </copyright>
 
 using System.ComponentModel.DataAnnotations;
-using CBCanteen.Shared.Models.Canteen;
+using CBCanteen.Shared.Models.Canteen.Meal;
 
 namespace CBCanteen.Server.Data.Models.Canteen;
 
@@ -41,4 +41,9 @@ public class Meal
     /// </summary>
     [Required]
     public MealCategories Category { get; set; }
+
+    /// <summary>
+    /// Gets or sets the list of daily orders containing this meal item.
+    /// </summary>
+    public List<DailyOrder> DailyOrders { get; set; } = new ();
 }

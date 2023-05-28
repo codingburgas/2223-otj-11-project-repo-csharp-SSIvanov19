@@ -5,7 +5,7 @@
 using System.Globalization;
 using AutoMapper;
 using CBCanteen.Shared.Models;
-using CBCanteen.Shared.Models.Canteen;
+using CBCanteen.Shared.Models.Canteen.Meal;
 using Microsoft.Graph.Models;
 
 namespace CBCanteen.Client.Web.Models;

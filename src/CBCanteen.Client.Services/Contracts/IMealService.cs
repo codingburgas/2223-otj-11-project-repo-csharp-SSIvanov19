@@ -2,7 +2,7 @@
 // Copyright (c) CBCanteen. All rights reserved.
 // </copyright>
 
-using CBCanteen.Shared.Models.Canteen;
+using CBCanteen.Shared.Models.Canteen.Meal;
 
 namespace CBCanteen.Client.Services.Contracts;
 

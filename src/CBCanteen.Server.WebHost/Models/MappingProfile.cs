@@ -4,7 +4,9 @@
 
 using AutoMapper;
 using CBCanteen.Server.Data.Models.Canteen;
-using CBCanteen.Shared.Models.Canteen;
+using CBCanteen.Shared.Models.Canteen.DailyOrder;
+using CBCanteen.Shared.Models.Canteen.Meal;
+using CBCanteen.Shared.Models.Canteen.Menu;
 using CBCanteen.Shared.Models.ReflectionHelpers;
 
 namespace CBCanteen.Server.WebHost.Models;
@@ -22,5 +24,9 @@ public class MappingProfile : Profile
         this.CreateMap<MealIM, Meal>();
         this.CreateMap<Meal, MealVM>()
             .ForMember(d => d.Category, cfg => cfg.MapFrom(s => s.Category.GetDescription()));
+        this.CreateMap<MenuIM, Menu>();
+        this.CreateMap<Menu, MenuVM>();
+        this.CreateMap<DailyOrderIM, DailyOrder>();
+        this.CreateMap<DailyOrder, DailyOrderVM>();
     }
 }

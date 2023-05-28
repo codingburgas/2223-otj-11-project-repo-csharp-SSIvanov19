@@ -1,4 +1,4 @@
-﻿<button @onclick="OnClickCallback" class="rounded-lg border-2 border-[#6EC700] bg-[#6EC700] bg-opacity-25 text-[#6EC700] font-semibold @StyleClass">@Text</button>
+﻿<button @onclick="OnClickCallback" class="rounded-lg border-2 border-[#6EC700] bg-[#6EC700] bg-opacity-25 text-[#6EC700] font-semibold @StyleClass" disabled=@IsDisabled>@Text</button>
 
 @code {
     /// <summary>
@@ -18,5 +18,7 @@
     /// </summary>
     [Parameter]
     public EventCallback<MouseEventArgs> OnClickCallback { get; set; }
-}
 
+    [Parameter]
+    public bool IsDisabled { get; set; } = false;
+}

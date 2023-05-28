@@ -2,12 +2,17 @@
 @using Blazored.Modal.Services;
 @using CBCanteen.Client.ComponentLibrary.Components
 @using CBCanteen.Client.Services.Contracts;
+@using CBCanteen.Shared.Models.Canteen.DailyOrder;
+@using CBCanteen.Shared.Models.Canteen.Menu;
+@using CBCanteen.Shared.Models.ReflectionHelpers;
 @using Syncfusion.Blazor.Grids
-@using CBCanteen.Shared.Models.Canteen
+@using CBCanteen.Shared.Models.Canteen.Meal
 @using Plk.Blazor.DragDrop
 @using System.Collections.ObjectModel;
 
 @inject IMealService mealService
+@inject IMenuService menuService
+@inject IDailyOrderService dailyOrderService
 
 <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all w-full sm:my-8 sm:align-middle">
     <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
@@ -20,36 +25,39 @@
                     @{
                         var Tool = (new List<string>() { "Search" });
                     }
-                    <MealGrid Meals="Meals" Tool=@Tool Id="AllMeals" TargetId="DestGrid" />
+                    <MealGrid Meals="Meals" Tool=@Tool Id="AllMeals" TargetId="DestGrid" HasPassed=@hasPassed />
                     <button @onclick=@OpenCreateMenuModal class="underline text text-[#474747]">Добави ястие?</button>
                 </div>
                 <div class="flex flex-col w-[38rem]">
                     <p class="mb-2">Меню 1</p>
-                    <MealGrid Meals="MenuOneMeals" Id="DestGrid" TargetId="AllMeals" HasMaxItem=@true />
+                    <MealGrid Meals="MenuOneMeals" Id="DestGrid" TargetId="AllMeals" HasMaxItem=@true HasPassed=@hasPassed />
   
                     <p class="mb-2 mt-4">Меню 2</p>
-                    <MealGrid Meals="MenuTwoMeals" Id="DestGrid" TargetId="AllMeals" HasMaxItem=@true />
+                    <MealGrid Meals="MenuTwoMeals" Id="DestGrid" TargetId="AllMeals" HasMaxItem=@true HasPassed=@hasPassed />
                     
                     <p class="mb-2 mt-4">Свободна консумация</p>
-                    <MealGrid Meals="FreeConsumptionMeals" Id="DestGrid" TargetId="AllMeals" />
+                    <MealGrid Meals="FreeConsumptionMeals" Id="DestGrid" TargetId="AllMeals" HasPassed=@hasPassed />
                 </div>
             </div>
         </div>
     </div>
     <div class="py-3 px-6 flex flex-row-reverse">
-        <GreenButton Text="Добави" StyleClass="ml-2 py-1 px-3" OnClickCallback="CreateDailyMenu"/>
+        @if (!hasPassed)
+        {
+            <GreenButton Text=@(isUpdate ? "Промени" : "Добави") StyleClass="ml-2 py-1 px-3" OnClickCallback=@(isUpdate ? UpdateDailyMenu : CreateDailyMenu) />
+        }
         <GrayButton Text="Откажи" StyleClass="py-1 px-3" OnClickCallback="CloseModal"/>
     </div>
 </div>
 
 @code {
-    private ObservableCollection<MealVM> Meals = new ObservableCollection<MealVM>();
+    private ObservableCollection<MealVM> Meals = new ();
 
-    private ObservableCollection<MealVM> MenuOneMeals = new ObservableCollection<MealVM>();
+    private ObservableCollection<MealVM> MenuOneMeals = new ();
 
-    private ObservableCollection<MealVM> MenuTwoMeals = new ObservableCollection<MealVM>();
+    private ObservableCollection<MealVM> MenuTwoMeals = new ();
 
-    private ObservableCollection<MealVM> FreeConsumptionMeals = new ObservableCollection<MealVM>();
+    private ObservableCollection<MealVM> FreeConsumptionMeals = new ();
 
     [Parameter]
     public DateTime MenuDate { get; set; }
@@ -60,19 +68,111 @@
     [CascadingParameter]
     private IModalService Modal { get; set; } = default!;
 
+    private bool isUpdate = false;
+
+    private bool hasPassed = false;
+
     protected async override Task OnInitializedAsync()
     {
+        if (MenuDate.Date < DateTime.Now.Date)
+        {
+            hasPassed = true;
+        }
+
         this.Meals = new(await this.mealService.GetAllMealsAsync());
+        var dailyOrders = await this.dailyOrderService.GetDailyOrderAsync(this.MenuDate, this.MenuDate);
+
+        if (dailyOrders.Count == 0)
+        {
+            return;
+        }
+
+        isUpdate = true;
+        var dailyOrder = dailyOrders.FirstOrDefault();
+
+        this.MenuOneMeals = new (menuService.GetMealsFromMenuAsync(dailyOrder!.MenuOne));
+        this.MenuTwoMeals = new (menuService.GetMealsFromMenuAsync(dailyOrder.MenuTwo));
+        this.FreeConsumptionMeals = new (dailyOrder.FreeConsumption);
     }
 
     /// <summary>
     /// Create daily menu
     /// </summary>
-    private async void CreateDailyMenu()
+    private async Task CreateDailyMenu()
     {
-        // Code to generate API Key
+        if (MenuOneMeals.Count < 3 || MenuTwoMeals.Count < 3 || FreeConsumptionMeals.Count < 1)
+        {
+            return;
+        }
+
+        var menuOne = await menuService.CreateMenuAsync(new MenuIM
+            {
+                AppetizerId = MenuOneMeals.First(m => m.Category == MealCategories.Appetizer.GetDescription()).Id,
+                MainDishId = MenuOneMeals.First(m => m.Category == MealCategories.MainDish.GetDescription()).Id,
+                DessertId = MenuOneMeals.First(m => m.Category == MealCategories.Dessert.GetDescription()).Id,
+                Price = 5.5
+            });
+
+        var menuTwo = await menuService.CreateMenuAsync(new MenuIM
+            {
+                AppetizerId = MenuTwoMeals.First(m => m.Category == MealCategories.Appetizer.GetDescription()).Id,
+                MainDishId = MenuTwoMeals.First(m => m.Category == MealCategories.MainDish.GetDescription()).Id,
+                DessertId = MenuTwoMeals.First(m => m.Category == MealCategories.Dessert.GetDescription()).Id,
+                Price = 5.5
+            });
+
+        var dailyOrder = new DailyOrderIM
+            {
+                MenuOneId = menuOne.Id,
+                MenuTwoId = menuTwo.Id,
+                FreeConsumptionIds = FreeConsumptionMeals.Select(m => m.Id).ToList(),
+                DateOfConsumption = MenuDate
+            };
+
+        await this.dailyOrderService.CreateDailyOrderAsync(dailyOrder);
+
         await BlazoredModal.CloseAsync();
     }
+
+    private async Task UpdateDailyMenu()
+    {
+        if (MenuOneMeals.Count < 3 || MenuTwoMeals.Count < 3 || FreeConsumptionMeals.Count < 1)
+        {
+            return;
+        }
+
+        var dailyOrders = await this.dailyOrderService.GetDailyOrderAsync(this.MenuDate, this.MenuDate);
+        var dailyOrder = dailyOrders.FirstOrDefault();
+
+        await menuService.EditMenuAsync(dailyOrder!.MenuOne.Id, new MenuIM
+            {
+                AppetizerId = MenuOneMeals.First(m => m.Category == MealCategories.Appetizer.GetDescription()).Id,
+                MainDishId = MenuOneMeals.First(m => m.Category == MealCategories.MainDish.GetDescription()).Id,
+                DessertId = MenuOneMeals.First(m => m.Category == MealCategories.Dessert.GetDescription()).Id,
+                Price = 5.5
+            });
+
+        await menuService.EditMenuAsync(dailyOrder!.MenuTwo.Id, new MenuIM
+            {
+                AppetizerId = MenuTwoMeals.First(m => m.Category == MealCategories.Appetizer.GetDescription()).Id,
+                MainDishId = MenuTwoMeals.First(m => m.Category == MealCategories.MainDish.GetDescription()).Id,
+                DessertId = MenuTwoMeals.First(m => m.Category == MealCategories.Dessert.GetDescription()).Id,
+                Price = 5.5
+            });
+
+        var newDailyOrder = new DailyOrderIM
+            {
+                MenuOneId = dailyOrder!.MenuOne.Id,
+                MenuTwoId = dailyOrder!.MenuTwo.Id,
+                FreeConsumptionIds = FreeConsumptionMeals.Select(m => m.Id).ToList(),
+                DateOfConsumption = MenuDate
+            };
+
+        await this.dailyOrderService.EditDailyOrderAsync(dailyOrder.Id, newDailyOrder);
+
+        await BlazoredModal.CloseAsync();
+    }
+
 
     /// <summary>
     /// Closes the modal window

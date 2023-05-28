@@ -3,7 +3,7 @@
 @using Blazored.Modal.Services;
 @using CBCanteen.Client.ComponentLibrary.Layouts
 @using CBCanteen.Client.Services.Contracts;
-@using CBCanteen.Shared.Models.Canteen;
+@using CBCanteen.Shared.Models.Canteen.Meal;
 @using Plk.Blazor.DragDrop
 @using Syncfusion.Blazor.Grids
 @using System.Collections.ObjectModel;
@@ -11,7 +11,7 @@
 @inject IMapper mapper
 @inject IMealService mealService
 
-<SfGrid DataSource=@Meals ID=@Id AllowSelection="true" AllowRowDragAndDrop="true" Toolbar=@Tool EnableAdaptiveUI="true" AllowPaging=@AllowPaging>
+<SfGrid DataSource=@Meals ID=@Id AllowSelection=@(!HasPassed) AllowRowDragAndDrop=@(!HasPassed) Toolbar=@Tool EnableAdaptiveUI="true" AllowPaging=@AllowPaging>
     <GridPageSettings PageSize="10" />
     <GridRowDropSettings TargetID=@TargetId></GridRowDropSettings>
     <GridEvents RowDropped=@RowDroppedHandler RowDropping=@RowDroppingHandler TValue="MealVM" OnRecordDoubleClick=@OnDoubleClickEditMeal></GridEvents>
@@ -60,6 +60,9 @@
 
     [Parameter]
     public List<string> Tool { get; set; } = new ();
+
+    [Parameter]
+    public bool HasPassed { get; set; } = false;
 
     [CascadingParameter]
     private IModalService Modal { get; set; } = default!;

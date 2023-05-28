@@ -5,6 +5,7 @@
 using System.Text.Json.Serialization;
 using CBCanteen.Server.Data.Data;
 using CBCanteen.Server.Services;
+using CBCanteen.Server.WebHost.Helpers;
 using CBCanteen.Server.WebHost.Models;
 using CBCanteen.Server.WebHost.SwaggerConfiguration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -16,11 +17,16 @@ var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
-   options.UseSqlServer(configuration.GetConnectionString("DefaultConnection") !, o =>
-   {
-       o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
-       o.MigrationsAssembly(typeof(Program).Assembly.FullName);
-   }));
+{
+    options.UseSqlServer(configuration.GetConnectionString("DefaultConnection") !, o =>
+    {
+        o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+        o.MigrationsAssembly(typeof(Program).Assembly.FullName);
+    });
+    options.EnableDetailedErrors();
+    options.EnableSensitiveDataLogging();
+    options.EnableThreadSafetyChecks();
+});
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
@@ -37,6 +43,7 @@ builder.Services.AddSwagger();
 
 var app = builder.Build();
 
+await app.InitAppAsync();
 app.UseSwagger();
 
 // Configure the HTTP request pipeline.

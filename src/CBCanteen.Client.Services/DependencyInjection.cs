@@ -22,6 +22,8 @@ public static class DependencyInjection
         services
             .AddScoped<IUserService, UserService>()
             .AddScoped<ICalendarService, CalendarService>()
-            .AddScoped<IMealService, MealService>();
+            .AddScoped<IMealService, MealService>()
+            .AddScoped<IMenuService, MenuService>()
+            .AddScoped<IDailyOrderService, DailyOrderService>();
     }
 }
