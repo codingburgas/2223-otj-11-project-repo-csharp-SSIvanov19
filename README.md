@@ -26,7 +26,7 @@ OR
 Pasting this line of code in your favourite ***Terminal***:
 
 ```
-git clone --recursive https://github.com/codingburgas/school-canteen-reservation-web-app.git
+git clone --recursive https://github.com/codingburgas/2223-otj-11-project-repo-csharp-SSIvanov19.git
 ```
   
 Deployment 💻
@@ -35,6 +35,7 @@ If you want to start the server, you need to paste the following lines in your f
 dotnet restore
 dotnet run
 ```
+
 ```
 Thank you for scrolling this far! Please consider giving the repo a star ⭐.
 ```
