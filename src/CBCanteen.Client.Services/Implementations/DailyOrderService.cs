@@ -84,5 +84,4 @@ internal class DailyOrderService : IDailyOrderService
 
         return await this.httpClient.GetFromJsonAsync<List<DailyOrderVM>>(apiUrl);
     }
-
 }

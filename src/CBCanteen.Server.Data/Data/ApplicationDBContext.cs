@@ -3,6 +3,8 @@
 // </copyright>
 
 using CBCanteen.Server.Data.Models.Canteen;
+using CBCanteen.Server.Data.Models.User;
+using CBCanteen.Server.Data.Models.ValueConverters;
 using Microsoft.EntityFrameworkCore;
 
 namespace CBCanteen.Server.Data.Data;
@@ -47,6 +49,31 @@ public class ApplicationDBContext : DbContext
     public virtual DbSet<DailyOrderMeal> DailyOrderMeals { get; set; }
 
     /// <summary>
+    /// Gets or sets the <see cref="UserPreference"/> table.
+    /// </summary>
+    public virtual DbSet<LunchHours> LunchHours { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="UserLunchHours"/> table.
+    /// </summary>
+    public virtual DbSet<UserLunchHours> UserLunchHours { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="UserPreference"/> table.
+    /// </summary>
+    public virtual DbSet<UserPreference> UserPreferences { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="MealOrder"/> table.
+    /// </summary>
+    public virtual DbSet<MealOrder> MealOrders { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="MenuOrder"/> table.
+    /// </summary>
+    public virtual DbSet<MenuOrder> MenuOrders { get; set; }
+
+    /// <summary>
     /// On model creating.
     /// </summary>
     /// <param name="builder">Builder.</param>
@@ -59,5 +86,13 @@ public class ApplicationDBContext : DbContext
             .WithMany(m => m.DailyOrders)
             .UsingEntity<DailyOrderMeal>()
             .HasKey(e => new { e.DailyOrderId, e.MealId });
+
+        builder.Entity<LunchHours>()
+            .Property(lu => lu.StartTime)
+            .HasConversion<TimeOnlyConverter, TimeOnlyComparer>();
+
+        builder.Entity<LunchHours>()
+            .Property(lu => lu.EndTime)
+            .HasConversion<TimeOnlyConverter, TimeOnlyComparer>();
     }
 }

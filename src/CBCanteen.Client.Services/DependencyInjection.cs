@@ -24,6 +24,10 @@ public static class DependencyInjection
             .AddScoped<ICalendarService, CalendarService>()
             .AddScoped<IMealService, MealService>()
             .AddScoped<IMenuService, MenuService>()
-            .AddScoped<IDailyOrderService, DailyOrderService>();
+            .AddScoped<IDailyOrderService, DailyOrderService>()
+            .AddScoped<IUserPreferenceService, UserPreferenceService>()
+            .AddScoped<ILunchHourService, LunchHourService>()
+            .AddScoped<IMealOrderService, MealOrderService>()
+            .AddScoped<IMenuOrderService, MenuOrderService>();
     }
 }

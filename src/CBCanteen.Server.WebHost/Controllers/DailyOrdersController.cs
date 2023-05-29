@@ -110,6 +110,7 @@ public class DailyOrdersController : ControllerBase
     /// <param name="endDateTime">The end date.</param>
     /// <returns>A list of daily orders between specified dates.</returns>
     [HttpGet]
+    [Authorize]
     public async Task<ActionResult<List<DailyOrderVM>>> GetAllDailyOrdersBetweenDates(DateTime? startDateTime, DateTime? endDateTime)
     {
         return await this.dailyOrderService.GetDailyOrdersBetweenDates(startDateTime, endDateTime);

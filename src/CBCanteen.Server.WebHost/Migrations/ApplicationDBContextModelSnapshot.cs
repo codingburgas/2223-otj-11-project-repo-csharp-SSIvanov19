@@ -85,6 +85,32 @@ namespace CBCanteen.Server.WebHost.Migrations
                     b.ToTable("Meals");
                 });
 
+            modelBuilder.Entity("CBCanteen.Server.Data.Models.Canteen.MealOrder", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("MealId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MealId");
+
+                    b.ToTable("MealOrders");
+                });
+
             modelBuilder.Entity("CBCanteen.Server.Data.Models.Canteen.Menu", b =>
                 {
                     b.Property<string>("Id")
@@ -116,6 +142,32 @@ namespace CBCanteen.Server.WebHost.Migrations
                     b.ToTable("Menus");
                 });
 
+            modelBuilder.Entity("CBCanteen.Server.Data.Models.Canteen.MenuOrder", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("MenuId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MenuId");
+
+                    b.ToTable("MenuOrders");
+                });
+
             modelBuilder.Entity("CBCanteen.Server.Data.Models.Canteen.MenuPrice", b =>
                 {
                     b.Property<string>("Id")
@@ -127,6 +179,87 @@ namespace CBCanteen.Server.WebHost.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("MenuPrices");
+                });
+
+            modelBuilder.Entity("CBCanteen.Server.Data.Models.User.LunchHours", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("DayOfWeek")
+                        .HasColumnType("int");
+
+                    b.Property<TimeSpan>("EndTime")
+                        .HasColumnType("time");
+
+                    b.Property<TimeSpan>("StartTime")
+                        .HasColumnType("time");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("LunchHours");
+                });
+
+            modelBuilder.Entity("CBCanteen.Server.Data.Models.User.UserLunchHours", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("FridayLunchTimeId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("HasSameLunchHours")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("MondayLunchHoursId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ThursdayLunchTimeId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("TuesdayLunchTimeId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("WednesdayLunchTimeId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("UserId");
+
+                    b.HasIndex("FridayLunchTimeId");
+
+                    b.HasIndex("MondayLunchHoursId");
+
+                    b.HasIndex("ThursdayLunchTimeId");
+
+                    b.HasIndex("TuesdayLunchTimeId");
+
+                    b.HasIndex("WednesdayLunchTimeId");
+
+                    b.ToTable("UserLunchHours");
+                });
+
+            modelBuilder.Entity("CBCanteen.Server.Data.Models.User.UserPreference", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("CreateReminder")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("SendEmail")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("ShowMeetings")
+                        .HasColumnType("bit");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("UserPreferences");
                 });
 
             modelBuilder.Entity("CBCanteen.Server.Data.Models.Canteen.DailyOrder", b =>
@@ -167,6 +300,17 @@ namespace CBCanteen.Server.WebHost.Migrations
                     b.Navigation("Meal");
                 });
 
+            modelBuilder.Entity("CBCanteen.Server.Data.Models.Canteen.MealOrder", b =>
+                {
+                    b.HasOne("CBCanteen.Server.Data.Models.Canteen.Meal", "Meal")
+                        .WithMany()
+                        .HasForeignKey("MealId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Meal");
+                });
+
             modelBuilder.Entity("CBCanteen.Server.Data.Models.Canteen.Menu", b =>
                 {
                     b.HasOne("CBCanteen.Server.Data.Models.Canteen.Meal", "Appetizer")
@@ -192,6 +336,60 @@ namespace CBCanteen.Server.WebHost.Migrations
                     b.Navigation("Dessert");
 
                     b.Navigation("MainDish");
+                });
+
+            modelBuilder.Entity("CBCanteen.Server.Data.Models.Canteen.MenuOrder", b =>
+                {
+                    b.HasOne("CBCanteen.Server.Data.Models.Canteen.Menu", "Menu")
+                        .WithMany()
+                        .HasForeignKey("MenuId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Menu");
+                });
+
+            modelBuilder.Entity("CBCanteen.Server.Data.Models.User.UserLunchHours", b =>
+                {
+                    b.HasOne("CBCanteen.Server.Data.Models.User.LunchHours", "FridayLunchTime")
+                        .WithMany()
+                        .HasForeignKey("FridayLunchTimeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CBCanteen.Server.Data.Models.User.LunchHours", "MondayLunchHours")
+                        .WithMany()
+                        .HasForeignKey("MondayLunchHoursId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CBCanteen.Server.Data.Models.User.LunchHours", "ThursdayLunchTime")
+                        .WithMany()
+                        .HasForeignKey("ThursdayLunchTimeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CBCanteen.Server.Data.Models.User.LunchHours", "TuesdayLunchTime")
+                        .WithMany()
+                        .HasForeignKey("TuesdayLunchTimeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CBCanteen.Server.Data.Models.User.LunchHours", "WednesdayLunchTime")
+                        .WithMany()
+                        .HasForeignKey("WednesdayLunchTimeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FridayLunchTime");
+
+                    b.Navigation("MondayLunchHours");
+
+                    b.Navigation("ThursdayLunchTime");
+
+                    b.Navigation("TuesdayLunchTime");
+
+                    b.Navigation("WednesdayLunchTime");
                 });
 #pragma warning restore 612, 618
         }

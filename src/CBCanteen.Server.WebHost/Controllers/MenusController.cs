@@ -2,11 +2,11 @@
 // Copyright (c) CBCanteen. All rights reserved.
 // </copyright>
 
+using System.ComponentModel.DataAnnotations;
 using CBCanteen.Server.Services.Contracts;
 using CBCanteen.Shared.Models.Canteen.Menu;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
 
 namespace CBCanteen.Server.WebHost.Controllers;
 

@@ -1,11 +1,14 @@
 ﻿@using CBCanteen.Client.ComponentLibrary.Components
 @using CBCanteen.Client.Services.Contracts;
+@using CBCanteen.Shared.Models.User;
 @using Microsoft.Graph.Models;
 @using Microsoft.Graph.Models.ODataErrors;
 @using Microsoft.JSInterop;
 @inject IJSRuntime JS
 @inject IUserService userService
 @inject NavigationManager Navigation
+
+@inject IUserPreferenceService userPreferenceService
 
 <h1 class="text text-[#474747] text-4xl font-bold">Управлявайте вашия акаунт</h1>
 <h1 class="text text-[#474747] text-2xl font-medium mt-2">Променете настройките на вашия профил</h1>
@@ -18,7 +21,7 @@
         }
     </div>
     <div class="flex flex-col space-y-2">
-        @if(currentUser is not null)
+        @if (currentUser is not null)
         {
             <p class="text text-4xl text-[#474747]">@currentUser.DisplayName</p>
             <p class="text text-3xl text-[#474747]">@currentUser.Mail</p>
@@ -32,9 +35,18 @@
             <div class="animate-pulse h-2 bg-slate-200 rounded w-80 mx-4 my-2 h-6"></div>
             <div class="animate-pulse h-2 bg-slate-200 rounded w-80 mx-4 my-2 h-6"></div>
         }
-        <Checkbox Text="Показване на срещи в календара" TooltipText="Ако тази опция е изключена, във вашия календар няма да се показват вашите срещи. " />
-        <Checkbox Text="Изпращане на имейл при нов обяд" TooltipText="Ако тази опция е включена, ще получите имейл, когато може да запазите обяд." />
-        <Checkbox Text="Създаване на напомняне при резервиране на обяд" TooltipText="Ако тази опция е включена, когато запазите обяд, автоматично ще се създаде напомняне." />
+        <Checkbox Text="Показване на срещи в календара"
+                  TooltipText="Ако тази опция е изключена, във вашия календар няма да се показват вашите срещи. "
+                  IsChecked=@showMeetingInCalendar
+                  OnButtonChange=@UpdateShowMeetingInCalendar />
+        <Checkbox Text="Изпращане на имейл при нов обяд"
+                  TooltipText="Ако тази опция е включена, ще получите имейл, когато може да запазите обяд."
+                  IsChecked=@sendEmailOnNewLunch
+                  OnButtonChange=@UpdateSendEmailOnNewLunch />
+        <Checkbox Text="Създаване на напомняне при резервиране на обяд"
+                  TooltipText="Ако тази опция е включена, когато запазите обяд, автоматично ще се създаде напомняне."
+                  IsChecked=@createReminderOnLunchReservation
+                  OnButtonChange=@UpdateCreateReminderOnLunchReservation />
     </div>
 </div>
 
@@ -49,11 +61,54 @@
     /// </summary>
     private Stream? currentUserPhotoStream;
 
+    private bool showMeetingInCalendar = true;
+    private bool sendEmailOnNewLunch = true;
+    private bool createReminderOnLunchReservation = true;
+
+    private async void UpdateShowMeetingInCalendar(bool newState)
+    {
+        showMeetingInCalendar = newState;
+        await userPreferenceService.SetUserPreferenceAsync(new UserPreferenceIM
+            {
+                ShowMeetings = showMeetingInCalendar,
+                SendEmail = sendEmailOnNewLunch,
+                CreateReminder = createReminderOnLunchReservation
+            });
+    }
+
+    private async void UpdateSendEmailOnNewLunch(bool newState)
+    {
+        sendEmailOnNewLunch = newState;
+        await userPreferenceService.SetUserPreferenceAsync(new UserPreferenceIM
+            {
+                ShowMeetings = showMeetingInCalendar,
+                SendEmail = sendEmailOnNewLunch,
+                CreateReminder = createReminderOnLunchReservation
+            });
+    }
+
+    private async void UpdateCreateReminderOnLunchReservation(bool newState)
+    {
+        createReminderOnLunchReservation = newState;
+        await userPreferenceService.SetUserPreferenceAsync(new UserPreferenceIM
+            {
+                ShowMeetings = showMeetingInCalendar,
+                SendEmail = sendEmailOnNewLunch,
+                CreateReminder = createReminderOnLunchReservation
+            });
+    }
+
     /// <summary>
     /// Function triggered when component is initialized.
     /// </summary>
     protected override async Task OnInitializedAsync()
     {
+        var userPreferences = await this.userPreferenceService.GetUserPreferenceAsync();
+
+        showMeetingInCalendar = userPreferences!.ShowMeetings;
+        sendEmailOnNewLunch = userPreferences.SendEmail;
+        createReminderOnLunchReservation = userPreferences.CreateReminder;
+
         currentUser = await this.userService.GetCurrentUserInfoAsync();
 
         try
@@ -67,7 +122,7 @@
             }
 
         }
-        catch(ODataError)
+        catch (ODataError)
         {
             currentUserPhotoStream = new MemoryStream();
 

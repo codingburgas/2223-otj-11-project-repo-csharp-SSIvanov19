@@ -1,7 +1,10 @@
 @using AutoMapper;
 @using AutoMapper.QueryableExtensions;
+@using Blazored.Modal;
+@using Blazored.Modal.Services;
 @using CBCanteen.Client.Services.Contracts;
 @using CBCanteen.Shared.Models;
+@using CBCanteen.Shared.Models.User;
 @using Microsoft.Graph.Models;
 @using Syncfusion.Blazor
 @using Syncfusion.Blazor.Schedule
@@ -9,49 +12,237 @@
 
 @inject ICalendarService calendarService
 @inject IMapper mapper
+@inject IUserPreferenceService userPreferenceService
+@inject ILunchHourService lunchHourService
+@inject IDailyOrderService dailyOrderService
+@inject NavigationManager Navigator
 
-<SfSchedule TValue=CalendarEvent Readonly="true" Height="calc(100vh - 65px)">
+<SfSchedule @ref=@scheduleObj TValue=CalendarEvent Readonly="true" Height="calc(100vh - 65px)" @bind-SelectedDate="@CurrentDate">
     <ScheduleViews>
         <ScheduleView Option="View.WorkWeek" EnableVirtualMask="true"/>
     </ScheduleViews>
+    <ScheduleEvents TValue="CalendarEvent" ActionCompleted="OnActionCompleted" OnEventClick=@OnEventClicked  />
     <ScheduleEventSettings DataSource="DataSource">
     </ScheduleEventSettings>
 </SfSchedule>
 
 @code {
+    [CascadingParameter]
+    private IModalService Modal { get; set; } = default!;
+
     ///<summary>
     /// Holds the list of events.
     ///</summary>
-    private List<CalendarEvent>? DataSource { get; set; }
+    private List<CalendarEvent> DataSource { get; set; } = new ();
+
+    SfSchedule<CalendarEvent> scheduleObj;
+
+    private DateTime CurrentDate = DateTime.Now;
+    private UserPreferenceVM userPreferences;
+    private UserLunchHoursVM userLunchTime;
 
     ///<summary>
     /// Method called during initialization.
     ///</summary>
     protected async override Task OnInitializedAsync()
     {
-        var startOfWeek = GetCurrentWeekStart();
-        var events = await calendarService.GetEventsBetweenTwoDatesAsync(startOfWeek, startOfWeek.AddDays(5));
+        userPreferences = await this.userPreferenceService.GetUserPreferenceAsync();
+        userLunchTime = await this.lunchHourService.GetUserLunchHours();
 
-        if (events is not null && events.Value is not null)
+        if (userPreferences is null || userLunchTime is null)
         {
-            DataSource = new();
+            Navigator.NavigateTo("/firsttimesetup");
+        }
 
-            foreach(var @event in events.Value)
+        if (userPreferences!.ShowMeetings)
+        {   
+            var startOfWeek = GetWeekStart(DateTime.Now);
+            var events = await calendarService.GetEventsBetweenTwoDatesAsync(startOfWeek, startOfWeek.AddDays(5));
+
+            if (events is not null && events.Value is not null)
             {
-                DataSource.Add(this.mapper.Map<CalendarEvent>(@event));
+                foreach(var @event in events.Value)
+                {
+                    DataSource.Add(this.mapper.Map<CalendarEvent>(@event));
+                }
             }
         }
 
+        var startDate = GetWeekStart(DateTime.Now);
+
+        var dailyOrders = await dailyOrderService.GetDailyOrderAsync(startDate, startDate.AddDays(5));
+
+        var outputEvents = Enumerable.Range(0, 5)
+            .Select(i => startDate.AddDays(i))
+            .Select(date =>
+            {
+                var subject = $"Обяд за {date:d MMM yyyy}";
+                var previouslyAddedEvent = DataSource.FirstOrDefault(e => e.Subject == subject);
+
+                if (previouslyAddedEvent is not null)
+                    return previouslyAddedEvent;
+
+                TimeOnly? userLunchStarTime = null;
+                TimeOnly? userLunchEndTime = null;
+
+                switch (date.DayOfWeek)
+                {
+                    case DayOfWeek.Monday:
+                        userLunchStarTime = userLunchTime!.MondayLunchTimeStart;
+                        userLunchEndTime = userLunchTime.MondayLunchTimeEnd;
+                        break;
+                    case DayOfWeek.Tuesday:
+                        userLunchStarTime = userLunchTime!.TuesdayLunchTimeStart;
+                        userLunchEndTime = userLunchTime.TuesdayLunchTimeEnd;
+                        break;
+                    case DayOfWeek.Wednesday:
+                        userLunchStarTime = userLunchTime!.WednesdayLunchTimeStart;
+                        userLunchEndTime = userLunchTime.WednesdayLunchTimeEnd;
+                        break;
+                    case DayOfWeek.Thursday:
+                        userLunchStarTime = userLunchTime!.ThursdayLunchTimeStart;
+                        userLunchEndTime = userLunchTime.ThursdayLunchTimeEnd;
+                        break;
+                    case DayOfWeek.Friday:
+                        userLunchStarTime = userLunchTime!.FridayLunchTimeStart;
+                        userLunchEndTime = userLunchTime.FridayLunchTimeEnd;
+                        break;
+                }
+
+                var newEvent = new CalendarEvent
+                    {
+                        Subject = subject,
+                        StartTime = new DateTime(date.Year, date.Month, date.Day, userLunchStarTime!.Value.Hour, userLunchStarTime.Value.Minute, 0),
+                        EndTime = new DateTime(date.Year, date.Month, date.Day, userLunchEndTime!.Value.Hour, userLunchEndTime.Value.Minute, 0),
+                        IsReadonly = true,
+                        CssClass = dailyOrders.Any(o => o.DateOfConsumption.Date == date.Date) ? "lunch" : date < DateTime.Now ? "past-lunch" : "",
+                    };
+
+                return newEvent;
+            }).ToList();
+
+        DataSource.AddRange(outputEvents);
+
+        await scheduleObj.RefreshEventsAsync();
+
         StateHasChanged();
+        await base.OnInitializedAsync().ConfigureAwait(false);
     }
 
-    ///<summary>
-    /// Returns the current weeks start.
-    ///</summary>
-    private static DateTime GetCurrentWeekStart()
+    /// <summary>
+    /// Displays selected menu item modal that contains its data.
+    /// </summary>
+    private async Task OnEventClicked(EventClickArgs<CalendarEvent> args)
     {
-        var datetimeNow = DateTime.Now;
+        args.Cancel = true;
 
+        if (args.Event.CssClass != "lunch")
+        {
+            return;
+        }
+
+        var parameter = new ModalParameters()
+            .Add(nameof(AddMenuModal.MenuDate), args.Event.StartTime!);
+
+        var options = new ModalOptions()
+            {
+                Class = "bigModalClass"
+            };
+
+        var modal = Modal.Show<OrderMealModal>($"Обяд за {args.Event.StartTime!}", parameter, options);
+        var result = await modal.Result;
+    }
+
+    /// <summary>
+    /// Updates DataSource to match the current date and remembers its previous state.
+    /// </summary>
+    private async void OnActionCompleted(ActionEventArgs<CalendarEvent> args)
+    {
+        if (args.ActionType == ActionType.DateNavigate)
+        {
+            var startDate = GetWeekStart(CurrentDate);
+
+            if (DataSource.FirstOrDefault(e => e.Subject == $"Обяд за{startDate: d MMM yyyy}") is not null)
+            {
+                return;
+            }
+
+            var dailyOrders = await dailyOrderService.GetDailyOrderAsync(startDate, startDate.AddDays(5));
+
+            var outputEvents = Enumerable.Range(0, 5)
+                .Select(i => startDate.AddDays(i))
+                .Select(date =>
+                {
+                    var subject = $"Обяд за {date:d MMM yyyy}";
+                    var previouslyAddedEvent = DataSource.FirstOrDefault(e => e.Subject == subject);
+
+                    if (previouslyAddedEvent is not null)
+                        return previouslyAddedEvent;
+
+                    TimeOnly? userLunchStarTime = null;
+                    TimeOnly? userLunchEndTime = null;
+
+                    switch (date.DayOfWeek)
+                    {
+                        case DayOfWeek.Monday:
+                            userLunchStarTime = userLunchTime!.MondayLunchTimeStart;
+                            userLunchEndTime = userLunchTime.MondayLunchTimeEnd;
+                            break;
+                        case DayOfWeek.Tuesday:
+                            userLunchStarTime = userLunchTime!.TuesdayLunchTimeStart;
+                            userLunchEndTime = userLunchTime.TuesdayLunchTimeEnd;
+                            break;
+                        case DayOfWeek.Wednesday:
+                            userLunchStarTime = userLunchTime!.WednesdayLunchTimeStart;
+                            userLunchEndTime = userLunchTime.WednesdayLunchTimeEnd;
+                            break;
+                        case DayOfWeek.Thursday:
+                            userLunchStarTime = userLunchTime!.ThursdayLunchTimeStart;
+                            userLunchEndTime = userLunchTime.ThursdayLunchTimeEnd;
+                            break;
+                        case DayOfWeek.Friday:
+                            userLunchStarTime = userLunchTime!.FridayLunchTimeStart;
+                            userLunchEndTime = userLunchTime.FridayLunchTimeEnd;
+                            break;
+                    }
+
+                    var newEvent = new CalendarEvent
+                        {
+                            Subject = subject,
+                            StartTime = new DateTime(date.Year, date.Month, date.Day, userLunchStarTime!.Value.Hour, userLunchStarTime.Value.Minute, 0),
+                            EndTime = new DateTime(date.Year, date.Month, date.Day, userLunchEndTime!.Value.Hour, userLunchEndTime.Value.Minute, 0),
+                            IsReadonly = true,
+                            CssClass = dailyOrders.Any(o => o.DateOfConsumption.Date == date.Date) ? "lunch" : date < DateTime.Now ? "past-lunch" : "",
+                        };
+
+                    return newEvent;
+                }).ToList();
+
+            DataSource.AddRange(outputEvents);
+
+            if (userPreferences!.ShowMeetings)
+            {   
+                var startOfWeek = GetWeekStart(CurrentDate);
+                var events = await calendarService.GetEventsBetweenTwoDatesAsync(startOfWeek, startOfWeek.AddDays(5));
+
+                if (events is not null && events.Value is not null)
+                {
+                    foreach(var @event in events.Value)
+                    {
+                        DataSource.Add(this.mapper.Map<CalendarEvent>(@event));
+                    }
+                }
+            }
+
+            await scheduleObj.RefreshEventsAsync();
+        }
+    }
+
+    /// <summary>
+    /// Calculates the starting date of the current week.
+    /// </summary>
+    private static DateTime GetWeekStart(DateTime datetimeNow)
+    {
         var startOfWeek = datetimeNow.AddDays(
             (int)CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek - (int)datetimeNow.DayOfWeek);
 

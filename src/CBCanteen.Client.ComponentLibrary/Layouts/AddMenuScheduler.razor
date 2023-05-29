@@ -63,8 +63,6 @@
         await base.OnInitializedAsync().ConfigureAwait(false);
     }
 
-
-
     /// <summary>
     /// Displays selected menu item modal that contains its data.
     /// </summary>
@@ -104,8 +102,6 @@
         {
             var startDate = GetWeekStart(CurrentDate);
 
-            Console.WriteLine(DataSource.FirstOrDefault(e => e.Subject == $"Обяд за{startDate: d MMM yyyy}") is not null);
-            Console.WriteLine($"Обяд за{startDate: d MMM yyyy}");
             if (DataSource.FirstOrDefault(e => e.Subject == $"Обяд за{startDate: d MMM yyyy}") is not null)
             {
                 return;
