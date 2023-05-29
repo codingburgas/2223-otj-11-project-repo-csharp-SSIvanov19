@@ -2,6 +2,7 @@
 // Copyright (c) CBCanteen. All rights reserved.
 // </copyright>
 
+using System.Runtime.CompilerServices;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using CBCanteen.Server.Data.Data;
@@ -9,6 +10,8 @@ using CBCanteen.Server.Data.Models.Canteen;
 using CBCanteen.Server.Services.Contracts;
 using CBCanteen.Shared.Models.Canteen.Meal;
 using Microsoft.EntityFrameworkCore;
+
+[assembly: InternalsVisibleToAttribute("CBCanteen.Server.Services.Test")]
 
 namespace CBCanteen.Server.Services.Implementations;
 
