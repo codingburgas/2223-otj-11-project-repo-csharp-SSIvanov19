@@ -20,6 +20,8 @@ public class DailyOrdersController : ControllerBase
     private readonly IDailyOrderService dailyOrderService;
     private readonly IMenuService menuService;
     private readonly IMealService mealService;
+    private readonly ILogger<DailyOrdersController> logger;
+    private readonly ICurrentUser currentUser;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DailyOrdersController"/> class.
@@ -27,11 +29,20 @@ public class DailyOrdersController : ControllerBase
     /// <param name="dailyOrderService">Daily order service.</param>
     /// <param name="menuService">Menu service.</param>
     /// <param name="mealService">Meal service.</param>
-    public DailyOrdersController(IDailyOrderService dailyOrderService, IMenuService menuService, IMealService mealService)
+    /// <param name="logger">Logger.</param>
+    /// <param name="currentUser">Current user.</param>
+    public DailyOrdersController(
+        IDailyOrderService dailyOrderService,
+        IMenuService menuService,
+        IMealService mealService,
+        ILogger<DailyOrdersController> logger,
+        ICurrentUser currentUser)
     {
         this.dailyOrderService = dailyOrderService;
         this.menuService = menuService;
         this.mealService = mealService;
+        this.logger = logger;
+        this.currentUser = currentUser;
     }
 
     /// <summary>
@@ -42,10 +53,14 @@ public class DailyOrdersController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<DailyOrderVM>> CreateDailyOrderAsync([FromBody] DailyOrderIM dailyOrderIM)
     {
+        this.logger.LogInformation($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) is trying to create a daily order with menu one id: {dailyOrderIM.MenuOneId} and menu two id: {dailyOrderIM.MenuTwoId}.");
+
         var menuOne = await this.menuService.GetMenuByIdAsync(dailyOrderIM.MenuOneId);
 
         if (menuOne is null)
         {
+            this.logger.LogWarning($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) failed to create a daily order. Reason: Menu with id {dailyOrderIM.MenuOneId} does not exist.");
+
             return this.BadRequest(
                 new
                 {
@@ -57,6 +72,8 @@ public class DailyOrdersController : ControllerBase
 
         if (menuTwo is null)
         {
+            this.logger.LogWarning($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) failed to create a daily order. Reason: Menu with id {dailyOrderIM.MenuTwoId} does not exist.");
+
             return this.BadRequest(
                 new
                 {
@@ -70,6 +87,8 @@ public class DailyOrdersController : ControllerBase
 
             if (meal is null)
             {
+                this.logger.LogWarning($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) failed to create a daily order. Reason: Meal with id {mealId} does not exist.");
+
                 return this.BadRequest(
                     new
                     {
@@ -79,6 +98,8 @@ public class DailyOrdersController : ControllerBase
         }
 
         var dailyOrder = await this.dailyOrderService.GenerateAndSaveDailyOrderInfoAsync(dailyOrderIM);
+
+        this.logger.LogInformation($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) created daily order.");
 
         return this.Ok(dailyOrder);
     }
@@ -91,14 +112,20 @@ public class DailyOrdersController : ControllerBase
     [HttpDelete("{dailyOrderId}")]
     public async Task<IActionResult> DeleteDailyOrderAsync(string dailyOrderId)
     {
+        this.logger.LogInformation($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) is trying to delete daily order with id: {dailyOrderId}.");
+
         var dailyOrder = await this.dailyOrderService.GetDailyOrderByIdAsync(dailyOrderId);
 
         if (dailyOrder is null)
         {
+            this.logger.LogWarning($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) failed to delete daily order with id: {dailyOrderId}. Reason: Daily order with id {dailyOrderId} doesn't exists.");
+
             return this.NotFound();
         }
 
         await this.dailyOrderService.DeleteDailyOrderAsync(dailyOrderId);
+
+        this.logger.LogInformation($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) successfully deleted daily order with id: {dailyOrderId}.");
 
         return this.Ok();
     }
@@ -113,6 +140,7 @@ public class DailyOrdersController : ControllerBase
     [Authorize]
     public async Task<ActionResult<List<DailyOrderVM>>> GetAllDailyOrdersBetweenDates(DateTime? startDateTime, DateTime? endDateTime)
     {
+        this.logger.LogInformation($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) is trying to get all daily orders between dates: {startDateTime} and {endDateTime}.");
         return await this.dailyOrderService.GetDailyOrdersBetweenDates(startDateTime, endDateTime);
     }
 
@@ -125,10 +153,12 @@ public class DailyOrdersController : ControllerBase
     [HttpPut("{dailyOrderId}")]
     public async Task<IActionResult> EditDailyOrderAsync(string dailyOrderId, DailyOrderIM dailyOrderIM)
     {
+        this.logger.LogInformation($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) is trying to edit daily order with id: {dailyOrderId}.");
         var dailyOrder = await this.dailyOrderService.GetDailyOrderByIdAsync(dailyOrderId);
 
         if (dailyOrder is null)
         {
+            this.logger.LogWarning($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) failed to edit daily order with id: {dailyOrderId}. Reason: Daily order with id {dailyOrderId} doesn't exists.");
             return this.NotFound();
         }
 
@@ -136,6 +166,7 @@ public class DailyOrdersController : ControllerBase
 
         if (menuOne is null)
         {
+            this.logger.LogWarning($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) failed to edit daily order with id: {dailyOrderId}. Reason: Menu with id {dailyOrderIM.MenuOneId} does not exist.");
             return this.BadRequest(
                 new
                 {
@@ -147,6 +178,7 @@ public class DailyOrdersController : ControllerBase
 
         if (menuTwo is null)
         {
+            this.logger.LogWarning($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) failed to edit daily order with id: {dailyOrderId}. Reason: Menu with id {dailyOrderIM.MenuTwoId} does not exist.");
             return this.BadRequest(
                 new
                 {
@@ -160,6 +192,7 @@ public class DailyOrdersController : ControllerBase
 
             if (meal is null)
             {
+                this.logger.LogWarning($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) failed to edit daily order with id: {dailyOrderId}. Reason: Meal with id {mealId} does not exist.");
                 return this.BadRequest(
                     new
                     {
@@ -170,6 +203,7 @@ public class DailyOrdersController : ControllerBase
 
         await this.dailyOrderService.EditDailyOrderAsync(dailyOrderId, dailyOrderIM);
 
+        this.logger.LogInformation($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) successfully edited daily order with id: {dailyOrderId}.");
         return this.Ok();
     }
 }

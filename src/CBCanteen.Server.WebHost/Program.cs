@@ -81,4 +81,6 @@ app.MapRazorPages();
 app.MapControllers();
 app.MapFallbackToFile("index.html");
 
+app.Logger.LogInformation("Starting the app.");
+
 app.Run();

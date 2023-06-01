@@ -2,6 +2,7 @@
 // Copyright (c) CBCanteen. All rights reserved.
 // </copyright>
 
+using System.Security.Claims;
 using CBCanteen.Server.Services.Contracts;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Identity.Web;
@@ -26,10 +27,18 @@ internal class CurrentUser : ICurrentUser
             .Claims
             .FirstOrDefault(c => c.Type == ClaimConstants.ObjectId)?
             .Value!;
+
+        this.UserEmail = httpContextAccessor?
+            .HttpContext?
+            .User
+            .Claims
+            .FirstOrDefault(c => c.Type == ClaimTypes.Email)?
+            .Value!;
     }
 
-    /// <summary>
-    /// Gets the id of the user.
-    /// </summary>
+    /// <inheritdoc/>
     public string UserId { get; }
+
+    /// <inheritdoc/>
+    public string UserEmail { get; }
 }

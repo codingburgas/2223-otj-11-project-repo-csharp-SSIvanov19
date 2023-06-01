@@ -20,6 +20,7 @@ public class MenuOrdersController : ControllerBase
     private readonly IMenuOrderService menuOrderService;
     private readonly IMenuService menuService;
     private readonly ICurrentUser currentUser;
+    private readonly ILogger<MenuOrdersController> logger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MenuOrdersController"/> class.
@@ -27,14 +28,17 @@ public class MenuOrdersController : ControllerBase
     /// <param name="menuOrderService">Service for menu ordering.</param>
     /// <param name="currentUser">Current user.</param>
     /// <param name="menuService">Menu service.</param>
+    /// <param name="logger">Logger.</param>
     public MenuOrdersController(
         IMenuOrderService menuOrderService,
         ICurrentUser currentUser,
-        IMenuService menuService)
+        IMenuService menuService,
+        ILogger<MenuOrdersController> logger)
     {
         this.menuOrderService = menuOrderService;
         this.currentUser = currentUser;
         this.menuService = menuService;
+        this.logger = logger;
     }
 
     /// <summary>
@@ -45,14 +49,20 @@ public class MenuOrdersController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<MenuOrderVM>> CreateMenuOrderAsync([FromBody] MenuOrderIM menuOrderIM)
     {
+        this.logger.LogInformation($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) is trying to create a menu order with menu id: {menuOrderIM.MenuId}.");
+
         var menu = await this.menuService.GetMenuByIdAsync(menuOrderIM.MenuId);
 
         if (menu is null)
         {
+            this.logger.LogWarning($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) tried to create a menu order with menu id: {menuOrderIM.MenuId} but the menu was not found.");
+
             return this.NotFound();
         }
 
         var menuOrder = await this.menuOrderService.GenerateAndSaveMenuOrderInfoAsync(menuOrderIM, this.currentUser.UserId);
+
+        this.logger.LogInformation($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) created a menu order with menu id: {menuOrderIM.MenuId}.");
 
         return this.Ok(menuOrder);
     }
@@ -65,19 +75,27 @@ public class MenuOrdersController : ControllerBase
     [HttpDelete("{menuOrderId}")]
     public async Task<IActionResult> DeleteMenuOrderAsync(string menuOrderId)
     {
+        this.logger.LogInformation($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) is trying to delete a menu order with id: {menuOrderId}.");
+
         var menuOrder = await this.menuOrderService.GetMenuOrderByIdAsync(menuOrderId);
 
         if (menuOrder is null)
         {
+            this.logger.LogWarning($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) tried to delete a menu order with id: {menuOrderId} but the menu order was not found.");
+
             return this.NotFound();
         }
 
         if (menuOrder.UserId != this.currentUser.UserId)
         {
+            this.logger.LogWarning($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) tried to delete a menu order with id: {menuOrderId} but the menu order does not belong to the user.");
+
             return this.Forbid();
         }
 
         await this.menuOrderService.DeleteMenuOrderAsync(menuOrderId);
+
+        this.logger.LogInformation($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) deleted a menu order with id: {menuOrderId}.");
 
         return this.Ok();
     }
@@ -91,7 +109,11 @@ public class MenuOrdersController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<MenuOrderVM>>> GetAllMenusOrdersBetweenDates(DateTime? startDateTime, DateTime? endDateTime)
     {
+        this.logger.LogInformation($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) is trying to get all menu orders between dates: {startDateTime} and {endDateTime}.");
+
         var menuOrders = await this.menuOrderService.GetMenuOrdersBetweenDates(startDateTime, endDateTime);
+
+        this.logger.LogInformation($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) got all menu orders between dates: {startDateTime} and {endDateTime}.");
 
         return this.Ok(menuOrders.Where(m => m.UserId == this.currentUser.UserId));
     }
@@ -105,19 +127,27 @@ public class MenuOrdersController : ControllerBase
     [HttpPut("{menuOrderId}")]
     public async Task<IActionResult> EditMenuOrderAsync(string menuOrderId, MenuOrderIM menuOrderIM)
     {
+        this.logger.LogInformation($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) is trying to edit a menu order with id: {menuOrderId}.");
+
         var menuOrder = await this.menuOrderService.GetMenuOrderByIdAsync(menuOrderId);
 
         if (menuOrder is null)
         {
+            this.logger.LogWarning($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) tried to edit a menu order with id: {menuOrderId} but the menu order was not found.");
+
             return this.NotFound();
         }
 
         if (menuOrder.UserId != this.currentUser.UserId)
         {
+            this.logger.LogWarning($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) tried to edit a menu order with id: {menuOrderId} but the menu order does not belong to the user.");
+
             return this.Forbid();
         }
 
         await this.menuOrderService.EditMenuOrderAsync(menuOrderId, menuOrderIM);
+
+        this.logger.LogInformation($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) edited a menu order with id: {menuOrderId}.");
 
         return this.Ok();
     }

@@ -12,7 +12,12 @@ namespace CBCanteen.Server.Services.Contracts;
 public interface ICurrentUser
 {
     /// <summary>
-    /// Gets or sets the ID of the current user.
+    /// Gets the ID of the current user.
     /// </summary>
     public string UserId { get; }
+
+    /// <summary>
+    /// Gets the email of the current user.
+    /// </summary>
+    public string UserEmail { get; }
 }

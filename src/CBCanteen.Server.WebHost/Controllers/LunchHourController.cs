@@ -19,16 +19,22 @@ public class LunchHourController : ControllerBase
 {
     private readonly ILunchHoursService lunchHoursService;
     private readonly ICurrentUser currentUser;
+    private readonly ILogger<LunchHourController> logger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LunchHourController"/> class.
     /// </summary>
     /// <param name="lunchHoursService">Lunch hour service.</param>
     /// <param name="currentUser">Current user.</param>
-    public LunchHourController(ILunchHoursService lunchHoursService, ICurrentUser currentUser)
+    /// <param name="logger">Logger.</param>
+    public LunchHourController(
+        ILunchHoursService lunchHoursService,
+        ICurrentUser currentUser,
+        ILogger<LunchHourController> logger)
     {
         this.lunchHoursService = lunchHoursService;
         this.currentUser = currentUser;
+        this.logger = logger;
     }
 
     /// <summary>
@@ -38,6 +44,8 @@ public class LunchHourController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<UserLunchHoursVM?>> GetUserLunchHoursAsync()
     {
+        this.logger.LogInformation($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) is trying to get their lunch hours.");
+
         return this.Ok(await this.lunchHoursService.GetUserLunchHoursAsync(this.currentUser.UserId));
     }
 
@@ -49,6 +57,8 @@ public class LunchHourController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> SetUserLunchHoursAsync([FromBody] UserLunchHoursIM userLunchHoursIM)
     {
+        this.logger.LogInformation($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) is trying to set their lunch hours.");
+
         await this.lunchHoursService.SetUserLunchHoursAsync(userLunchHoursIM, this.currentUser.UserId);
 
         return this.Ok();

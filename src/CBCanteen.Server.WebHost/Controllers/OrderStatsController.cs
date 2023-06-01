@@ -17,16 +17,26 @@ public class OrderStatsController : ControllerBase
 {
     private readonly IMenuOrderService menuOrderService;
     private readonly IMealOrderService mealOrderService;
+    private readonly ICurrentUser currentUser;
+    private readonly ILogger<OrderStatsController> logger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="OrderStatsController"/> class.
     /// </summary>
     /// <param name="menuOrderService">Menu order service.</param>
     /// <param name="mealOrderService">Meal order service.</param>
-    public OrderStatsController(IMenuOrderService menuOrderService, IMealOrderService mealOrderService)
+    /// <param name="currentUser">Current user.</param>
+    /// <param name="logger">Logger.</param>
+    public OrderStatsController(
+        IMenuOrderService menuOrderService,
+        IMealOrderService mealOrderService,
+        ICurrentUser currentUser,
+        ILogger<OrderStatsController> logger)
     {
         this.menuOrderService = menuOrderService;
         this.mealOrderService = mealOrderService;
+        this.currentUser = currentUser;
+        this.logger = logger;
     }
 
     /// <summary>
@@ -38,8 +48,12 @@ public class OrderStatsController : ControllerBase
     [HttpGet("meals")]
     public async Task<ActionResult<List<MealStats>>> GetMealStatsAsync(DateOnly startTime, DateOnly endTime)
     {
+        this.logger.LogInformation($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) is trying to get meal stats between {startTime} and {endTime}.");
+        
         if (startTime > endTime)
         {
+            this.logger.LogWarning($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) tried to get meal stats between {startTime} and {endTime} but the start time was after the end time.");
+
             return this.BadRequest("Start time should be before end time.");
         }
 
@@ -59,6 +73,8 @@ public class OrderStatsController : ControllerBase
         }
         while (startTime != endTime);
 
+        this.logger.LogInformation($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) successfully got meal stats between {startTime} and {endTime}.");
+
         return this.Ok(returnVal);
     }
 
@@ -71,8 +87,12 @@ public class OrderStatsController : ControllerBase
     [HttpGet("orders")]
     public async Task<ActionResult<List<OrderStats>>> GetOrderStatsAsync(DateOnly startTime, DateOnly endTime)
     {
+        this.logger.LogInformation($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) is trying to get order stats between {startTime} and {endTime}.");
+        
         if (startTime > endTime)
         {
+            this.logger.LogWarning($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) tried to get order stats between {startTime} and {endTime} but the start time was after the end time.");
+
             return this.BadRequest("Start time should be before end time.");
         }
 
@@ -123,6 +143,8 @@ public class OrderStatsController : ControllerBase
             });
         }
         while (startTime != endTime);
+
+        this.logger.LogInformation($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) successfully got order stats between {startTime} and {endTime}.");
 
         return this.Ok(returnVal);
     }

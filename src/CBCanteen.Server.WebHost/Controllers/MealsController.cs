@@ -20,16 +20,26 @@ public class MealsController : ControllerBase
 {
     private readonly IMapper mapper;
     private readonly IMealService mealService;
+    private readonly ICurrentUser currentUser;
+    private readonly ILogger<MealsController> logger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MealsController"/> class.
     /// </summary>
     /// <param name="mapper">Mapper.</param>
     /// <param name="mealService">Meal Service.</param>
-    public MealsController(IMapper mapper, IMealService mealService)
+    /// <param name="currentUser">Current user.</param>
+    /// <param name="logger">Logger.</param>
+    public MealsController(
+        IMapper mapper,
+        IMealService mealService,
+        ICurrentUser currentUser,
+        ILogger<MealsController> logger)
     {
         this.mapper = mapper;
         this.mealService = mealService;
+        this.currentUser = currentUser;
+        this.logger = logger;
     }
 
     /// <summary>
@@ -40,7 +50,11 @@ public class MealsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<MealVM>> CreateMealVMAsync([FromBody] MealIM mealIm)
     {
+        this.logger.LogInformation($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) is trying to create a meal.");
+
         var meal = await this.mealService.GenerateAndSaveMealInfoAsync(mealIm);
+
+        this.logger.LogInformation($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) created a meal with id: {meal.Id}.");
 
         return this.Ok(meal);
     }
@@ -52,7 +66,12 @@ public class MealsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<List<MealVM>>> GetAllMealsAsync()
     {
+        this.logger.LogInformation($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) is trying to get all meals.");
+
         var meals = await this.mealService.GetAllMealsAsync();
+
+        this.logger.LogInformation($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) got all meals.");
+
         return this.Ok(meals);
     }
 
@@ -65,14 +84,20 @@ public class MealsController : ControllerBase
     [HttpPut("{mealId}")]
     public async Task<IActionResult> EditMealAsync(string mealId, [FromBody] MealIM mealIm)
     {
+        this.logger.LogInformation($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) is trying to edit a meal with id: {mealId}.");
+
         var meal = await this.mealService.GetMealByIdAsync(mealId);
 
         if (meal is null)
         {
+            this.logger.LogWarning($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) tried to edit a meal with id: {mealId} but the meal was not found.");
+
             return this.NotFound();
         }
 
         await this.mealService.EditMealAsync(mealId, mealIm);
+
+        this.logger.LogInformation($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) edited a meal with id: {mealId}.");
 
         return this.Ok();
     }
