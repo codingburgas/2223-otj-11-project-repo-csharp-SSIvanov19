@@ -28,6 +28,7 @@ public static class DependencyInjection
             .AddScoped<IUserPreferenceService, UserPreferenceService>()
             .AddScoped<ILunchHourService, LunchHourService>()
             .AddScoped<IMealOrderService, MealOrderService>()
-            .AddScoped<IMenuOrderService, MenuOrderService>();
+            .AddScoped<IMenuOrderService, MenuOrderService>()
+            .AddScoped<IStatsService, StatsService>();
     }
 }

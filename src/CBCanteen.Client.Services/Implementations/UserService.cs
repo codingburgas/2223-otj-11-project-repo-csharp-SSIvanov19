@@ -41,4 +41,15 @@ internal class UserService : IUserService
     {
         return await this.graphClient.Me.Photo.Content.GetAsync();
     }
+
+    /// <inheritdoc/>
+    public async Task<string> GetUserNameById(string id)
+    {
+        var user = await this.graphClient.Users[id].GetAsync((requestConfiguration) =>
+        {
+            requestConfiguration.QueryParameters.Select = new string[] { "mail" };
+        });
+
+        return user!.Mail!;
+    }
 }

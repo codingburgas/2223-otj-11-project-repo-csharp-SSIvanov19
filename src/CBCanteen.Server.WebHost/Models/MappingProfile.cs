@@ -27,7 +27,9 @@ public class MappingProfile : Profile
     {
         this.CreateMap<MealIM, Meal>();
         this.CreateMap<Meal, MealVM>()
-            .ForMember(d => d.Category, cfg => cfg.MapFrom(s => s.Category.GetDescription()));
+            .ForMember(d => d.Category, cfg => cfg.MapFrom(s => s.Category.GetDescription()))
+            .ForMember(d => d.Quantity, cfg => cfg.Ignore())
+            .ForMember(d => d.IsChecked, cfg => cfg.Ignore());
         this.CreateMap<MenuIM, Menu>();
         this.CreateMap<Menu, MenuVM>();
         this.CreateMap<DailyOrderIM, DailyOrder>();

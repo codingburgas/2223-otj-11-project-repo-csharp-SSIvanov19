@@ -33,4 +33,23 @@ public class MealVM
     /// Gets or sets the category of the meal.
     /// </summary>
     public string Category { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the quantity of the meal.
+    /// </summary>
+    public int Quantity { get; set; } = 0;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the meal is checked.
+    /// </summary>
+    public bool IsChecked { get; set; } = false;
+
+    /// <summary>
+    /// Return the name of the meal.
+    /// </summary>
+    /// <returns>The name of the meal.</returns>
+    public override string ToString()
+    {
+        return this.Name;
+    }
 }

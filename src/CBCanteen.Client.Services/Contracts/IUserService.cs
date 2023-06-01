@@ -22,4 +22,11 @@ public interface IUserService
     /// </summary>
     /// <returns>The profile photo stream.</returns>
     Task<Stream?> GetCurrentUserProfilePhotoAsync();
+
+    /// <summary>
+    /// Retrieves the user name by id.
+    /// </summary>
+    /// <param name="id">Id of the user.</param>
+    /// <returns>The user username.</returns>
+    Task<string> GetUserNameById(string id);
 }

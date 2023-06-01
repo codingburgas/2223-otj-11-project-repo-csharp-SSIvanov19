@@ -24,6 +24,6 @@ public class FutureDateAttribute : ValidationAttribute
             return false;
         }
 
-        return date >= DateTime.Now;
+        return date.Date >= DateTime.Now.Date;
     }
 }

@@ -52,7 +52,7 @@
                         IsAllDay = true,
                         StartTime = date,
                         EndTime = date.AddHours(1),
-                        CssClass = dailyOrders.Any(o => o.DateOfConsumption == date) ? "lunch" : date < DateTime.Now ? "past-lunch" : ""
+                        CssClass = dailyOrders.Any(o => o.DateOfConsumption == date) ? "lunch" : date.Date < DateTime.Now.Date ? "past-lunch" : ""
                     };
                 return newEvent;
             }).ToList();

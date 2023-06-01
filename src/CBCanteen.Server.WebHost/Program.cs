@@ -31,6 +31,15 @@ builder.Services.AddDbContext<ApplicationDBContext>(options =>
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
 
+builder.Services
+    .AddLogging(conf =>
+    {
+        conf.ClearProviders();
+
+        conf.AddSeq(configuration.GetSection("Seq"));
+        conf.AddConsole();
+    });
+
 builder.Services.AddServices();
 
 builder.Services

@@ -80,7 +80,7 @@
         }
 
         this.Meals = new(await this.mealService.GetAllMealsAsync());
-        var dailyOrders = await this.dailyOrderService.GetDailyOrderAsync(this.MenuDate, this.MenuDate);
+        var dailyOrders = await this.dailyOrderService.GetDailyOrderAsync(this.MenuDate.Date, this.MenuDate.Date.AddHours(23));
 
         if (dailyOrders.Count == 0)
         {
@@ -165,7 +165,7 @@
                 MenuOneId = dailyOrder!.MenuOne.Id,
                 MenuTwoId = dailyOrder!.MenuTwo.Id,
                 FreeConsumptionIds = FreeConsumptionMeals.Select(m => m.Id).ToList(),
-                DateOfConsumption = MenuDate
+                DateOfConsumption = MenuDate.Date
             };
 
         await this.dailyOrderService.EditDailyOrderAsync(dailyOrder.Id, newDailyOrder);
@@ -178,7 +178,7 @@
     /// </summary>
     private async void CloseModal()
     {
-        await BlazoredModal.CloseAsync();
+        await BlazoredModal.CancelAsync();
     }
 
     private async Task UpdateMealsList()
