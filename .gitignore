@@ -351,3 +351,6 @@ MigrationBackup/
 
 # Web Host appsettings.json file
 src/CBCanteen.WebHost/appsettings.json
+
+# Application setting and secrets
+src/CBCanteen.Server.WebHost/appsettings.json
