@@ -28,7 +28,8 @@ builder.Services.AddDbContext<ApplicationDBContext>(options =>
     options.EnableThreadSafetyChecks();
 });
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
 
 builder.Services
@@ -36,11 +37,9 @@ builder.Services
     {
         conf.ClearProviders();
 
-        conf.AddSeq(configuration.GetSection("Seq"));
+        // conf.AddSeq(configuration.GetSection("Seq"));
         conf.AddConsole();
     });
-
-builder.Services.AddServices();
 
 builder.Services
     .AddControllersWithViews()
@@ -49,10 +48,12 @@ builder.Services
 builder.Services.AddRazorPages();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddSwagger();
+builder.Services.AddServices();
 
 var app = builder.Build();
 
 await app.InitAppAsync();
+
 app.UseSwagger();
 
 // Configure the HTTP request pipeline.

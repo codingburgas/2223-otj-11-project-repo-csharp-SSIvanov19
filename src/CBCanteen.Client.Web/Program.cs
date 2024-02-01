@@ -13,7 +13,9 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Plk.Blazor.DragDrop;
 using Syncfusion.Blazor;
 
+
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
+
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
@@ -22,6 +24,8 @@ builder.Services.AddHttpClient("CBCanteen.Client.Web.ServerAPI", client => clien
 
 // Supply HttpClient instances that include access tokens when making requests to the server project
 builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("CBCanteen.Client.Web.ServerAPI"));
+
+builder.Services.AddSyncfusionBlazor();
 
 builder.Services
     .AddMsalAuthentication<RemoteAuthenticationState, CustomUserAccount>(
@@ -48,7 +52,7 @@ var scopes = builder.Configuration.GetSection("MicrosoftGraph:Scopes")
 builder.Services.AddGraphClient(baseUrl, scopes);
 builder.Services.AddServices();
 builder.Services.AddBlazoredModal();
-builder.Services.AddSyncfusionBlazor();
+
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddBlazorDragDrop();
 
