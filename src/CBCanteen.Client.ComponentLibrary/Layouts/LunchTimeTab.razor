@@ -1,0 +1,195 @@
+﻿@using CBCanteen.Client.ComponentLibrary.Components
+@using CBCanteen.Client.Services.Contracts;
+@using CBCanteen.Shared.Models.User;
+@using Microsoft.Graph.Models;
+@using Microsoft.Graph.Models.ODataErrors;
+@using Microsoft.JSInterop;
+@inject IJSRuntime JS
+@inject IUserService userService
+@inject ILunchHourService lunchHourService
+@inject NavigationManager Navigation
+
+<h1 class="text text-[#474747] text-4xl font-bold">Управлявайте времето за обяд</h1>
+<h1 class="text text-[#474747] text-2xl font-medium mt-2">Кога е вашият обяд?</h1>
+
+<Checkbox OnButtonChange="UpdateButtonState"
+          IsChecked="hasLunchOnSameTime"
+          StyleClass="mt-4"
+          Text="Имам едно и също време за обяд всеки ден" />
+
+@if (hasLunchOnSameTime)
+{
+    <div class="flex mt-6 flex-row space-x-4">
+        <InputTime Text="Начало"
+                   BindingValue=@MondayStartTime
+                   BindingValueChanged=@UpdateMondayStartTime />
+        <InputTime Text="Край"
+                   BindingValue=@MondayEndTime
+                   BindingValueChanged=@UpdateMondayEndTime />
+    </div>
+}
+else
+{
+    <div class="grid grid-cols-3 gap-4 mt-6">
+        <div class="flex items-center justify-center justify-self-start">
+            <p class="text text-xl text-[#94A3B8]">Понеделник</p>
+        </div>
+        <InputTime Text="Начало"
+                   BindingValue=@MondayStartTime
+                   BindingValueChanged=@UpdateMondayStartTime />
+        <InputTime Text="Край"
+                   BindingValue=@MondayEndTime
+                   BindingValueChanged=@UpdateMondayEndTime />
+        <div class="flex items-center justify-center justify-self-start">
+            <p class="text text-xl text-[#94A3B8]">Вторник</p>
+        </div>
+        <InputTime Text="Начало"
+                   BindingValue=@TuesdayStartTime
+                   BindingValueChanged=@UpdateTuesdayStartTime />
+        <InputTime Text="Край"
+                   BindingValue=@TuesdayEndTime
+                   BindingValueChanged=@UpdateTuesdayEndTime />
+        <div class="flex items-center justify-center justify-self-start">
+            <p class="text text-xl text-[#94A3B8]">Сряда</p>
+        </div>
+        <InputTime Text="Начало"
+                   BindingValue=@WednesdayStartTime
+                   BindingValueChanged=@UpdateWednesdayStartTime />
+        <InputTime Text="Край"
+                   BindingValue=@WednesdayEndTime
+                   BindingValueChanged=@UpdateWednesdayEndTime />
+        <div class="flex items-center justify-center justify-self-start">
+            <p class="text text-xl text-[#94A3B8]">Четвъртък</p>
+        </div>
+        <InputTime Text="Начало"
+                   BindingValue=@ThursdayStartTime
+                   BindingValueChanged=@UpdateThursdayStartTime />
+        <InputTime Text="Край"
+                   BindingValue=@ThursdayEndTime
+                   BindingValueChanged=@UpdateThursdayEndTime />
+        <div class="flex items-center justify-center justify-self-start">
+            <p class="text text-xl text-[#94A3B8]">Петък</p>
+        </div>
+        <InputTime Text="Начало"
+                   BindingValue=@FridayStartTime
+                   BindingValueChanged=@UpdateFridayStartTime />
+        <InputTime Text="Край"
+                   BindingValue=@FridayEndTime
+                   BindingValueChanged=@UpdateFridayEndTime />
+    </div>
+}
+<GreenButton Text="Запази" StyleClass="mr-2 flex items-center justify-center py-1 px-4 mt-6" OnClickCallback=@(async e => await SubmitForm()) />
+
+@code {
+    private bool hasLunchOnSameTime = true;
+
+    private TimeOnly MondayStartTime;
+    private TimeOnly MondayEndTime;
+
+    private TimeOnly TuesdayStartTime;
+    private TimeOnly TuesdayEndTime;
+
+    private TimeOnly WednesdayStartTime;
+    private TimeOnly WednesdayEndTime;
+
+    private TimeOnly ThursdayStartTime;
+    private TimeOnly ThursdayEndTime;
+
+    private TimeOnly FridayStartTime;
+    private TimeOnly FridayEndTime;
+
+    private void UpdateMondayStartTime(TimeOnly newTime)
+    {
+        MondayStartTime = newTime;
+    }
+
+    private void UpdateMondayEndTime(TimeOnly newTime)
+    {
+        MondayEndTime = newTime;
+    }
+
+    private void UpdateTuesdayStartTime(TimeOnly newTime)
+    {
+        TuesdayStartTime = newTime;
+    }
+
+    private void UpdateTuesdayEndTime(TimeOnly newTime)
+    {
+        TuesdayEndTime = newTime;
+    }
+
+    private void UpdateWednesdayStartTime(TimeOnly newTime)
+    {
+        WednesdayStartTime = newTime;
+    }
+
+    private void UpdateWednesdayEndTime(TimeOnly newTime)
+    {
+        WednesdayEndTime = newTime;
+    }
+
+    private void UpdateThursdayStartTime(TimeOnly newTime)
+    {
+        ThursdayStartTime = newTime;
+    }
+
+    private void UpdateThursdayEndTime(TimeOnly newTime)
+    {
+        ThursdayEndTime = newTime;
+    }
+
+    private void UpdateFridayStartTime(TimeOnly newTime)
+    {
+        FridayStartTime = newTime;
+    }
+
+    private void UpdateFridayEndTime(TimeOnly newTime)
+    {
+        FridayEndTime = newTime;
+    }
+
+    /// <summary>
+    /// Updates the state of the button.
+    /// </summary>
+    /// <param name="newState">New state</param>
+    private void UpdateButtonState(bool newState)
+    {
+        hasLunchOnSameTime = newState;
+    }
+
+    protected async override Task OnInitializedAsync()
+    {
+        var lunchTime = await lunchHourService.GetUserLunchHours();
+
+        MondayStartTime = lunchTime!.MondayLunchTimeStart;
+        MondayEndTime = lunchTime.MondayLunchTimeEnd;
+        TuesdayStartTime = lunchTime.TuesdayLunchTimeStart;
+        TuesdayEndTime = lunchTime.TuesdayLunchTimeEnd;
+        WednesdayStartTime = lunchTime.WednesdayLunchTimeStart;
+        WednesdayEndTime = lunchTime.WednesdayLunchTimeEnd;
+        ThursdayStartTime = lunchTime.ThursdayLunchTimeStart;
+        ThursdayEndTime = lunchTime.ThursdayLunchTimeEnd;
+        FridayStartTime = lunchTime.FridayLunchTimeStart;
+        FridayEndTime = lunchTime.FridayLunchTimeEnd;
+    }
+
+    private async Task SubmitForm()
+    {
+        var userLunchTime = new UserLunchHoursIM
+            {
+                HasSameLunchHours = hasLunchOnSameTime,
+                MondayLunchTimeStart = MondayStartTime,
+                MondayLunchTimeEnd = MondayEndTime,
+                TuesdayLunchTimeStart = TuesdayStartTime,
+                TuesdayLunchTimeEnd = TuesdayEndTime,
+                WednesdayLunchTimeStart = WednesdayStartTime,
+                WednesdayLunchTimeEnd = WednesdayEndTime,
+                ThursdayLunchTimeStart = ThursdayStartTime,
+                ThursdayLunchTimeEnd = ThursdayEndTime,
+                FridayLunchTimeStart = FridayStartTime,
+                FridayLunchTimeEnd = FridayEndTime
+            };
+
+        await this.lunchHourService.SetUserLunchHours(userLunchTime);
+    }
+}

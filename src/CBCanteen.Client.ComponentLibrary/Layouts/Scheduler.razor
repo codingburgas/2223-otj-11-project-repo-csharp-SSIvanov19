@@ -1,0 +1,239 @@
+﻿@using AutoMapper;
+@using AutoMapper.QueryableExtensions;
+@using Blazored.Modal;
+@using Blazored.Modal.Services;
+@using CBCanteen.Client.Services.Contracts;
+@using CBCanteen.Shared.Models;
+@using CBCanteen.Shared.Models.Canteen.DailyOrder
+@using CBCanteen.Shared.Models.User;
+@using Microsoft.Graph.Models;
+@using Syncfusion.Blazor
+@using Syncfusion.Blazor.Schedule
+@using System.Globalization;
+
+@inject ICalendarService calendarService
+@inject IMapper mapper
+@inject IUserPreferenceService userPreferenceService
+@inject ILunchHourService lunchHourService
+@inject IDailyOrderService dailyOrderService
+@inject NavigationManager Navigator
+
+<SfSchedule @ref=@scheduleObj TValue=CalendarEvent Readonly="true" Height="calc(100vh - 65px)" @bind-SelectedDate="@CurrentDate">
+    <ScheduleViews>
+        <ScheduleView Option="View.WorkWeek" EnableVirtualMask="true"/>
+    </ScheduleViews>
+    <ScheduleEvents TValue="CalendarEvent" ActionCompleted="OnActionCompleted" OnEventClick=@OnEventClicked  />
+    <ScheduleEventSettings DataSource="DataSource">
+    </ScheduleEventSettings>
+</SfSchedule>
+
+@code {
+    /// <summary>
+    /// 
+    /// </summary>
+    [CascadingParameter]
+    private IModalService Modal { get; set; } = default!;
+
+    ///<summary>
+    /// Holds the list of events.
+    ///</summary>
+    private List<CalendarEvent> DataSource { get; set; } = new ();
+
+    ///<summary> 
+    /// 
+    /// </summary>
+    private SfSchedule<CalendarEvent>? scheduleObj;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    private DateTime CurrentDate = DateTime.Now;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    private UserPreferenceVM? userPreferences;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    private UserLunchHoursVM? userLunchTime;
+
+    ///<summary>
+    /// Method called during initialization.
+    ///</summary>
+    protected async override Task OnInitializedAsync()
+    {
+        this.userPreferences = await this.userPreferenceService.GetUserPreferenceAsync();
+        this.userLunchTime = await this.lunchHourService.GetUserLunchHours();
+
+        if (this.userPreferences is null || this.userLunchTime is null)
+        {
+            this.Navigator.NavigateTo("/firsttimesetup");
+        }
+
+        var startDate = GetWeekStart(DateTime.Now);
+
+        if (this.userPreferences!.ShowMeetings)
+        {   
+            var events = await calendarService.GetEventsBetweenTwoDatesAsync(startDate, startDate.AddDays(5));
+
+            this.AddEventsToDataSource(events);
+        }
+
+        var dailyOrders = await dailyOrderService.GetDailyOrderAsync(startDate, startDate.AddDays(5));
+
+        var outputEvents = this.GenerateOutputEvents(startDate, dailyOrders);
+
+        this.DataSource.AddRange(outputEvents.Where(e => e is not null)!);
+
+        await scheduleObj!.RefreshEventsAsync();
+
+        this.StateHasChanged();
+        await base.OnInitializedAsync().ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Displays selected menu item modal that contains its data.
+    /// </summary>
+    private async Task OnEventClicked(EventClickArgs<CalendarEvent> args)
+    {
+        args.Cancel = true;
+
+        if (args.Event.CssClass != "lunch")
+        {
+            return;
+        }
+
+        var parameter = new ModalParameters()
+            .Add(nameof(AddMenuModal.MenuDate), args.Event.StartTime!);
+
+        var options = new ModalOptions()
+            {
+                Class = "bigModalClass"
+            };
+
+        var modal = Modal.Show<OrderMealModal>($"Обяд за {args.Event.StartTime!}", parameter, options);
+        var result = await modal.Result;
+    }
+
+    /// <summary>
+    /// Updates DataSource to match the current date and remembers its previous state.
+    /// </summary>
+    private async void OnActionCompleted(ActionEventArgs<CalendarEvent> args)
+    {
+        if (args.ActionType == ActionType.DateNavigate)
+        {
+            var startDate = GetWeekStart(CurrentDate);
+
+            if (this.DataSource.FirstOrDefault(e => e.Subject == $"Обяд за {startDate: d MMM yyyy}") is not null)
+            {
+                return;
+            }
+
+            var dailyOrders = await dailyOrderService.GetDailyOrderAsync(startDate, startDate.AddDays(5));
+
+            var outputEvents = this.GenerateOutputEvents(startDate, dailyOrders);
+
+            this.DataSource.AddRange(outputEvents.Where(e => e is not null)!);
+
+            if (this.userPreferences!.ShowMeetings)
+            {   
+                var events = await calendarService.GetEventsBetweenTwoDatesAsync(startDate, startDate.AddDays(5));
+
+                this.AddEventsToDataSource(events);
+            }
+
+            await this.scheduleObj!.RefreshEventsAsync();
+        }
+    }
+
+    /// <summary>
+    /// Calculates the starting date of the current week.
+    /// </summary>
+    private static DateTime GetWeekStart(DateTime datetimeNow)
+    {
+        var startOfWeek = datetimeNow.AddDays(
+                    (int)CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek - (int)datetimeNow.DayOfWeek);
+
+        if (startOfWeek.DayOfWeek == DayOfWeek.Sunday)
+        {
+            startOfWeek = startOfWeek.AddDays(1);
+        }
+
+        return startOfWeek.Date;
+    }
+
+    /// <summary>
+    /// Generates the output events based on the start date and daily orders.
+    /// </summary>
+    private List<CalendarEvent?> GenerateOutputEvents(DateTime startDate, List<DailyOrderVM> dailyOrders)
+    {
+        return Enumerable.Range(0, 5)
+            .Select(i => startDate.AddDays(i))
+            .Select(date =>
+            {
+                var subject = $"Обяд за {date:d MMM yyyy}";
+                var previouslyAddedEvent = DataSource.FirstOrDefault(e => e.Subject == subject);
+
+                if (previouslyAddedEvent is not null)
+                    return previouslyAddedEvent;
+
+                TimeOnly? userLunchStarTime = null;
+                TimeOnly? userLunchEndTime = null;
+
+                switch (date.DayOfWeek)
+                {
+                    case DayOfWeek.Monday:
+                        userLunchStarTime = userLunchTime!.MondayLunchTimeStart;
+                        userLunchEndTime = userLunchTime.MondayLunchTimeEnd;
+                        break;
+                    case DayOfWeek.Tuesday:
+                        userLunchStarTime = userLunchTime!.TuesdayLunchTimeStart;
+                        userLunchEndTime = userLunchTime.TuesdayLunchTimeEnd;
+                        break;
+                    case DayOfWeek.Wednesday:
+                        userLunchStarTime = userLunchTime!.WednesdayLunchTimeStart;
+                        userLunchEndTime = userLunchTime.WednesdayLunchTimeEnd;
+                        break;
+                    case DayOfWeek.Thursday:
+                        userLunchStarTime = userLunchTime!.ThursdayLunchTimeStart;
+                        userLunchEndTime = userLunchTime.ThursdayLunchTimeEnd;
+                        break;
+                    case DayOfWeek.Friday:
+                        userLunchStarTime = userLunchTime!.FridayLunchTimeStart;
+                        userLunchEndTime = userLunchTime.FridayLunchTimeEnd;
+                        break;
+                }
+
+                var newEvent = new CalendarEvent
+                    {
+                        Subject = subject,
+                        StartTime = new DateTime(date.Year, date.Month, date.Day, userLunchStarTime!.Value.Hour, userLunchStarTime.Value.Minute, 0),
+                        EndTime = new DateTime(date.Year, date.Month, date.Day, userLunchEndTime!.Value.Hour, userLunchEndTime.Value.Minute, 0),
+                        IsReadonly = true,
+                        CssClass = dailyOrders.Any(o => o.DateOfConsumption.Date == date.Date) ? "lunch" : date < DateTime.Now ? "past-lunch" : "",
+                    };
+
+                return newEvent;
+            }).ToList();
+    }
+
+    private void AddEventsToDataSource(EventCollectionResponse? events)
+    {
+        if (events is not null && events.Value is not null)
+        {
+            foreach (var @event in events.Value)
+            {
+                var calEvent = this.mapper.Map<CalendarEvent>(@event);
+
+                if (this.DataSource.FirstOrDefault(e => e.StartTime == calEvent.StartTime && e.Subject == calEvent.Subject) is not null)
+                {
+                    continue;
+                }
+
+                this.DataSource.Add(this.mapper.Map<CalendarEvent>(@event));
+            }
+        }
+    }
+}

@@ -1,0 +1,57 @@
+﻿@using CBCanteen.Client.Services.Contracts;
+@using CBCanteen.Shared.Models.Canteen.Meal;
+@using CBCanteen.Shared.Models.Canteen.Menu;
+@using CBCanteen.Shared.Models.Canteen.Stats;
+@using Syncfusion.Blazor.Grids
+
+@inject IStatsService statsService
+
+<div class="flex space-y-4 flex-col mt-2">
+    @foreach (var order in Orders)
+    {
+        <p>@order.Date</p>
+        <SfGrid DataSource="@order.UserOrders" AllowSorting="true">
+            <GridColumns>
+                <GridColumn Field=@nameof(UserOrderStats.UserName) HeaderText="Име" Width="150"></GridColumn>
+                <GridColumn HeaderText="Менюта" Width="120">
+                    <Template>
+                        @{
+                            @foreach (var menu in (context as UserOrderStats).Menus)
+                            {
+                                <p>@menu.Appetizer.Name</p>
+                                <p>@menu.MainDish.Name</p>
+                                <p>@menu.Dessert.Name</p>
+                            }
+                        }
+                    </Template>
+                </GridColumn>
+                <GridColumn HeaderText="Ястия"  Width="130">
+                    <Template>
+                        @{
+                            @foreach (var meal in (context as UserOrderStats).Meals)
+                            {
+                                <p>@meal.Name</p>
+                            }
+                        }
+                    </Template>
+                </GridColumn>
+            </GridColumns>
+        </SfGrid>
+    }
+</div>
+
+@code {
+
+    [Parameter]
+    public DateTime StartTime { get; set; }
+
+    [Parameter]
+    public DateTime EndTime { get; set; }
+
+    public List<OrderStats> Orders { get; set; } = new();
+
+    protected async override Task OnInitializedAsync()
+    {
+        Orders = await statsService.GetOrdersInRangeAsync(DateOnly.FromDateTime(StartTime), DateOnly.FromDateTime(EndTime));
+    }
+}

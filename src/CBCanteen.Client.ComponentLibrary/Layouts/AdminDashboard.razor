@@ -1,0 +1,64 @@
+﻿@using CBCanteen.Client.ComponentLibrary.Components
+@using Syncfusion.Blazor.Navigations
+@using Syncfusion.Blazor;
+@inject NavigationManager Navigator
+
+<div class="mx-24 mt-6 justify-between flex">
+    <div class="flex flex space-x-4">
+        <DatePicker Text="Начало на справката" Value=@StarTime />
+        <DatePicker Text="Край на справката" Value=@EndTime />
+    </div>
+    <div class="flex flex space-x-4">
+        <GrayButton Text="Настройки" StyleClass="px-4 py-2 h-min" OnClickCallback="NavigateToSettings" />
+        <GrayButton Text="Добави меню" StyleClass="px-4 py-2 h-min" OnClickCallback="NavigateToAddMenu" />
+    </div>
+</div>
+<div class="mx-24 mt-6">
+    <SfTab>
+        <TabAnimationSettings>
+            <TabAnimationPrevious Effect=AnimationEffect.None></TabAnimationPrevious>
+            <TabAnimationNext Effect=AnimationEffect.None></TabAnimationNext>
+        </TabAnimationSettings>
+        <TabItems>
+            <TabItem>
+                <ChildContent>
+                    <TabHeader Text="Ястия"></TabHeader>
+                </ChildContent>
+                <ContentTemplate>
+                    <MealStatsGrid StartTime=@StarTime EndTime=@EndTime />    
+                </ContentTemplate>
+            </TabItem>
+            <TabItem>
+                <ChildContent>
+                    <TabHeader Text="Хора"></TabHeader>
+                </ChildContent>
+                <ContentTemplate>
+                    <OrderStatsGrid StartTime=@StarTime EndTime=@EndTime /> 
+                </ContentTemplate>
+            </TabItem>
+        </TabItems>
+    </SfTab>
+</div>
+
+
+@code {
+    public DateTime StarTime { get; set; } = DateTime.Now;
+
+    public DateTime EndTime { get; set; } = DateTime.Now;
+
+    /// <summary>
+    /// Navigates to the AddMenu page.
+    /// </summary>
+    private void NavigateToAddMenu()
+    {
+        Navigator.NavigateTo("/admin/addmenu");
+    }
+
+    /// <summary>
+    /// Navigates to the Settings page.
+    /// </summary>
+    private void NavigateToSettings()
+    {
+        Navigator.NavigateTo("/admin/settings");
+    }
+}

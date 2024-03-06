@@ -1,0 +1,18 @@
+<svg class="@StyleClass" @onclick="OnClickCallback" width="70" height="70" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="35" cy="35" r="33.5" stroke="#94A3B8" stroke-width="3" />
+    <path d="M18.963 31.6135C17.7915 32.7851 17.7915 34.6846 18.963 35.8562L38.0549 54.9481C39.2265 56.1196 41.126 56.1196 42.2976 54.9481C43.4691 53.7765 43.4691 51.877 42.2976 50.7054L25.327 33.7349L42.2976 16.7643C43.4691 15.5927 43.4691 13.6932 42.2976 12.5217C41.126 11.3501 39.2265 11.3501 38.0549 12.5217L18.963 31.6135ZM21.9277 30.7349H21.0844V36.7349H21.9277V30.7349Z" fill="#94A3B8" />
+</svg>
+
+@code {
+    /// <summary>
+    /// The callback executed when the button is clicked.
+    /// </summary>
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnClickCallback { get; set; }
+
+    /// <summary>
+    /// The class string used to style the button.
+    /// </summary>
+    [Parameter]
+    public string StyleClass { get; set; } = string.Empty;
+}

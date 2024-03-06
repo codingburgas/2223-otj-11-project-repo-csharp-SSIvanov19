@@ -1,0 +1,16 @@
+﻿<a href="@URL">
+    <div class="w-96 h-28 bg-gradient-to-r from-[#2563EB] to-[#5F8BEB] flex items-center justify-evenly rounded-3xl">
+        <p class="text-7xl font-bold font-poppins text-white">Log In</p>
+        <svg width="30" height="54" viewBox="0 0 30 54" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M-0.000488281 47.655L17.9572 27L-0.000488281 6.345L5.52796 0L29.0533 27L5.52796 54L-0.000488281 47.655Z" fill="white" />
+        </svg>
+    </div>
+</a>
+
+@code {
+    /// <summary>
+    /// The URL to redirect to when the button is clicked.
+    /// </summary>
+    [Parameter]
+    public string? URL { get; set; }
+}

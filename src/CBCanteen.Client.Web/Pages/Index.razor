@@ -1,0 +1,16 @@
+﻿@page "/"
+@using CBCanteen.Client.ComponentLibrary.Pages;
+
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+
+<CascadingAuthenticationState>
+    <AuthorizeView>
+        <Authorized>
+            <DashboardPage/>
+        </Authorized>
+        <NotAuthorized>
+            <WelcomePage/>
+        </NotAuthorized>
+    </AuthorizeView>
+</CascadingAuthenticationState>

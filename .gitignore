@@ -348,3 +348,9 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+
+# Web Host appsettings.json file
+src/CBCanteen.WebHost/appsettings.json
+
+# Application setting and secrets
+src/CBCanteen.Server.WebHost/appsettings.json

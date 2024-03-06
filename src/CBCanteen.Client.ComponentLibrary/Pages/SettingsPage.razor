@@ -1,0 +1,68 @@
+﻿@using CBCanteen.Client.ComponentLibrary.Layouts;
+@using CBCanteen.Client.ComponentLibrary.Components;
+@inject NavigationManager Navigator
+
+
+<Navbar/>
+<hr />
+<div class="flex flex-row">
+    <div class="flex flex-col mt-4 ml-12 space-y-4">
+        <BackButton OnClickCallback="NavigateBackwards" StyleClass="cursor-pointer" />
+        @switch (CurrentTab)
+        {
+            case Tabs.Account:
+                <TimeButton StyleClass="cursor-pointer" OnClickCallback="@(e => ChangeTabTo(Tabs.LunchTime))" />
+                <APIButton StyleClass="cursor-pointer" OnClickCallback="@(e => ChangeTabTo(Tabs.APIKeys))" />
+                break;
+            case Tabs.LunchTime:
+                <AccountButton StyleClass="cursor-pointer" OnClickCallback="@(e => ChangeTabTo(Tabs.Account))" />
+                <APIButton StyleClass="cursor-pointer" OnClickCallback="@(e => ChangeTabTo(Tabs.APIKeys))" />
+                break;
+            case Tabs.APIKeys:
+                <AccountButton StyleClass="cursor-pointer" OnClickCallback="@(e => ChangeTabTo(Tabs.Account))" />
+                <TimeButton StyleClass="cursor-pointer" OnClickCallback="@(e => ChangeTabTo(Tabs.LunchTime))" />
+                break;
+        }
+    </div>
+    <div class="w-full flex items-start justify-start ml-28 mt-12 flex-col">
+        @switch (CurrentTab)
+        {
+            case Tabs.Account:
+                <AccountTab />
+                break;
+            case Tabs.LunchTime:
+                <LunchTimeTab />
+                break;
+            case Tabs.APIKeys:
+                <APITab />
+                break;
+        }
+    </div>
+</div>
+
+@code {
+    private enum Tabs
+    {
+        Account,
+        LunchTime,
+        APIKeys
+    };
+
+    private Tabs CurrentTab = Tabs.Account;
+
+    ///<summary>
+    /// Getter/setter for the CurrentTab field.
+    ///</summary>
+    private void ChangeTabTo(Tabs tab)
+    {
+        this.CurrentTab = tab;
+    }
+
+    ///<summary>
+    /// Navigates backwards to the home page.
+    ///</summary>
+    private void NavigateBackwards()
+    {
+        Navigator.NavigateTo("/");
+    }
+}

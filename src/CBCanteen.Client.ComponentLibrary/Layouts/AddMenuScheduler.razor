@@ -1,0 +1,146 @@
+﻿@using Blazored.Modal.Services;
+@using Blazored.Modal;
+@using CBCanteen.Client.Services.Contracts;
+@using CBCanteen.Shared.Models;
+@using Syncfusion.Blazor.Schedule
+@using System.Globalization;
+@using Syncfusion.Blazor.Schedule.Internal;
+
+@inject IDailyOrderService dailyOrderService
+
+<SfSchedule @ref=@scheduleObj TValue=CalendarEvent Readonly="true" Height="calc(100vh - 65px)" @bind-SelectedDate="@CurrentDate" CssClass="lunch-past">
+    <ScheduleTimeScale Enable="false" />
+    <ScheduleViews>
+        <ScheduleView Option="View.WorkWeek" EnableVirtualMask="true" />
+    </ScheduleViews>
+    <ScheduleEvents TValue="CalendarEvent" ActionCompleted="OnActionCompleted" OnEventClick="OnEventClicked" />
+    <ScheduleEventSettings DataSource="DataSource" />
+</SfSchedule>
+
+@code {
+    [CascadingParameter]
+    private IModalService Modal { get; set; } = default!;
+
+    private List<CalendarEvent> DataSource { get; set; } = new List<CalendarEvent>();
+    private DateTime CurrentDate = DateTime.Now;
+
+    SfSchedule<CalendarEvent> scheduleObj;
+
+    /// <summary>
+    /// Initializes the DataSource and updates presentation if any changes were occured.
+    /// </summary>
+    protected async override Task OnInitializedAsync()
+    {
+        Console.WriteLine("Slava na Preslava");
+        var startDate = GetWeekStart(CurrentDate);
+
+        var dailyOrders = await dailyOrderService.GetDailyOrderAsync(startDate, startDate.AddDays(5));
+
+        var outputEvents = Enumerable.Range(0, 5)
+            .Select(i => startDate.AddDays(i))
+            .Select(date =>
+            {
+                var subject = $"Обяд за {date:d MMM yyyy}";
+                var previouslyAddedEvent = DataSource.FirstOrDefault(e => e.Subject == subject);
+
+                if (previouslyAddedEvent is not null)
+                    return previouslyAddedEvent;
+
+                var newEvent = new CalendarEvent
+                    {
+                        Subject = subject,
+                        IsAllDay = true,
+                        StartTime = date,
+                        EndTime = date.AddHours(1),
+                        CssClass = dailyOrders.Any(o => o.DateOfConsumption == date) ? "lunch" : date.Date < DateTime.Now.Date ? "past-lunch" : ""
+                    };
+                return newEvent;
+            }).ToList();
+
+        DataSource.AddRange(outputEvents);
+
+        await scheduleObj.RefreshEventsAsync();
+        await base.OnInitializedAsync().ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Displays selected menu item modal that contains its data.
+    /// </summary>
+    private async Task OnEventClicked(EventClickArgs<CalendarEvent> args)
+    {
+        args.Cancel = true;
+        var parameter = new ModalParameters()
+            .Add(nameof(AddMenuModal.MenuDate), args.Event.StartTime!);
+
+        var options = new ModalOptions()
+            {
+                Class = "bigModalClass"
+            };
+
+        var modal = Modal.Show<AddMenuModal>($"Обяд за {args.Event.StartTime!}", parameter, options);
+        var result = await modal.Result;
+
+        if (!result.Cancelled)
+        {
+            var eventToUpdate = DataSource.FirstOrDefault(e => e.StartTime == args.Event.StartTime);
+
+            if (eventToUpdate is not null)
+            {
+                eventToUpdate.CssClass = "lunch";
+            }
+
+            await scheduleObj.RefreshEventsAsync();
+        }
+    }
+
+    /// <summary>
+    /// Updates DataSource to match the current date and remembers its previous state.
+    /// </summary>
+    private async void OnActionCompleted(ActionEventArgs<CalendarEvent> args)
+    {
+        if (args.ActionType == ActionType.DateNavigate)
+        {
+            var startDate = GetWeekStart(CurrentDate);
+
+            if (DataSource.FirstOrDefault(e => e.Subject == $"Обяд за{startDate: d MMM yyyy}") is not null)
+            {
+                return;
+            }
+
+            var dailyOrders = await dailyOrderService.GetDailyOrderAsync(startDate, startDate.AddDays(5));
+
+            var outputEvents = Enumerable.Range(0, 5)
+                .Select(i => startDate.AddDays(i))
+                .Select(date =>
+                {
+                    var subject = $"Обяд за{date: d MMM yyyy}";
+
+                    var newEvent = new CalendarEvent
+                        {
+                            Subject = subject,
+                            IsAllDay = true,
+                            StartTime = date,
+                            EndTime = date.AddHours(1),
+                            CssClass = dailyOrders.Any(o => o.DateOfConsumption == date) ? "lunch" : date < DateTime.Now ? "past-lunch" : ""
+                        };
+
+                    return newEvent;
+                }).ToList();
+
+            DataSource.AddRange(outputEvents);
+
+            await scheduleObj.RefreshEventsAsync();
+        }
+    }
+
+    /// <summary>
+    /// Calculates the starting date of the current week.
+    /// </summary>
+    private static DateTime GetWeekStart(DateTime datetimeNow)
+    {
+        var startOfWeek = datetimeNow.AddDays(
+            (int)CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek - (int)datetimeNow.DayOfWeek);
+
+        return startOfWeek.Date;
+    }
+}

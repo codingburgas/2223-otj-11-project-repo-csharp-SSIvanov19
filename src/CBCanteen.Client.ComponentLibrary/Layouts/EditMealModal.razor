@@ -1,0 +1,98 @@
+﻿@using Blazored.Modal;
+@using CBCanteen.Client.ComponentLibrary.Components
+@using CBCanteen.Client.Services.Contracts
+@using CBCanteen.Shared.Models.Canteen.Meal
+@using Microsoft.AspNetCore.Components.Forms
+
+@inject IMealService mealService
+
+<div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all w-28 sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+        <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+            Редактиране на ястие: @Meal.Name
+        </h3>
+
+        <EditForm EditContext=@EditContext>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text text-[#dc3545]" />
+            <div class="mb-4">
+                <label for="name" class="block text-gray-700 font-bold mb-2">Име:</label>
+                <InputText 
+                    id="name" 
+                    name="name" 
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                    placeholder="Въведете име за ястието" 
+                    @bind-Value=@Meal.Name/>
+            </div>
+
+            <div class="mb-4">
+                <label for="weight" class="block text-gray-700 font-bold mb-2">Грамаж:</label>
+                <InputNumber 
+                    id="weight" 
+                    name="weight" 
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                    placeholder="Въведете грамаж за ястието"
+                    @bind-Value=@Meal.Weight/>
+            </div>
+            <div class="mb-4">
+                <label for="unitPrice" class="block text-gray-700 font-bold mb-2">Цена:</label>
+                <InputNumber id="unitPrice" name="weight" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Въведете цена за ястието" @bind-Value=@Meal.UnitPrice />
+            </div>
+            <div class="mb-4">
+                <label for="category" class="block text-gray-700 font-bold mb-2">Категория:</label>
+                <InputSelect id="category" name="category" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" @bind-Value=@Meal.Category>
+                    <option value=@MealCategories.Appetizer>Предястие</option>
+                    <option value=@MealCategories.MainDish>Основно</option>
+                    <option value=@MealCategories.Dessert>Десерт</option>
+                </InputSelect>
+            </div>
+        </EditForm>
+    </div>
+    <div class="bg-gray-50 py-3 px-6 flex flex-row-reverse">
+        <GreenButton Text="Редкатирай" StyleClass="ml-2 py-1 px-3" OnClickCallback="CreateMeal" />
+        <GrayButton Text="Откажи" StyleClass="py-1 px-3" OnClickCallback="CloseModal" />
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback OnMealCreatedSuccessfully { get; set; }
+
+    [Parameter]
+    public MealIM Meal { get; set; } = new MealIM();
+
+    [Parameter]
+    public string Id { get; set; } = string.Empty;
+
+    [CascadingParameter]
+    private BlazoredModalInstance BlazoredModal { get; set; } = default!;
+    
+    private EditContext? EditContext;
+
+    protected override void OnInitialized()
+    {
+        EditContext = new EditContext(Meal);
+        base.OnInitialized();
+    }
+
+    /// <summary>
+    /// Function that creates a new meal
+    /// </summary>
+    private async void CreateMeal()
+    {
+        if (EditContext is not null && EditContext.Validate())
+        {
+            await mealService.EditMealAsync(Id, Meal);
+            await BlazoredModal.CloseAsync();
+            await OnMealCreatedSuccessfully.InvokeAsync();
+        }
+    }
+
+    /// <summary>
+    /// Function that closes the modal window
+    /// </summary>
+    private async void CloseModal()
+    {
+        await BlazoredModal.CloseAsync();
+    }
+}

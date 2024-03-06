@@ -1,0 +1,180 @@
+﻿@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.tooltip-wrapper {
+    position: relative;
+    display: inline-block;
+    cursor: help;
+}
+
+.tooltip-text {
+    visibility: hidden;
+    position: absolute;
+    width: 240px;
+    bottom: 100%;
+    left: -121%;
+    margin-left: -60px;
+    background-color: #363636;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+    z-index: 1;
+}
+
+    .tooltip-text::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: #555 transparent transparent transparent;
+    }
+
+.tooltip-wrapper:hover span {
+    visibility: visible;
+}
+
+.form-group {
+    border: 1px solid #999;
+    margin: 10px;
+    border-radius: 5px;
+}
+
+    .form-group > label {
+        position: absolute;
+        top: -1px;
+        left: 25px;
+        background-color: white;
+        color: #666;
+        padding: 0 5px;
+    }
+
+    .form-group .required {
+        color: red;
+        padding: 0 5px;
+    }
+
+    .form-group > input {
+        border: none;
+        border: 0;
+        line-height: 100%;
+    }
+
+.smallModalClass {
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.bigModalClass {
+    max-width: 1250px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/*add this to avoid flickering*/
+.plk-dd-inprogess > * {
+    pointer-events: none;
+}
+
+/*dropzone style style*/
+.plk-dd-dropzone {
+    min-height: 50px;
+}
+
+
+
+/*drag drop styles*/
+
+.plk-dd-spacing {
+    height: 10px;
+}
+
+.plk-dd-spacing-dragged-over {
+    padding: 25px;
+}
+
+.plk-dd-dragged-over {
+    background-color: lightgray;
+    opacity: 0.6;
+    animation: blinker 1s linear infinite;
+}
+
+    .plk-dd-dragged-over > div {
+        background-color: lightgray;
+        opacity: 0.6;
+        animation: blinker 1s linear infinite;
+    }
+
+.plk-dd-dragged-over-denied {
+    background-color: red;
+    opacity: 0.6;
+    animation: blinker 1s linear infinite;
+}
+
+.plk-dd-in-transit {
+    opacity: 0.5;
+}
+
+    .plk-dd-in-transit > div {
+        opacity: 0.5;
+    }
+
+@keyframes blinker {
+    50% {
+        opacity: 0;
+    }
+}
+
+.blink_me {
+    animation: blinker 1s linear infinite;
+}
+
+/*for flex demo*/
+
+.plk-flex .plk-dd-spacing {
+    width: 20px;
+    height: auto;
+}
+
+.plk-flex .plk-dd-dragged-over {
+    background-color: lightgray;
+    opacity: 0.6;
+    animation: blinker 1s linear infinite;
+}
+
+    .plk-flex .plk-dd-dragged-over > div {
+        background-color: lightgray;
+        opacity: 0.9;
+        animation: blinker 1s linear infinite;
+    }
+
+.plk-flex .plk-dd-in-transit {
+    background-color: orangered;
+}
+
+    .plk-flex .plk-dd-in-transit > div {
+        background-color: orangered;
+    }
+
+.plk-dd-noselect {
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Old versions of Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+}
+
+.past-lunch {
+    background-color: #CBD5E1 !important;
+}
+
+.lunch {
+    background-color: #d4edda !important;
+}

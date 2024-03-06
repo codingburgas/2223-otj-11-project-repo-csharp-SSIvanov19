@@ -1,0 +1,139 @@
+﻿@using CBCanteen.Client.ComponentLibrary.Components
+@using CBCanteen.Client.Services.Contracts;
+@using CBCanteen.Shared.Models.User;
+@using Microsoft.Graph.Models;
+@using Microsoft.Graph.Models.ODataErrors;
+@using Microsoft.JSInterop;
+@inject IJSRuntime JS
+@inject IUserService userService
+@inject NavigationManager Navigation
+
+@inject IUserPreferenceService userPreferenceService
+
+<h1 class="text text-[#474747] text-4xl font-bold">Управлявайте вашия акаунт</h1>
+<h1 class="text text-[#474747] text-2xl font-medium mt-2">Променете настройките на вашия профил</h1>
+<div class="flex mt-12 mr-12 space-x-8">
+    <div>
+        <img class="@((currentUserPhotoStream is not null ? "rounded-full w-80" : "hidden"))" id="userProfilePic" alt="User profile picture">
+        @if (currentUserPhotoStream is null)
+        {
+            <div class="w-80 h-80 rounded-full animate-pulse bg-slate-200"></div>
+        }
+    </div>
+    <div class="flex flex-col space-y-2">
+        @if (currentUser is not null)
+        {
+            <p class="text text-4xl text-[#474747]">@currentUser.DisplayName</p>
+            <p class="text text-3xl text-[#474747]">@currentUser.Mail</p>
+            <p class="text text-3xl text-[#474747]">@currentUser.JobTitle</p>
+            <p class="text text-3xl text-[#474747]">@currentUser.Department</p>
+        }
+        else
+        {
+            <div class="animate-pulse h-2 bg-slate-200 rounded w-80 mx-4 my-2 h-6"></div>
+            <div class="animate-pulse h-2 bg-slate-200 rounded w-80 mx-4 my-2 h-6"></div>
+            <div class="animate-pulse h-2 bg-slate-200 rounded w-80 mx-4 my-2 h-6"></div>
+            <div class="animate-pulse h-2 bg-slate-200 rounded w-80 mx-4 my-2 h-6"></div>
+        }
+        <Checkbox Text="Показване на срещи в календара"
+                  TooltipText="Ако тази опция е изключена, във вашия календар няма да се показват вашите срещи. "
+                  IsChecked=@showMeetingInCalendar
+                  OnButtonChange=@UpdateShowMeetingInCalendar />
+        <Checkbox Text="Изпращане на имейл при нов обяд"
+                  TooltipText="Ако тази опция е включена, ще получите имейл, когато може да запазите обяд."
+                  IsChecked=@sendEmailOnNewLunch
+                  OnButtonChange=@UpdateSendEmailOnNewLunch />
+        <Checkbox Text="Създаване на напомняне при резервиране на обяд"
+                  TooltipText="Ако тази опция е включена, когато запазите обяд, автоматично ще се създаде напомняне."
+                  IsChecked=@createReminderOnLunchReservation
+                  OnButtonChange=@UpdateCreateReminderOnLunchReservation />
+    </div>
+</div>
+
+@code {
+    /// <summary>
+    /// Get or set a user instance.
+    /// </summary>
+    private User? currentUser;
+
+    /// <summary>
+    /// Stream representing current user photo.
+    /// </summary>
+    private Stream? currentUserPhotoStream;
+
+    private bool showMeetingInCalendar = true;
+    private bool sendEmailOnNewLunch = true;
+    private bool createReminderOnLunchReservation = true;
+
+    private async void UpdateShowMeetingInCalendar(bool newState)
+    {
+        showMeetingInCalendar = newState;
+        await userPreferenceService.SetUserPreferenceAsync(new UserPreferenceIM
+            {
+                ShowMeetings = showMeetingInCalendar,
+                SendEmail = sendEmailOnNewLunch,
+                CreateReminder = createReminderOnLunchReservation
+            });
+    }
+
+    private async void UpdateSendEmailOnNewLunch(bool newState)
+    {
+        sendEmailOnNewLunch = newState;
+        await userPreferenceService.SetUserPreferenceAsync(new UserPreferenceIM
+            {
+                ShowMeetings = showMeetingInCalendar,
+                SendEmail = sendEmailOnNewLunch,
+                CreateReminder = createReminderOnLunchReservation
+            });
+    }
+
+    private async void UpdateCreateReminderOnLunchReservation(bool newState)
+    {
+        createReminderOnLunchReservation = newState;
+        await userPreferenceService.SetUserPreferenceAsync(new UserPreferenceIM
+            {
+                ShowMeetings = showMeetingInCalendar,
+                SendEmail = sendEmailOnNewLunch,
+                CreateReminder = createReminderOnLunchReservation
+            });
+    }
+
+    /// <summary>
+    /// Function triggered when component is initialized.
+    /// </summary>
+    protected override async Task OnInitializedAsync()
+    {
+        var userPreferences = await this.userPreferenceService.GetUserPreferenceAsync();
+
+        showMeetingInCalendar = userPreferences!.ShowMeetings;
+        sendEmailOnNewLunch = userPreferences.SendEmail;
+        createReminderOnLunchReservation = userPreferences.CreateReminder;
+
+        currentUser = await this.userService.GetCurrentUserInfoAsync();
+
+        try
+        {
+            currentUserPhotoStream = await this.userService.GetCurrentUserProfilePhotoAsync();
+
+            if (currentUserPhotoStream is not null)
+            {
+                var dotnetImageStream = new DotNetStreamReference(currentUserPhotoStream);
+                await JS.InvokeVoidAsync("setImage", "userProfilePic", dotnetImageStream);
+            }
+
+        }
+        catch (ODataError)
+        {
+            currentUserPhotoStream = new MemoryStream();
+
+            if (currentUser is not null)
+            {
+                await JS.InvokeVoidAsync("setImageSource", "userProfilePic", $"https://api.dicebear.com/6.x/initials/svg?seed={currentUser.DisplayName}");
+            }
+            else
+            {
+                await JS.InvokeVoidAsync("setImageSource", "userProfilePic", $"https://api.dicebear.com/6.x/identicon/svg");
+            }
+        }
+    }
+}

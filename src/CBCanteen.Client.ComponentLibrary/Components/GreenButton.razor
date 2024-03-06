@@ -1,0 +1,24 @@
+﻿<button @onclick="OnClickCallback" class="rounded-lg border-2 border-[#6EC700] bg-[#6EC700] bg-opacity-25 text-[#6EC700] font-semibold @StyleClass" disabled=@IsDisabled>@Text</button>
+
+@code {
+    /// <summary>
+    /// The text to display in the button.
+    /// </summary>
+    [Parameter]
+    public string Text { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The class string used to style the button.
+    /// </summary>
+    [Parameter]
+    public string StyleClass { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The callback executed when the button is clicked.
+    /// </summary>
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnClickCallback { get; set; }
+
+    [Parameter]
+    public bool IsDisabled { get; set; } = false;
+}

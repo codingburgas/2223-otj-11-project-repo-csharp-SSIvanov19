@@ -1,0 +1,162 @@
+﻿@using CBCanteen.Client.Services.Contracts;
+@using CBCanteen.Client.ComponentLibrary.Components;
+@using Microsoft.Graph.Models;
+@using Microsoft.Graph.Models.ODataErrors;
+@using Microsoft.JSInterop;
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+
+@inject IAuthorizationService AuthorizationService
+@inject IJSRuntime JS
+@inject IUserService userService
+@inject NavigationManager Navigation
+
+<nav>
+    <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+        <div class="relative flex h-16 items-center justify-between">
+            <div class="flex flex-1 items-stretch justify-start">
+                <div class="flex flex-shrink-0 items-center">
+                    <img @onclick="NavigateToHomePage" class="block h-8 w-auto cursor-pointer" src="https://yt3.googleusercontent.com/ytc/AGIKgqMHBqYzGIWh_Fm5doEqZb9njyglBN-ZHUO99iPfOQ=s900-c-k-c0x00ffffff-no-rj" alt="CB-Canteen">
+                </div>
+            </div>
+            <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+                @if (isUserAdmin)
+                {
+                    <GrayButton Text="Админ" StyleClass="px-2 mr-2" OnClickCallback="NavigateToAdminPage"/>
+                }
+                <div class="relative ml-3">
+                    <div>
+                        <button id="user-menu-button" tabindex="0" class="flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800" aria-expanded="false" aria-haspopup="true">
+                            <span class="sr-only">Open user menu</span>
+                            <img class="@((currentUserPhotoStream is not null ? "h-8 w-8 rounded-full" : "hidden"))" id="userAvatar" alt="User profile">
+                            @if (currentUserPhotoStream is null)
+                            {
+                                <div class="h-8 w-8 rounded-full animate-pulse bg-slate-200"></div>
+                            }
+                        </button>
+                    </div>
+
+                    <div id="navbarDropdown" class="absolute right-0 z-10 mt-2 w-fit origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none hidden" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button">
+                        @if (currentUser is not null)
+                        {
+                            <p class="block px-4 pt-2 text text-xl text-[#474747]">@currentUser!.DisplayName</p>
+                            <p class="block px-4 pb-2 text text-lg font-light text-[#474747]">@currentUser!.Mail</p>
+                        }
+                        else
+                        {
+                            <div class="animate-pulse h-2 bg-slate-200 rounded w-80 mx-4 my-2 h-6"></div>
+                            <div class="animate-pulse h-2 bg-slate-200 rounded w-80 mx-4 my-2 h-6"></div>
+                        }
+                        <hr />
+                        
+                        <button @onmousedown="NavigateToSettingsPage" class="block text px-4 py-2 text-lg text-[#434343]" role="menuitem">Настройки на профила</button>
+                        <hr />
+                        <a href="#" class="block text px-4 py-2 text-lg text-[#434343]" role="menuitem">Изход</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+@code {
+    /// <summary>
+    /// The current user object.
+    /// </summary>
+    private User? currentUser;
+
+    /// <summary>
+    /// The current user's profile photo.
+    /// </summary>
+    private Stream? currentUserPhotoStream;
+    
+    /// <summary>
+    /// Whether the current user is an Admin or not.
+    /// </summary>
+    private bool isUserAdmin = false;
+
+    /// <summary>
+    /// The current authentication state provided by the 'CascadingParameter' attribute.
+    /// </summary>
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationState { get; set; }
+
+    /// <summary>
+    /// Called when the component is initialized. Initializes the user and profile photo.
+    /// </summary>
+    protected override async Task OnInitializedAsync()
+    {
+        if (authenticationState is not null)
+        {
+            var authState = await authenticationState;
+            var user = authState?.User;
+
+            if (user is not null)
+            {
+                isUserAdmin = user.IsInRole("Admin");
+            }
+        }
+
+        currentUser = await userService.GetCurrentUserInfoAsync();
+
+        try
+        {
+            currentUserPhotoStream = await this.userService.GetCurrentUserProfilePhotoAsync();
+
+            if (currentUserPhotoStream is not null)
+            {
+                var dotnetImageStream = new DotNetStreamReference(currentUserPhotoStream);
+                await JS.InvokeVoidAsync("setImage", "userAvatar", dotnetImageStream);
+            }
+
+        }
+        catch (ODataError)
+        {
+            currentUserPhotoStream = new MemoryStream();
+
+            if (currentUser is not null)
+            {
+                await JS.InvokeVoidAsync("setImageSource", "userAvatar", $"https://api.dicebear.com/6.x/initials/svg?seed={currentUser.DisplayName}");
+            }
+            else
+            {
+                await JS.InvokeVoidAsync("setImageSource", "userAvatar", $"https://api.dicebear.com/6.x/identicon/svg");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Called after the component is rendered. Initializes the navbar.
+    /// </summary>
+    protected async override void OnAfterRender(bool firstRender)
+    {
+        if(firstRender)
+        {
+            await JS.InvokeVoidAsync("initNavbar");
+        }
+    }
+
+    /// <summary>
+    /// Redirects to the settings page.
+    /// </summary>
+    private void NavigateToSettingsPage()
+    {
+        Navigation.NavigateTo("/settings");
+    }
+
+    /// <summary>
+    /// Redirects to the Admin page.
+    /// </summary>
+    private void NavigateToAdminPage()
+    {
+        Navigation.NavigateTo("/admin");
+    }
+
+    /// <summary>
+    /// Redirects to the home page.
+    /// </summary>
+    private void NavigateToHomePage()
+    {
+        Navigation.NavigateTo("/");
+    }
+}

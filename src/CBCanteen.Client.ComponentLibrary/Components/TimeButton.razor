@@ -1,0 +1,17 @@
+<svg class="@StyleClass" @onclick="OnClickCallback" width="70" height="70" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M35 0C17 0 0 15.5 0 35C0 54.5 15.5 70 35 70C54.5 70 70 53 70 34.5C70 15.5 53 0 35 0ZM35 3C52.7205 3 67 17.2795 67 35C67 52.7205 52.7205 67 35 67C17.2795 67 3 52.7205 3 35C3 17.2795 17.2795 3 35 3ZM31 11V36.6562L48.1719 53.8281L51 51L34 35V11H31Z" fill="#94A3B8"/>
+</svg>
+
+@code {
+    /// <summary>
+    /// The CSS class to be used for styling the button.
+    /// </summary>
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnClickCallback { get; set; }
+
+    /// <summary>
+    /// The callback function to execute when the button is clicked.
+    /// </summary>
+    [Parameter]
+    public string StyleClass { get; set; } = string.Empty;
+}

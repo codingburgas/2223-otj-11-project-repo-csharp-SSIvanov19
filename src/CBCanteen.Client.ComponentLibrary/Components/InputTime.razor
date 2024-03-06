@@ -1,0 +1,35 @@
+﻿<div class="p-2 w-fit rounded-2xl border-2 border-[#94A3B8] @StyleCalss">
+    <h1 class="w-fit mt-[-22px] ml-[6px] bg-white pr-[2px] pl-[1px] text-[#94A3B8]">@Text</h1>
+    <input required type="time" class="outline-none w-fit border-none bg-transparent text-[#94A3B8] px-1" @bind-value=@BindingValue />
+</div>
+
+@code {
+    /// <summary>
+    /// The text to display next to the input field.
+    /// </summary>
+    [Parameter]
+    public string Text { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The class string used to style the input field.
+    /// </summary>
+    [Parameter]
+    public string StyleCalss { get; set; } = string.Empty;
+
+    [Parameter]
+    public TimeOnly BindingValue
+    {
+        get => this.value;
+        set
+        {
+            if (this.value == value) return;
+            this.value = value;
+            BindingValueChanged.InvokeAsync(value);
+        }
+    }
+
+    [Parameter]
+    public EventCallback<TimeOnly> BindingValueChanged { get; set; }
+
+    private TimeOnly value;
+}
