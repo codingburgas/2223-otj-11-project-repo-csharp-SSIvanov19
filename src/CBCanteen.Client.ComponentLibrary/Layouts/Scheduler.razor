@@ -11,18 +11,18 @@
 @using Syncfusion.Blazor.Schedule
 @using System.Globalization;
 
-@inject ICalendarService calendarService
-@inject IMapper mapper
-@inject IUserPreferenceService userPreferenceService
-@inject ILunchHourService lunchHourService
-@inject IDailyOrderService dailyOrderService
+@inject ICalendarService CalendarService
+@inject IMapper Mapper
+@inject IUserPreferenceService UserPreferenceService
+@inject ILunchHourService LunchHourService
+@inject IDailyOrderService DailyOrderService
 @inject NavigationManager Navigator
 
-<SfSchedule @ref=@scheduleObj TValue=CalendarEvent Readonly="true" Height="calc(100vh - 65px)" @bind-SelectedDate="@CurrentDate">
+<SfSchedule @ref="@scheduleObj" TValue="CalendarEvent" Readonly="true" Height="calc(100vh - 65px)" @bind-SelectedDate="@currentDate">
     <ScheduleViews>
         <ScheduleView Option="View.WorkWeek" EnableVirtualMask="true"/>
     </ScheduleViews>
-    <ScheduleEvents TValue="CalendarEvent" ActionCompleted="OnActionCompleted" OnEventClick=@OnEventClicked  />
+    <ScheduleEvents TValue="CalendarEvent" ActionCompleted="OnActionCompleted" OnEventClick="@OnEventClicked"  />
     <ScheduleEventSettings DataSource="DataSource">
     </ScheduleEventSettings>
 </SfSchedule>
@@ -47,7 +47,7 @@
     /// <summary>
     /// 
     /// </summary>
-    private DateTime CurrentDate = DateTime.Now;
+    private DateTime currentDate = DateTime.Now;
 
     /// <summary>
     /// 
@@ -62,26 +62,27 @@
     ///<summary>
     /// Method called during initialization.
     ///</summary>
-    protected async override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
-        this.userPreferences = await this.userPreferenceService.GetUserPreferenceAsync();
-        this.userLunchTime = await this.lunchHourService.GetUserLunchHours();
+        this.userPreferences = await this.UserPreferenceService.GetUserPreferenceAsync();
+        this.userLunchTime = await this.LunchHourService.GetUserLunchHours();
 
         if (this.userPreferences is null || this.userLunchTime is null)
         {
             this.Navigator.NavigateTo("/firsttimesetup");
+            return;
         }
 
         var startDate = GetWeekStart(DateTime.Now);
 
-        if (this.userPreferences!.ShowMeetings)
+        if (this.userPreferences.ShowMeetings)
         {   
-            var events = await calendarService.GetEventsBetweenTwoDatesAsync(startDate, startDate.AddDays(5));
+            var events = await CalendarService.GetEventsBetweenTwoDatesAsync(startDate, startDate.AddDays(5));
 
             this.AddEventsToDataSource(events);
         }
 
-        var dailyOrders = await dailyOrderService.GetDailyOrderAsync(startDate, startDate.AddDays(5));
+        var dailyOrders = await DailyOrderService.GetDailyOrderAsync(startDate, startDate.AddDays(5));
 
         var outputEvents = this.GenerateOutputEvents(startDate, dailyOrders);
 
@@ -124,14 +125,14 @@
     {
         if (args.ActionType == ActionType.DateNavigate)
         {
-            var startDate = GetWeekStart(CurrentDate);
+            var startDate = GetWeekStart(currentDate);
 
             if (this.DataSource.FirstOrDefault(e => e.Subject == $"Обяд за {startDate: d MMM yyyy}") is not null)
             {
                 return;
             }
 
-            var dailyOrders = await dailyOrderService.GetDailyOrderAsync(startDate, startDate.AddDays(5));
+            var dailyOrders = await DailyOrderService.GetDailyOrderAsync(startDate, startDate.AddDays(5));
 
             var outputEvents = this.GenerateOutputEvents(startDate, dailyOrders);
 
@@ -139,7 +140,7 @@
 
             if (this.userPreferences!.ShowMeetings)
             {   
-                var events = await calendarService.GetEventsBetweenTwoDatesAsync(startDate, startDate.AddDays(5));
+                var events = await CalendarService.GetEventsBetweenTwoDatesAsync(startDate, startDate.AddDays(5));
 
                 this.AddEventsToDataSource(events);
             }
@@ -225,14 +226,14 @@
         {
             foreach (var @event in events.Value)
             {
-                var calEvent = this.mapper.Map<CalendarEvent>(@event);
+                var calEvent = this.Mapper.Map<CalendarEvent>(@event);
 
                 if (this.DataSource.FirstOrDefault(e => e.StartTime == calEvent.StartTime && e.Subject == calEvent.Subject) is not null)
                 {
                     continue;
                 }
 
-                this.DataSource.Add(this.mapper.Map<CalendarEvent>(@event));
+                this.DataSource.Add(this.Mapper.Map<CalendarEvent>(@event));
             }
         }
     }

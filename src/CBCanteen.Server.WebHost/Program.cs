@@ -21,7 +21,7 @@ builder.Services.AddDbContext<ApplicationDBContext>(options =>
     options.UseSqlServer(configuration.GetConnectionString("DefaultConnection") !, o =>
     {
         o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
-        o.MigrationsAssembly(typeof(Program).Assembly.FullName);
+        o.MigrationsAssembly(typeof(ApplicationDBContext).Assembly.FullName);
     });
     options.EnableDetailedErrors();
     options.EnableSensitiveDataLogging();

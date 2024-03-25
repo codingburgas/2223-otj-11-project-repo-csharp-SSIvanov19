@@ -24,14 +24,13 @@ internal class CalendarService : ICalendarService
     }
 
     /// <inheritdoc/>
-    public async Task<EventCollectionResponse?> GetEventsBetweenTwoDatesAsync(DateTime StartDate, DateTime EndDate)
+    public async Task<EventCollectionResponse?> GetEventsBetweenTwoDatesAsync(DateTime startDate, DateTime endDate)
     {
         return await this.graphClient.Me.CalendarView.GetAsync((requestConfiguration) =>
         {
-            /// <inheritdoc/>
             requestConfiguration.QueryParameters.Top = 100;
-            requestConfiguration.QueryParameters.StartDateTime = StartDate.ToString("o");
-            requestConfiguration.QueryParameters.EndDateTime = EndDate.ToString("o");
+            requestConfiguration.QueryParameters.StartDateTime = startDate.ToString("o");
+            requestConfiguration.QueryParameters.EndDateTime = endDate.ToString("o");
             requestConfiguration.QueryParameters.Select = new string[] { "subject", "attendees", "start", "end" };
         });
     }

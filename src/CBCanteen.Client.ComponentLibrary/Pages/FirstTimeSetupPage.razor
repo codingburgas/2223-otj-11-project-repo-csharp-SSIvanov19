@@ -2,8 +2,8 @@
 @using CBCanteen.Client.Services.Contracts;
 @using CBCanteen.Shared.Models.User;
 
-@inject IUserPreferenceService userPreferenceService
-@inject ILunchHourService lunchHourService
+@inject IUserPreferenceService UserPreferenceService
+@inject ILunchHourService LunchHourService
 @inject NavigationManager Navigator
 
 <div class="mx-24 mt-6 justify-start flex flex-col space-y-4">
@@ -12,35 +12,35 @@
         <h3 class="text-2xl text">Изглежда си тука за първи път, нека да направим няколко настройки:</h3>
     </div>
     <div>
-        <Checkbox IsChecked=@showMeetingInCalendar
-                  OnButtonChange=@UpdateShowMeetingInCalendar
+        <Checkbox IsChecked="@showMeetingInCalendar"
+                  OnButtonChange="@UpdateShowMeetingInCalendar"
                   Text="Показване на срещи в календара"
                   TooltipText="Ако тази опция е изключена, във вашия календар няма да се показват вашите срещи. " />
-        <Checkbox IsChecked=@sendEmailOnNewLunch
-                  OnButtonChange=@UpdateSendEmailOnNewLunch
+        <Checkbox IsChecked="@sendEmailOnNewLunch"
+                  OnButtonChange="@UpdateSendEmailOnNewLunch"
                   Text="Изпращане на имейл при нов обяд"
                   TooltipText="Ако тази опция е включена, ще получите имейл, когато може да запазите обяд." />
-        <Checkbox IsChecked=@createReminderOnLunchReservation
-                  OnButtonChange=@UpdateCreateReminderOnLunchReservation
+        <Checkbox IsChecked="@createReminderOnLunchReservation"
+                  OnButtonChange="@UpdateCreateReminderOnLunchReservation"
                   Text="Създаване на напомняне при резервиране на обяд"
                   TooltipText="Ако тази опция е включена, когато запазите обяд, автоматично ще се създаде напомняне." />
     </div>
     <div>
         <h1 class="text text-[#474747] text-2xl font-medium mt-2">Кога е вашият обяд?</h1>
 
-        <Checkbox OnButtonChange="UpdatehasLunchOnSameTimeButtonState"
+        <Checkbox OnButtonChange="newState => UpdateHasLunchOnSameTimeButtonState(newState)"
                   IsChecked="hasLunchOnSameTime"
                   StyleClass="mt-4"
-                  Text="Имам едно и също време за обяд всеки ден" />
+                  Text="Имам едно и също време за обяд всеки ден"></Checkbox>
 
         @if (hasLunchOnSameTime)
         {
             <div class="flex mt-6 flex-row space-x-4">
                 <InputTime Text="Начало"
-                           BindingValue=@MondayStartTime
+                           BindingValue=@mondayStartTime
                            BindingValueChanged=@UpdateMondayStartTime />
                 <InputTime Text="Край"
-                           BindingValue=@MondayEndTime
+                           BindingValue=@mondayEndTime
                            BindingValueChanged=@UpdateMondayEndTime />
             </div>
         }
@@ -51,50 +51,50 @@
                     <p class="text text-xl text-[#94A3B8]">Понеделник</p>
                 </div>
                 <InputTime Text="Начало"
-                           BindingValue=@MondayStartTime
+                           BindingValue=@mondayStartTime
                            BindingValueChanged=@UpdateMondayStartTime />
                 <InputTime Text="Край"
-                           BindingValue=@MondayEndTime
+                           BindingValue=@mondayEndTime
                            BindingValueChanged=@UpdateMondayEndTime />
                 <div class="flex items-center justify-center justify-self-start">
                     <p class="text text-xl text-[#94A3B8]">Вторник</p>
                 </div>
                 <InputTime Text="Начало"
-                           BindingValue=@TuesdayStartTime
+                           BindingValue=@tuesdayStartTime
                            BindingValueChanged=@UpdateTuesdayStartTime />
                 <InputTime Text="Край"
-                           BindingValue=@TuesdayEndTime
+                           BindingValue=@tuesdayEndTime
                            BindingValueChanged=@UpdateTuesdayEndTime />
                 <div class="flex items-center justify-center justify-self-start">
                     <p class="text text-xl text-[#94A3B8]">Сряда</p>
                 </div>
                 <InputTime Text="Начало"
-                           BindingValue=@WednesdayStartTime
+                           BindingValue=@wednesdayStartTime
                            BindingValueChanged=@UpdateWednesdayStartTime />
                 <InputTime Text="Край"
-                           BindingValue=@WednesdayEndTime
+                           BindingValue=@wednesdayEndTime
                            BindingValueChanged=@UpdateWednesdayEndTime />
                 <div class="flex items-center justify-center justify-self-start">
                     <p class="text text-xl text-[#94A3B8]">Четвъртък</p>
                 </div>
                 <InputTime Text="Начало"
-                           BindingValue=@ThursdayStartTime
+                           BindingValue=@thursdayStartTime
                            BindingValueChanged=@UpdateThursdayStartTime />
                 <InputTime Text="Край"
-                           BindingValue=@ThursdayEndTime
+                           BindingValue=@thursdayEndTime
                            BindingValueChanged=@UpdateThursdayEndTime />
                 <div class="flex items-center justify-center justify-self-start">
                     <p class="text text-xl text-[#94A3B8]">Петък</p>
                 </div>
                 <InputTime Text="Начало"
-                           BindingValue=@FridayStartTime
+                           BindingValue=@fridayStartTime
                            BindingValueChanged=@UpdateFridayStartTime />
                 <InputTime Text="Край"
-                           BindingValue=@FridayEndTime
+                           BindingValue=@fridayEndTime
                            BindingValueChanged=@UpdateFridayEndTime />
             </div>
         }
-        <GreenButton Text="Запази" StyleClass="mr-2 flex items-center justify-center py-1 px-4 mt-6" OnClickCallback=@(async e => await SubmitInfo()) />
+        <GreenButton Text="Запази" StyleClass="mr-2 flex items-center justify-center py-1 px-4 mt-6" OnClickCallback="@(async _ => await SubmitInfo())" />
     </div>
 </div>
 
@@ -105,26 +105,26 @@
     private bool sendEmailOnNewLunch = true;
     private bool createReminderOnLunchReservation = true;
 
-    private TimeOnly MondayStartTime;
-    private TimeOnly MondayEndTime;
+    private TimeOnly mondayStartTime;
+    private TimeOnly mondayEndTime;
 
-    private TimeOnly TuesdayStartTime;
-    private TimeOnly TuesdayEndTime;
+    private TimeOnly tuesdayStartTime;
+    private TimeOnly tuesdayEndTime;
 
-    private TimeOnly WednesdayStartTime;
-    private TimeOnly WednesdayEndTime;
+    private TimeOnly wednesdayStartTime;
+    private TimeOnly wednesdayEndTime;
 
-    private TimeOnly ThursdayStartTime;
-    private TimeOnly ThursdayEndTime;
+    private TimeOnly thursdayStartTime;
+    private TimeOnly thursdayEndTime;
 
-    private TimeOnly FridayStartTime;
-    private TimeOnly FridayEndTime;
+    private TimeOnly fridayStartTime;
+    private TimeOnly fridayEndTime;
 
     /// <summary>
     /// Updates the state of the button.
     /// </summary>
     /// <param name="newState">New state</param>
-    private void UpdatehasLunchOnSameTimeButtonState(bool newState)
+    private void UpdateHasLunchOnSameTimeButtonState(bool newState)
     {
         hasLunchOnSameTime = newState;
     }
@@ -146,58 +146,58 @@
 
     private void UpdateMondayStartTime(TimeOnly newTime)
     {
-        MondayStartTime = newTime;
+        mondayStartTime = newTime;
     }
 
     private void UpdateMondayEndTime(TimeOnly newTime)
     {
-        MondayEndTime = newTime;
+        mondayEndTime = newTime;
     }
 
     private void UpdateTuesdayStartTime(TimeOnly newTime)
     {
-        TuesdayStartTime = newTime;
+        tuesdayStartTime = newTime;
     }
 
     private void UpdateTuesdayEndTime(TimeOnly newTime)
     {
-        TuesdayEndTime = newTime;
+        tuesdayEndTime = newTime;
     }
 
     private void UpdateWednesdayStartTime(TimeOnly newTime)
     {
-        WednesdayStartTime = newTime;
+        wednesdayStartTime = newTime;
     }
 
     private void UpdateWednesdayEndTime(TimeOnly newTime)
     {
-        WednesdayEndTime = newTime;
+        wednesdayEndTime = newTime;
     }
 
     private void UpdateThursdayStartTime(TimeOnly newTime)
     {
-        ThursdayStartTime = newTime;
+        thursdayStartTime = newTime;
     }
 
     private void UpdateThursdayEndTime(TimeOnly newTime)
     {
-        ThursdayEndTime = newTime;
+        thursdayEndTime = newTime;
     }
 
     private void UpdateFridayStartTime(TimeOnly newTime)
     {
-        FridayStartTime = newTime;
+        fridayStartTime = newTime;
     }
 
     private void UpdateFridayEndTime(TimeOnly newTime)
     {
-        FridayEndTime = newTime;
+        fridayEndTime = newTime;
     }
 
-    protected async override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
-        if (await this.userPreferenceService.GetUserPreferenceAsync() is not null &&
-            await this.lunchHourService.GetUserLunchHours() is not null)
+        if (await this.UserPreferenceService.GetUserPreferenceAsync() is not null &&
+            await this.LunchHourService.GetUserLunchHours() is not null)
         {
             this.Navigator.NavigateTo("/");
         }
@@ -216,20 +216,20 @@
         var userLunchTime = new UserLunchHoursIM
         {
             HasSameLunchHours = hasLunchOnSameTime,
-            MondayLunchTimeStart = MondayStartTime,
-            MondayLunchTimeEnd = MondayEndTime,
-            TuesdayLunchTimeStart = TuesdayStartTime,
-            TuesdayLunchTimeEnd = TuesdayEndTime,
-            WednesdayLunchTimeStart = WednesdayStartTime,
-            WednesdayLunchTimeEnd = WednesdayEndTime,
-            ThursdayLunchTimeStart = ThursdayStartTime,
-            ThursdayLunchTimeEnd = ThursdayEndTime,
-            FridayLunchTimeStart = FridayStartTime,
-            FridayLunchTimeEnd = FridayEndTime
+            MondayLunchTimeStart = mondayStartTime,
+            MondayLunchTimeEnd = mondayEndTime,
+            TuesdayLunchTimeStart = tuesdayStartTime,
+            TuesdayLunchTimeEnd = tuesdayEndTime,
+            WednesdayLunchTimeStart = wednesdayStartTime,
+            WednesdayLunchTimeEnd = wednesdayEndTime,
+            ThursdayLunchTimeStart = thursdayStartTime,
+            ThursdayLunchTimeEnd = thursdayEndTime,
+            FridayLunchTimeStart = fridayStartTime,
+            FridayLunchTimeEnd = fridayEndTime
         };
 
-        await this.userPreferenceService.SetUserPreferenceAsync(userPreference);
-        await this.lunchHourService.SetUserLunchHours(userLunchTime);
+        await this.UserPreferenceService.SetUserPreferenceAsync(userPreference);
+        await this.LunchHourService.SetUserLunchHours(userLunchTime);
 
         this.Navigator.NavigateTo("/");
     }
