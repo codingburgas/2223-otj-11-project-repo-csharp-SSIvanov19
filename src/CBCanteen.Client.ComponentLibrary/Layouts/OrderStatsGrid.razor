@@ -54,4 +54,10 @@
     {
         Orders = await statsService.GetOrdersInRangeAsync(DateOnly.FromDateTime(StartTime), DateOnly.FromDateTime(EndTime));
     }
+
+    [Parameter]
+    public EventCallback<DateTime> StartTimeChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<DateTime> EndTimeChanged { get; set; }
 }

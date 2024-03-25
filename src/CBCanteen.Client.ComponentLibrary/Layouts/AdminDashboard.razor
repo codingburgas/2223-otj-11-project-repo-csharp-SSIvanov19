@@ -1,18 +1,21 @@
 ﻿@using CBCanteen.Client.ComponentLibrary.Components
+@using Syncfusion.Blazor.Calendars
 @using Syncfusion.Blazor.Navigations
 @using Syncfusion.Blazor;
 @inject NavigationManager Navigator
 
 <div class="mx-24 mt-6 justify-between flex">
     <div class="flex flex space-x-4">
-        <DatePicker Text="Начало на справката" Value=@StarTime />
-        <DatePicker Text="Край на справката" Value=@EndTime />
+        <DatePicker Text="Начало на справката" @bind-Value=@StarTime />
+        <DatePicker Text="Край на справката" @bind-Value=@EndTime />
     </div>
     <div class="flex flex space-x-4">
         <GrayButton Text="Настройки" StyleClass="px-4 py-2 h-min" OnClickCallback="NavigateToSettings" />
         <GrayButton Text="Добави меню" StyleClass="px-4 py-2 h-min" OnClickCallback="NavigateToAddMenu" />
     </div>
 </div>
+@StarTime
+@EndTime
 <div class="mx-24 mt-6">
     <SfTab>
         <TabAnimationSettings>
@@ -25,7 +28,7 @@
                     <TabHeader Text="Ястия"></TabHeader>
                 </ChildContent>
                 <ContentTemplate>
-                    <MealStatsGrid StartTime=@StarTime EndTime=@EndTime />    
+                    <MealStatsGrid @bind-StartTime=@StarTime @bind-EndTime=@EndTime />
                 </ContentTemplate>
             </TabItem>
             <TabItem>
@@ -33,7 +36,7 @@
                     <TabHeader Text="Хора"></TabHeader>
                 </ChildContent>
                 <ContentTemplate>
-                    <OrderStatsGrid StartTime=@StarTime EndTime=@EndTime /> 
+                    <OrderStatsGrid @bind-StartTime=@StarTime @bind-EndTime=@EndTime />
                 </ContentTemplate>
             </TabItem>
         </TabItems>

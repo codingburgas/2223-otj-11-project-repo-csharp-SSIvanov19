@@ -42,4 +42,15 @@
     {
         Meals = await statsService.GetMealInRangeAsync(DateOnly.FromDateTime(StartTime), DateOnly.FromDateTime(EndTime));
     }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Meals = await statsService.GetMealInRangeAsync(DateOnly.FromDateTime(StartTime), DateOnly.FromDateTime(EndTime));
+    }
+
+    [Parameter]
+    public EventCallback<DateTime> StartTimeChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<DateTime> EndTimeChanged { get; set; }
 }

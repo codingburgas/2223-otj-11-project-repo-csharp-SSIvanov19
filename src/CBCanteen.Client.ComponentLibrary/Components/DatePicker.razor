@@ -2,7 +2,9 @@
 
 <div class="flex flex-col">
     <label>@Text</label>
-    <SfDatePicker TValue="DateTime?" Placeholder="@Text" Value=@Value></SfDatePicker>
+    <SfDatePicker TValue="DateTime" Placeholder="@Text" @bind-Value=@value>
+        <DatePickerEvents TValue="DateTime" ValueChange=@OnValueChanged></DatePickerEvents>
+    </SfDatePicker>
 </div>
 
 @code {
@@ -14,4 +16,25 @@
     /// </summary>
     [Parameter]
     public string Text { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback<DateTime> ValueChanged { get; set; }
+
+    private DateTime value;
+
+    protected override void OnInitialized()
+    {
+        value = Value;
+
+        base.OnInitialized();
+    }
+
+    private async void OnValueChanged(ChangedEventArgs<DateTime> e)
+    {
+        value = e.Value;
+
+        Console.WriteLine(value);
+
+        await ValueChanged.InvokeAsync(value);
+    }
 }

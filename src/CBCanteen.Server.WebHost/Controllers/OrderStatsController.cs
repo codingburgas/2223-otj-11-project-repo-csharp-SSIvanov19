@@ -49,7 +49,7 @@ public class OrderStatsController : ControllerBase
     public async Task<ActionResult<List<MealStats>>> GetMealStatsAsync(DateOnly startTime, DateOnly endTime)
     {
         this.logger.LogInformation($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) is trying to get meal stats between {startTime} and {endTime}.");
-        
+
         if (startTime > endTime)
         {
             this.logger.LogWarning($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) tried to get meal stats between {startTime} and {endTime} but the start time was after the end time.");
@@ -61,8 +61,8 @@ public class OrderStatsController : ControllerBase
 
         do
         {
-            var menus = await this.menuOrderService.GetMenuOrdersBetweenDates(startTime.ToDateTime(TimeOnly.MinValue), endTime.ToDateTime(TimeOnly.MinValue));
-            var meals = await this.mealOrderService.GetMealOrdersBetweenDates(startTime.ToDateTime(TimeOnly.MinValue), endTime.ToDateTime(TimeOnly.MinValue));
+            var menus = await this.menuOrderService.GetMenuOrdersBetweenDates(startTime.ToDateTime(TimeOnly.MinValue), startTime.ToDateTime(TimeOnly.MinValue));
+            var meals = await this.mealOrderService.GetMealOrdersBetweenDates(startTime.ToDateTime(TimeOnly.MinValue), startTime.ToDateTime(TimeOnly.MinValue));
 
             returnVal.Add(new MealStats()
             {
@@ -70,8 +70,10 @@ public class OrderStatsController : ControllerBase
                 Meals = meals.Select(m => m.Meal).ToList(),
                 Menus = menus.Select(m => m.Menu).ToList(),
             });
-        }
-        while (startTime != endTime);
+
+
+            startTime = startTime.AddDays(1);
+        } while (startTime <= endTime);
 
         this.logger.LogInformation($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) successfully got meal stats between {startTime} and {endTime}.");
 
@@ -88,7 +90,7 @@ public class OrderStatsController : ControllerBase
     public async Task<ActionResult<List<OrderStats>>> GetOrderStatsAsync(DateOnly startTime, DateOnly endTime)
     {
         this.logger.LogInformation($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) is trying to get order stats between {startTime} and {endTime}.");
-        
+
         if (startTime > endTime)
         {
             this.logger.LogWarning($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) tried to get order stats between {startTime} and {endTime} but the start time was after the end time.");
@@ -101,8 +103,8 @@ public class OrderStatsController : ControllerBase
         do
         {
             List<UserOrderStats> orderStats = new ();
-            var menus = await this.menuOrderService.GetMenuOrdersBetweenDates(startTime.ToDateTime(TimeOnly.MinValue), endTime.ToDateTime(TimeOnly.MinValue));
-            var meals = await this.mealOrderService.GetMealOrdersBetweenDates(startTime.ToDateTime(TimeOnly.MinValue), endTime.ToDateTime(TimeOnly.MinValue));
+            var menus = await this.menuOrderService.GetMenuOrdersBetweenDates(startTime.ToDateTime(TimeOnly.MinValue), startTime.ToDateTime(TimeOnly.MinValue));
+            var meals = await this.mealOrderService.GetMealOrdersBetweenDates(startTime.ToDateTime(TimeOnly.MinValue), startTime.ToDateTime(TimeOnly.MinValue));
 
             foreach (var menu in menus)
             {
@@ -141,8 +143,9 @@ public class OrderStatsController : ControllerBase
                 Date = startTime,
                 UserOrders = orderStats,
             });
-        }
-        while (startTime != endTime);
+
+            startTime = startTime.AddDays(1);
+        } while (startTime <= endTime);
 
         this.logger.LogInformation($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) successfully got order stats between {startTime} and {endTime}.");
 
