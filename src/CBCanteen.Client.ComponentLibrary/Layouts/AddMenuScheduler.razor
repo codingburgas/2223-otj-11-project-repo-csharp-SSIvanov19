@@ -31,12 +31,11 @@
     /// </summary>
     protected async override Task OnInitializedAsync()
     {
-        Console.WriteLine("Slava na Preslava");
         var startDate = GetWeekStart(CurrentDate);
 
         var dailyOrders = await dailyOrderService.GetDailyOrderAsync(startDate, startDate.AddDays(5));
 
-        var outputEvents = Enumerable.Range(0, 5)
+        var outputEvents = Enumerable.Range(0, 6)
             .Select(i => startDate.AddDays(i))
             .Select(date =>
             {
@@ -109,7 +108,7 @@
 
             var dailyOrders = await dailyOrderService.GetDailyOrderAsync(startDate, startDate.AddDays(5));
 
-            var outputEvents = Enumerable.Range(0, 5)
+            var outputEvents = Enumerable.Range(0, 6)
                 .Select(i => startDate.AddDays(i))
                 .Select(date =>
                 {

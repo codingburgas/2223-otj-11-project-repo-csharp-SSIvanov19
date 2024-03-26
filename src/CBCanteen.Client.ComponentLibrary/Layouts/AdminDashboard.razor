@@ -5,22 +5,20 @@
 @inject NavigationManager Navigator
 
 <div class="mx-24 mt-6 justify-between flex">
-    <div class="flex flex space-x-4">
-        <DatePicker Text="Начало на справката" @bind-Value=@StarTime />
-        <DatePicker Text="Край на справката" @bind-Value=@EndTime />
+    <div class="flex space-x-4">
+        <DatePicker Text="Начало на справката" @bind-Value="@StarTime" />
+        <DatePicker Text="Край на справката" @bind-Value="@EndTime" />
     </div>
-    <div class="flex flex space-x-4">
+    <div class="flex space-x-4">
         <GrayButton Text="Настройки" StyleClass="px-4 py-2 h-min" OnClickCallback="NavigateToSettings" />
         <GrayButton Text="Добави меню" StyleClass="px-4 py-2 h-min" OnClickCallback="NavigateToAddMenu" />
     </div>
 </div>
-@StarTime
-@EndTime
 <div class="mx-24 mt-6">
     <SfTab>
         <TabAnimationSettings>
-            <TabAnimationPrevious Effect=AnimationEffect.None></TabAnimationPrevious>
-            <TabAnimationNext Effect=AnimationEffect.None></TabAnimationNext>
+            <TabAnimationPrevious Effect="AnimationEffect.None"></TabAnimationPrevious>
+            <TabAnimationNext Effect="AnimationEffect.None"></TabAnimationNext>
         </TabAnimationSettings>
         <TabItems>
             <TabItem>
@@ -28,7 +26,7 @@
                     <TabHeader Text="Ястия"></TabHeader>
                 </ChildContent>
                 <ContentTemplate>
-                    <MealStatsGrid @bind-StartTime=@StarTime @bind-EndTime=@EndTime />
+                    <MealStatsGrid @bind-StartTime="@StarTime" @bind-EndTime="@EndTime" />
                 </ContentTemplate>
             </TabItem>
             <TabItem>
@@ -36,7 +34,7 @@
                     <TabHeader Text="Хора"></TabHeader>
                 </ChildContent>
                 <ContentTemplate>
-                    <OrderStatsGrid @bind-StartTime=@StarTime @bind-EndTime=@EndTime />
+                    <OrderStatsGrid @bind-StartTime="@StarTime" @bind-EndTime="@EndTime" />
                 </ContentTemplate>
             </TabItem>
         </TabItems>
@@ -45,16 +43,16 @@
 
 
 @code {
-    public DateTime StarTime { get; set; } = DateTime.Now;
+    private DateTime StarTime { get; set; } = DateTime.Now;
 
-    public DateTime EndTime { get; set; } = DateTime.Now;
+    private DateTime EndTime { get; set; } = DateTime.Now;
 
     /// <summary>
     /// Navigates to the AddMenu page.
     /// </summary>
     private void NavigateToAddMenu()
     {
-        Navigator.NavigateTo("/admin/addmenu");
+        Navigator.NavigateTo("/admin/addMenu");
     }
 
     /// <summary>

@@ -14,7 +14,7 @@ namespace CBCanteen.Server.WebHost.Controllers;
 /// </summary>
 [Route("api/[controller]")]
 [ApiController]
-[Authorize(Roles = "Admin")]
+[Authorize]
 public class DailyOrdersController : ControllerBase
 {
     private readonly IDailyOrderService dailyOrderService;
@@ -51,6 +51,7 @@ public class DailyOrdersController : ControllerBase
     /// <param name="dailyOrderIM">The daily order input model.</param>
     /// <returns>The created daily order.</returns>
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<DailyOrderVM>> CreateDailyOrderAsync([FromBody] DailyOrderIM dailyOrderIM)
     {
         this.logger.LogInformation($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) is trying to create a daily order with menu one id: {dailyOrderIM.MenuOneId} and menu two id: {dailyOrderIM.MenuTwoId}.");
@@ -85,16 +86,18 @@ public class DailyOrdersController : ControllerBase
         {
             var meal = await this.mealService.GetMealByIdAsync(mealId);
 
-            if (meal is null)
+            if (meal is not null)
             {
-                this.logger.LogWarning($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) failed to create a daily order. Reason: Meal with id {mealId} does not exist.");
-
-                return this.BadRequest(
-                    new
-                    {
-                        Message = $"Meal with id {mealId} does not exist.",
-                    });
+                continue;
             }
+
+            this.logger.LogWarning($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) failed to create a daily order. Reason: Meal with id {mealId} does not exist.");
+
+            return this.BadRequest(
+                new
+                {
+                    Message = $"Meal with id {mealId} does not exist.",
+                });
         }
 
         var dailyOrder = await this.dailyOrderService.GenerateAndSaveDailyOrderInfoAsync(dailyOrderIM);
@@ -110,6 +113,7 @@ public class DailyOrdersController : ControllerBase
     /// <param name="dailyOrderId">The ID of the daily order to delete.</param>
     /// <returns>An OK result if deletion is successful.</returns>
     [HttpDelete("{dailyOrderId}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteDailyOrderAsync(string dailyOrderId)
     {
         this.logger.LogInformation($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) is trying to delete daily order with id: {dailyOrderId}.");
@@ -137,7 +141,6 @@ public class DailyOrdersController : ControllerBase
     /// <param name="endDateTime">The end date.</param>
     /// <returns>A list of daily orders between specified dates.</returns>
     [HttpGet]
-    [Authorize]
     public async Task<ActionResult<List<DailyOrderVM>>> GetAllDailyOrdersBetweenDates(DateTime? startDateTime, DateTime? endDateTime)
     {
         this.logger.LogInformation($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) is trying to get all daily orders between dates: {startDateTime} and {endDateTime}.");
@@ -151,6 +154,7 @@ public class DailyOrdersController : ControllerBase
     /// <param name="dailyOrderIM">The daily order input model.</param>
     /// <returns>An OK result if editing is successful.</returns>
     [HttpPut("{dailyOrderId}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> EditDailyOrderAsync(string dailyOrderId, DailyOrderIM dailyOrderIM)
     {
         this.logger.LogInformation($"User with email: {this.currentUser.UserEmail} ({this.currentUser.UserId}) is trying to edit daily order with id: {dailyOrderId}.");

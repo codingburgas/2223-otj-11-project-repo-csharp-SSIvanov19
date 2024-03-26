@@ -70,15 +70,15 @@ internal class DailyOrderService : IDailyOrderService
     }
 
     /// <inheritdoc/>
-    public async Task<DailyOrderVM> GenerateAndSaveDailyOrderInfoAsync(DailyOrderIM dailyOrderIM)
+    public async Task<DailyOrderVM> GenerateAndSaveDailyOrderInfoAsync(DailyOrderIM dailyOrderIm)
     {
-        var dailyOrder = this.mapper.Map<DailyOrder>(dailyOrderIM);
+        var dailyOrder = this.mapper.Map<DailyOrder>(dailyOrderIm);
 
         dailyOrder.Id = Guid.NewGuid().ToString();
 
         var freeConsumptionList = new List<Meal>();
 
-        foreach (var mealId in dailyOrderIM.FreeConsumptionIds)
+        foreach (var mealId in dailyOrderIm.FreeConsumptionIds)
         {
             var meal = await this.context.Meals.FindAsync(mealId);
             freeConsumptionList.Add(meal!);
@@ -127,7 +127,7 @@ internal class DailyOrderService : IDailyOrderService
     /// <inheritdoc/>
     public async Task SaveDailyOrderAsync(DailyOrder dailyOrder)
     {
-        if (this.context.DailyOrders!.Any(o => o.Id == dailyOrder.Id))
+        if (this.context.DailyOrders.Any(o => o.Id == dailyOrder.Id))
         {
             this.context.Update(dailyOrder);
         }

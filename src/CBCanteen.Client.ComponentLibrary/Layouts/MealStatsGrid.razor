@@ -2,29 +2,37 @@
 @using CBCanteen.Shared.Models.Canteen.Meal;
 @using CBCanteen.Shared.Models.Canteen.Menu;
 @using CBCanteen.Shared.Models.Canteen.Stats;
+@using Microsoft.IdentityModel.Tokens
 @using Syncfusion.Blazor.Grids
 
-@inject IStatsService statsService
+@inject IStatsService StatsService
 
 <div class="flex space-y-4 flex-col mt-2">
     @foreach (var meals in Meals)
     {
         <p>@meals.Date</p>
-        <SfGrid DataSource="@meals.Menus" AllowSorting="true">
-            <GridColumns>
-                <GridColumn Field=@nameof(MenuVM.Appetizer) HeaderText="Предястие" Width="150"></GridColumn>
-                <GridColumn Field=@nameof(MenuVM.MainDish) HeaderText="Основно ястие"  Width="130"></GridColumn>
-                <GridColumn Field=@nameof(MenuVM.Dessert) HeaderText="Десерт" Width="120"></GridColumn>
-                <GridColumn Field=@nameof(MenuVM.Price) HeaderText="Цена" Width="120"></GridColumn>
-            </GridColumns>
-        </SfGrid>
-        <SfGrid DataSource="@meals.Meals" AllowSorting="true">
-            <GridColumns>
-                <GridColumn Field=@nameof(MealVM.Name) HeaderText="Име" Width="150"></GridColumn>
-                <GridColumn Field=@nameof(MealVM.Weight) HeaderText="Грамаж" Format="d" Width="130"></GridColumn>
-                <GridColumn Field=@nameof(MealVM.UnitPrice) HeaderText="Цена" Width="120"></GridColumn>
-            </GridColumns>
-        </SfGrid>
+        @if (meals.Menus.IsNullOrEmpty())
+        {
+            <p>Няма направени пръчки за @meals.Date.ToShortDateString()</p>
+        }
+        else
+        {
+            <SfGrid DataSource="@meals.Menus" AllowSorting="true">
+                <GridColumns>
+                    <GridColumn Field=@nameof(MenuVM.Appetizer) HeaderText="Предястие" Width="150"></GridColumn>
+                    <GridColumn Field=@nameof(MenuVM.MainDish) HeaderText="Основно ястие" Width="130"></GridColumn>
+                    <GridColumn Field=@nameof(MenuVM.Dessert) HeaderText="Десерт" Width="120"></GridColumn>
+                    <GridColumn Field=@nameof(MenuVM.Price) HeaderText="Цена" Width="120"></GridColumn>
+                </GridColumns>
+            </SfGrid>
+            <SfGrid DataSource="@meals.Meals" AllowSorting="true">
+                <GridColumns>
+                    <GridColumn Field=@nameof(MealVM.Name) HeaderText="Име" Width="150"></GridColumn>
+                    <GridColumn Field=@nameof(MealVM.Weight) HeaderText="Грамаж" Format="d" Width="130"></GridColumn>
+                    <GridColumn Field=@nameof(MealVM.UnitPrice) HeaderText="Цена" Width="120"></GridColumn>
+                </GridColumns>
+            </SfGrid>
+        }
     }
 </div>
 
@@ -36,21 +44,21 @@
     [Parameter]
     public DateTime EndTime { get; set; }
 
-    public List<MealStats> Meals { get; set; } = new ();
-
-    protected async override Task OnInitializedAsync()
-    {
-        Meals = await statsService.GetMealInRangeAsync(DateOnly.FromDateTime(StartTime), DateOnly.FromDateTime(EndTime));
-    }
-
-    protected override async Task OnParametersSetAsync()
-    {
-        Meals = await statsService.GetMealInRangeAsync(DateOnly.FromDateTime(StartTime), DateOnly.FromDateTime(EndTime));
-    }
-
     [Parameter]
     public EventCallback<DateTime> StartTimeChanged { get; set; }
 
     [Parameter]
     public EventCallback<DateTime> EndTimeChanged { get; set; }
+    
+    private List<MealStats> Meals { get; set; } = new ();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Meals = await StatsService.GetMealInRangeAsync(DateOnly.FromDateTime(StartTime), DateOnly.FromDateTime(EndTime));
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Meals = await StatsService.GetMealInRangeAsync(DateOnly.FromDateTime(StartTime), DateOnly.FromDateTime(EndTime));
+    }
 }

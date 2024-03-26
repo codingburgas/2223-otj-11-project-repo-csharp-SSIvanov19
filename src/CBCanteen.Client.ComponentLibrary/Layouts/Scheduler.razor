@@ -123,30 +123,32 @@
     /// </summary>
     private async void OnActionCompleted(ActionEventArgs<CalendarEvent> args)
     {
-        if (args.ActionType == ActionType.DateNavigate)
+        if (args.ActionType != ActionType.DateNavigate)
         {
-            var startDate = GetWeekStart(currentDate);
-
-            if (this.DataSource.FirstOrDefault(e => e.Subject == $"Обяд за {startDate: d MMM yyyy}") is not null)
-            {
-                return;
-            }
-
-            var dailyOrders = await DailyOrderService.GetDailyOrderAsync(startDate, startDate.AddDays(5));
-
-            var outputEvents = this.GenerateOutputEvents(startDate, dailyOrders);
-
-            this.DataSource.AddRange(outputEvents.Where(e => e is not null)!);
-
-            if (this.userPreferences!.ShowMeetings)
-            {   
-                var events = await CalendarService.GetEventsBetweenTwoDatesAsync(startDate, startDate.AddDays(5));
-
-                this.AddEventsToDataSource(events);
-            }
-
-            await this.scheduleObj!.RefreshEventsAsync();
+            return;
         }
+
+        var startDate = GetWeekStart(currentDate);
+        
+        if (this.DataSource.FirstOrDefault(e => e.Subject == $"Обяд за {startDate:d MMM yyyy}") is not null)
+        {
+            return;
+        }
+
+        var dailyOrders = await DailyOrderService.GetDailyOrderAsync(startDate, startDate.AddDays(5));
+
+        var outputEvents = this.GenerateOutputEvents(startDate, dailyOrders);
+
+        this.DataSource.AddRange(outputEvents);
+
+        if (this.userPreferences!.ShowMeetings)
+        {   
+            var events = await CalendarService.GetEventsBetweenTwoDatesAsync(startDate, startDate.AddDays(5));
+
+            this.AddEventsToDataSource(events);
+        }
+
+        await this.scheduleObj!.RefreshEventsAsync();
     }
 
     /// <summary>
@@ -168,7 +170,7 @@
     /// <summary>
     /// Generates the output events based on the start date and daily orders.
     /// </summary>
-    private List<CalendarEvent?> GenerateOutputEvents(DateTime startDate, List<DailyOrderVM> dailyOrders)
+    private List<CalendarEvent> GenerateOutputEvents(DateTime startDate, List<DailyOrderVM> dailyOrders)
     {
         return Enumerable.Range(0, 5)
             .Select(i => startDate.AddDays(i))
