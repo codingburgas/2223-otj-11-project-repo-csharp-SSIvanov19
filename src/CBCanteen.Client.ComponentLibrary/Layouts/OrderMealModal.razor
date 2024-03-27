@@ -4,19 +4,15 @@
 @using CBCanteen.Client.Services.Contracts;
 @using CBCanteen.Shared.Models.Canteen.DailyOrder;
 @using CBCanteen.Shared.Models.Canteen.MealOrder;
-@using CBCanteen.Shared.Models.Canteen.Menu;
 @using CBCanteen.Shared.Models.Canteen.MenuOrder;
-@using CBCanteen.Shared.Models.ReflectionHelpers;
-@using Syncfusion.Blazor.Grids
 @using CBCanteen.Shared.Models.Canteen.Meal
-@using Plk.Blazor.DragDrop
 @using System.Collections.ObjectModel;
 
-@inject IMealService mealService
-@inject IMenuService menuService
-@inject IDailyOrderService dailyOrderService
-@inject IMenuOrderService menuOrderService
-@inject IMealOrderService mealOrderService
+@inject IMealService MealService
+@inject IMenuService MenuService
+@inject IDailyOrderService DailyOrderService
+@inject IMenuOrderService MenuOrderService
+@inject IMealOrderService MealOrderService
 
 <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all w-full sm:my-8 sm:align-middle">
     <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
@@ -29,60 +25,52 @@
                 <div class="flex h-40 justify-between border-2 rounded-lg border-[#94A3B8]">
                     <div class="flex flex-row">
                         <div class="h-full items-center justify-center flex mr-6 ml-6">
-                            <input type="checkbox" disabled=@isPast @bind=@MenuOneCheckboxValue />
+                            <input type="checkbox" disabled="@isPastOrToday" @bind="@menuOneCheckboxValue" min="1" max="10" />
                         </div>
                         <div class="flex flex-col">
                             <p class="font-bold text-2xl text mt-1 mb-1">Ястия</p>
-                            @if (dailyOrder is not null)
-                            {
-                                <p class="text text-xl">1. @dailyOrder.MenuOne.Appetizer.Name</p>
-                                <p class="text text-xl">2. @dailyOrder.MenuOne.MainDish.Name</p>
-                                <p class="text text-xl">3. @dailyOrder.MenuOne.Dessert.Name</p>
-                                <p class="text text-xl">4. Хляб - 2 филии</p>
-                            }
+                            
+                            <p class="text text-xl">1. @dailyOrder.MenuOne.Appetizer.Name</p>
+                            <p class="text text-xl">2. @dailyOrder.MenuOne.MainDish.Name</p>
+                            <p class="text text-xl">3. @dailyOrder.MenuOne.Dessert.Name</p>
+                            <p class="text text-xl">4. Хляб - 2 филии</p>
                         </div>
                     </div>
                     <div class="flex flex-col items-stretch mr-6">
                         <div>
                             <p class="font-bold text-2xl text mt-1 mb-1">Цена</p>
-                            @if (dailyOrder is not null)
-                            {
-                                <p class="text text-xl">@dailyOrder.MenuOne.Price лв.</p>
-                            }
+                            
+                            <p class="text text-xl">@dailyOrder.MenuOne.Price лв.</p>
                         </div>
                         <div>
                             <p class="font-bold text-2xl text mt-1 mb-1">Брой</p>
-                            <input type="number" class="w-16 border-2 border-[#94A3B8] rounded-lg text-center" disabled=@isPast @bind=@MenuOneQuantity />
+                            <input type="number" class="w-16 border-2 border-[#94A3B8] rounded-lg text-center" disabled="@isPastOrToday" @bind="@menuOneQuantity" />
                         </div>
                     </div>
                 </div>
                 <div class="flex h-40 justify-between border-2 rounded-lg border-[#94A3B8] mt-6">
                     <div class="flex flex-row">
                         <div class="h-full items-center justify-center flex mr-6 ml-6">
-                            <input type="checkbox" disabled=@isPast @bind=@MenuTwoCheckboxValue />
+                            <input type="checkbox" disabled="@isPastOrToday" @bind="@menuTwoCheckboxValue" min="1" max="10"/>
                         </div>
                         <div class="flex flex-col">
                             <p class="font-bold text-2xl text mt-1 mb-1">Ястия</p>
-                            @if (dailyOrder is not null)
-                            {
-                                <p class="text text-xl">1. @dailyOrder.MenuTwo.Appetizer.Name</p>
-                                <p class="text text-xl">2. @dailyOrder.MenuTwo.MainDish.Name</p>
-                                <p class="text text-xl">3. @dailyOrder.MenuTwo.Dessert.Name</p>
-                                <p class="text text-xl">4. Хляб - 2 филии</p>
-                            }
+                            
+                            <p class="text text-xl">1. @dailyOrder.MenuTwo.Appetizer.Name</p>
+                            <p class="text text-xl">2. @dailyOrder.MenuTwo.MainDish.Name</p>
+                            <p class="text text-xl">3. @dailyOrder.MenuTwo.Dessert.Name</p>
+                            <p class="text text-xl">4. Хляб - 2 филии</p>
                         </div>
                     </div>
                     <div class="flex flex-col items-stretch mr-6">
                         <div>
                             <p class="font-bold text-2xl text mt-1 mb-1">Цена</p>
-                            @if (dailyOrder is not null)
-                            {
-                                <p class="text text-xl">@dailyOrder.MenuTwo.Price лв.</p>
-                            }
+                            
+                            <p class="text text-xl">@dailyOrder.MenuTwo.Price лв.</p>
                         </div>
                         <div>
                             <p class="font-bold text-2xl text mt-1 mb-1">Брой</p>
-                            <input type="number" class="w-16 border-2 border-[#94A3B8] rounded-lg text-center" disabled=@isPast @bind=@MenuTwoQuantity />
+                            <input type="number" class="w-16 border-2 border-[#94A3B8] rounded-lg text-center" min="1" max="10" disabled="@isPastOrToday" @bind="@menuTwoQuantity" />
                         </div>
                     </div>
                 </div>
@@ -99,52 +87,49 @@
                         <p class="font-bold text-2xl text mt-1 mb-1">Брой</p>
                     </div>
                 </div>
-                @if (dailyOrder is not null)
+                @foreach (var meal in dailyOrder.FreeConsumption)
                 {
-                    @foreach (var meal in dailyOrder.FreeConsumption)
-                    {
-                        <div class="flex justify-between border-2 border-[#94A3B8] rounded-lg p-1 mb-2">
-                            <div class="flex space-x-2">
-                                <input type="checkbox" @bind=@meal.IsChecked />
-                                <p>@meal.Name</p>
-                            </div>
-                            <div class="flex space-x-2">
-                                <p>@meal.UnitPrice лв.</p>
-                                <input type="number" class="w-16 border-2 border-[#94A3B8] rounded-lg text-center" @bind=@meal.Quantity />
-                            </div>
+                    <div class="flex justify-between border-2 border-[#94A3B8] rounded-lg p-1 mb-2">
+                        <div class="flex space-x-2">
+                            <input type="checkbox" @bind=@meal.IsChecked disabled="@isPastOrToday"/>
+                            <p>@meal.Name</p>
                         </div>
-                    }
+                        <div class="flex space-x-2">
+                            <p>@meal.UnitPrice лв.</p>
+                            <input type="number" class="w-16 border-2 border-[#94A3B8] rounded-lg text-center" min="1" max="10" @bind=@meal.Quantity disabled="@isPastOrToday" />
+                        </div>
+                    </div>
                 }
-            </div>
+           </div>
         </div>
     </div>
     <div class="py-3 px-6 flex flex-row-reverse">
-        @if (!isPast)
+        @if (!isPastOrToday)
         {
             <GreenButton Text=@(isUpdate ? "Промени" : "Добави") StyleClass="ml-2 py-1 px-3" OnClickCallback=@(isUpdate ? UpdateOrder : PlaceOrder) />
         }
-        <GrayButton Text="Откажи" StyleClass="py-1 px-3" OnClickCallback="CloseModal" />
+        <GrayButton Text="Затвори" StyleClass="py-1 px-3" OnClickCallback="CloseModal" />
     </div>
 </div>
 
 @code {
-    private ObservableCollection<MealVM> MenuOneMeals = new();
+    private ObservableCollection<MealVM> menuOneMeals = new();
 
-    private ObservableCollection<MealVM> MenuTwoMeals = new();
+    private ObservableCollection<MealVM> menuTwoMeals = new();
 
-    private ObservableCollection<MealVM> FreeConsumptionMeals = new();
+    private ObservableCollection<MealVM> freeConsumptionMeals = new();
 
-    private List<MenuOrderVM> MenuOrders = new();
+    private List<MenuOrderVM> menuOrder = new();
 
-    private List<MealOrderVM> MealOrders = new();
+    private List<MealOrderVM> mealOrders = new();
 
-    private bool MenuOneCheckboxValue = false;
+    private bool menuOneCheckboxValue = false;
 
-    private int MenuOneQuantity = 0;
+    private int menuOneQuantity = 1;
 
-    private bool MenuTwoCheckboxValue = false;
+    private bool menuTwoCheckboxValue = false;
 
-    private int MenuTwoQuantity = 0;
+    private int menuTwoQuantity = 1;
 
     [Parameter]
     public DateTime MenuDate { get; set; }
@@ -156,58 +141,55 @@
     private IModalService Modal { get; set; } = default!;
 
     private bool isUpdate = false;
-    private bool isPast = false;
+    private bool isPastOrToday = false;
 
-    private DailyOrderVM dailyOrder;
+    private DailyOrderVM dailyOrder = new();
 
-    protected async override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
-        var dailyOrders = await this.dailyOrderService.GetDailyOrderAsync(this.MenuDate.Date, this.MenuDate.Date.AddHours(23));
+        var dailyOrders = await this.DailyOrderService.GetDailyOrderAsync(this.MenuDate.Date, this.MenuDate.Date.AddHours(23));
 
-        dailyOrder = dailyOrders.FirstOrDefault();
+        dailyOrder = dailyOrders.First();
+        
+        var menuOrders = await this.MenuOrderService.GetMenuOrderAsync(this.MenuDate.Date, this.MenuDate.Date.AddHours(23));
+        var mealOrders = await this.MealOrderService.GetMealOrderAsync(this.MenuDate.Date, this.MenuDate.Date.AddHours(23));
 
-        var menuOrders = await this.menuOrderService.GetMenuOrderAsync(this.MenuDate.Date, this.MenuDate.Date.AddHours(23));
-        var mealOrders = await this.mealOrderService.GetMealOrderAsync(this.MenuDate.Date, this.MenuDate.Date.AddHours(23));
-
-        this.MealOrders = mealOrders;
-        this.MenuOrders = menuOrders;
+        this.mealOrders = mealOrders;
+        this.menuOrder = menuOrders;
 
         if (mealOrders.Count > 0 || menuOrders.Count > 0)
         {
             isUpdate = true;
         }
 
-        if (this.MenuDate.Date < DateTime.Now.Date)
+            if (this.MenuDate.Date <= DateTime.Now.Date)
         {
-            isPast = true;
+            isPastOrToday = true;
         }
 
-        this.MenuOneMeals = new(menuService.GetMealsFromMenuAsync(dailyOrder!.MenuOne));
-        this.MenuTwoMeals = new(menuService.GetMealsFromMenuAsync(dailyOrder.MenuTwo));
-        this.FreeConsumptionMeals = new(dailyOrder.FreeConsumption);
+        this.menuOneMeals = new(MenuService.GetMealsFromMenuAsync(dailyOrder!.MenuOne));
+        this.menuTwoMeals = new(MenuService.GetMealsFromMenuAsync(dailyOrder.MenuTwo));
+        this.freeConsumptionMeals = new(dailyOrder.FreeConsumption);
 
 
         foreach (var menu in menuOrders)
         {
             if (menu.Menu.Id == dailyOrder.MenuOne.Id)
             {
-                MenuOneCheckboxValue = true;
-                MenuOneQuantity = menu.Quantity;
+                menuOneCheckboxValue = true;
+                menuOneQuantity = menu.Quantity;
             }
             else if (menu.Menu.Id == dailyOrder.MenuTwo.Id)
             {
-                MenuTwoCheckboxValue = true;
-                MenuTwoQuantity = menu.Quantity;
+                menuTwoCheckboxValue = true;
+                menuTwoQuantity = menu.Quantity;
             }
         }
 
-        foreach (var meal in mealOrders)
+        foreach (var meal in mealOrders.Where(meal => freeConsumptionMeals.Select(fc => fc.Id).Contains(meal.Meal.Id)))
         {
-            if (FreeConsumptionMeals.Select(fc => fc.Id).Contains(meal.Meal.Id))
-            {
-                FreeConsumptionMeals.First(fc => fc.Id == meal.Meal.Id).Quantity = meal.Quantity;
-                FreeConsumptionMeals.First(fc => fc.Id == meal.Meal.Id).IsChecked = true;
-            }
+            freeConsumptionMeals.First(fc => fc.Id == meal.Meal.Id).Quantity = meal.Quantity;
+            freeConsumptionMeals.First(fc => fc.Id == meal.Meal.Id).IsChecked = true;
         }
     }
 
@@ -216,66 +198,68 @@
     /// </summary>
     private async Task PlaceOrder()
     {
-        if (FreeConsumptionMeals.Select(fc => fc.IsChecked).All(el => (el == false)) && !MenuOneCheckboxValue && !MenuTwoCheckboxValue)
+        if (freeConsumptionMeals.Select(fc => fc.IsChecked).All(el => (el == false)) && !menuOneCheckboxValue && !menuTwoCheckboxValue)
         {
             return;
         }
 
-        foreach (var meal in FreeConsumptionMeals)
+        foreach (var meal in freeConsumptionMeals)
         {
-            if (meal.IsChecked && meal.Quantity <= 0)
+            if (meal is { IsChecked: true, Quantity: <= 0 })
             {
                 return;
             }
         }
 
-        if (MenuOneCheckboxValue && MenuOneQuantity <= 0)
+        if (menuOneCheckboxValue && menuOneQuantity <= 0)
         {
             return;
         }
 
-        if (MenuTwoCheckboxValue && MenuTwoQuantity <= 0)
+        if (menuTwoCheckboxValue && menuTwoQuantity <= 0)
         {
             return;
         }
 
-        if (MenuOneCheckboxValue)
+        if (menuOneCheckboxValue)
         {
-            var menuOrderIM = new MenuOrderIM()
+            var menuOrderIm = new MenuOrderIM()
                 {
                     MenuId = dailyOrder.MenuOne.Id,
-                    Quantity = MenuOneQuantity,
+                    Quantity = menuOneQuantity,
                     Date = this.MenuDate.Date
                 };
 
-            await this.menuOrderService.CreateMenuOrderAsync(menuOrderIM);
+            await this.MenuOrderService.CreateMenuOrderAsync(menuOrderIm);
         }
 
-        if (MenuTwoCheckboxValue)
+        if (menuTwoCheckboxValue)
         {
             var menuTwoIm = new MenuOrderIM()
                 {
                     MenuId = dailyOrder.MenuTwo.Id,
-                    Quantity = MenuTwoQuantity,
+                    Quantity = menuTwoQuantity,
                     Date = this.MenuDate.Date
                 };
 
-            await this.menuOrderService.CreateMenuOrderAsync(menuTwoIm);
+            await this.MenuOrderService.CreateMenuOrderAsync(menuTwoIm);
         }
 
-        foreach (var meals in FreeConsumptionMeals)
+        foreach (var meals in freeConsumptionMeals)
         {
-            if (meals.IsChecked)
+            if (!meals.IsChecked)
             {
-                var mealOrderIM = new MealOrderIM()
-                    {
-                        MealId = meals.Id,
-                        Quantity = meals.Quantity,
-                        Date = this.MenuDate.Date
-                    };
-
-                await this.mealOrderService.CreateMealOrderAsync(mealOrderIM);
+                continue;
             }
+            
+            var mealOrderIm = new MealOrderIM()
+            {
+                MealId = meals.Id,
+                Quantity = meals.Quantity,
+                Date = this.MenuDate.Date
+            };
+
+            await this.MealOrderService.CreateMealOrderAsync(mealOrderIm);
         }
 
         await BlazoredModal.CloseAsync();
@@ -283,72 +267,140 @@
 
     private async Task UpdateOrder()
     {
-        if (FreeConsumptionMeals.Select(fc => fc.IsChecked).All(el => (el == false)) && !MenuOneCheckboxValue && !MenuTwoCheckboxValue)
+        if (freeConsumptionMeals.Select(fc => fc.IsChecked).All(el => (el == false)) && !menuOneCheckboxValue && !menuTwoCheckboxValue)
         {
             return;
         }
 
-        foreach (var meal in FreeConsumptionMeals)
+        foreach (var meal in freeConsumptionMeals)
         {
-            if (meal.IsChecked && meal.Quantity <= 0)
+            if (meal is { IsChecked: true, Quantity: <= 0 })
             {
                 return;
             }
         }
 
-        if (MenuOneCheckboxValue && MenuOneQuantity <= 0)
+        if (menuOneCheckboxValue && menuOneQuantity <= 0)
         {
             return;
         }
 
-        if (MenuTwoCheckboxValue && MenuTwoQuantity <= 0)
+        if (menuTwoCheckboxValue && menuTwoQuantity <= 0)
         {
             return;
         }
             
-        if (MenuOneCheckboxValue)                  
+        if (menuOneCheckboxValue)                  
         {   
-            var menuOrderId = this.MenuOrders.Where(mo => mo.Menu.Id == dailyOrder.MenuTwo.Id).FirstOrDefault()!.Id;
+            var menuOneOrder = this.menuOrder.FirstOrDefault(mo => mo.Menu.Id == dailyOrder.MenuOne.Id);
 
-            var menuOrderIM = new MenuOrderIM()
-            {                    
-                MenuId = dailyOrder.MenuOne.Id,              
-                Quantity = MenuOneQuantity,
-                Date = this.MenuDate.Date
-            };
-
-            await this.menuOrderService.EditMenuOrderAsync(menuOrderId, menuOrderIM);
-        }
-
-        if (MenuTwoCheckboxValue)
-        {
-            var menuOrderId = this.MenuOrders.Where(mo => mo.Menu.Id == dailyOrder.MenuTwo.Id).FirstOrDefault()!.Id;
-
-            var menuTwoIm = new MenuOrderIM()
-                {
-                MenuId = dailyOrder.MenuTwo.Id,
-                Quantity = MenuTwoQuantity,
-                Date = this.MenuDate.Date
-            };
-
-            await this.menuOrderService.EditMenuOrderAsync(menuOrderId, menuTwoIm);
-        }
-
-        foreach (var meals in FreeConsumptionMeals)
-        {
-            
-            if (meals.IsChecked)
+            if (menuOneOrder is not null)
             {
-                var id = this.MealOrders.Where(mo => mo.Meal.Id == meals.Id).FirstOrDefault()!.Id;
+                var menuOrderIm = new MenuOrderIM()
+                {                    
+                    MenuId = dailyOrder.MenuOne.Id,              
+                    Quantity = menuOneQuantity,
+                    Date = this.MenuDate.Date
+                };
 
-                var mealOrderIM = new MealOrderIM()
+                await this.MenuOrderService.EditMenuOrderAsync(menuOneOrder.Id, menuOrderIm);
+            }
+            else
+            {
+                var menuOrderIm = new MenuOrderIM()
+                {
+                    MenuId = dailyOrder.MenuOne.Id,
+                    Quantity = menuOneQuantity,
+                    Date = this.MenuDate.Date
+                };
+
+                await this.MenuOrderService.CreateMenuOrderAsync(menuOrderIm);
+            }
+        }
+        else
+        {
+            var menuOneOrder = this.menuOrder.FirstOrDefault(mo => mo.Menu.Id == dailyOrder.MenuOne.Id);
+            
+            if (menuOneOrder is not null)
+            {
+                await this.MenuOrderService.DeleteMenuOrderAsync(menuOneOrder.Id);
+            }
+        }
+
+        if (menuTwoCheckboxValue)
+        {
+            var menuTwoOrder = this.menuOrder.FirstOrDefault(mo => mo.Menu.Id == dailyOrder.MenuTwo.Id);
+
+            if (menuTwoOrder is not null)
+            {
+                var menuTwoIm = new MenuOrderIM()
                     {
-                        MealId = meals.Id,
-                        Quantity = meals.Quantity,
-                        Date = this.MenuDate.Date
-                    };
+                    MenuId = dailyOrder.MenuTwo.Id,
+                    Quantity = menuTwoQuantity,
+                    Date = this.MenuDate.Date
+                };
 
-                await this.mealOrderService.EditMealOrderAsync(id, mealOrderIM);
+                await this.MenuOrderService.EditMenuOrderAsync(menuTwoOrder.Id, menuTwoIm);
+            }
+            else
+            {
+                var menuTwoIm = new MenuOrderIM()
+                    {
+                    MenuId = dailyOrder.MenuTwo.Id,
+                    Quantity = menuTwoQuantity,
+                    Date = this.MenuDate.Date
+                };
+
+                await this.MenuOrderService.CreateMenuOrderAsync(menuTwoIm);
+            }
+        }
+        else
+        {
+            var menuTwoOrder = this.menuOrder.FirstOrDefault(mo => mo.Menu.Id == dailyOrder.MenuTwo.Id);
+
+            if (menuTwoOrder is not null)
+            {
+                await this.MenuOrderService.DeleteMenuOrderAsync(menuTwoOrder.Id);
+            }
+        }
+
+        foreach (var meals in freeConsumptionMeals)
+        {
+            if (!meals.IsChecked)
+            {
+                var mealOrderForDelete = this.mealOrders.FirstOrDefault(mo => mo.Meal.Id == meals.Id);
+                
+                if (mealOrderForDelete is not null)
+                {
+                    await this.MealOrderService.DeleteMealOrderAsync(mealOrderForDelete.Id);
+                }
+                
+                continue;
+            }
+            
+            var mealOrder = this.mealOrders.FirstOrDefault(mo => mo.Meal.Id == meals.Id);
+
+            if (mealOrder is not null)
+            {
+                var mealOrderIm = new MealOrderIM()
+                {
+                    MealId = meals.Id,
+                    Quantity = meals.Quantity,
+                    Date = this.MenuDate.Date
+                };
+
+                await this.MealOrderService.EditMealOrderAsync(mealOrder.Id, mealOrderIm);
+            }
+            else
+            {
+                var mealOrderIm = new MealOrderIM()
+                {
+                    MealId = meals.Id,
+                    Quantity = meals.Quantity,
+                    Date = this.MenuDate.Date
+                };
+
+                await this.MealOrderService.CreateMealOrderAsync(mealOrderIm);
             }
         }
 

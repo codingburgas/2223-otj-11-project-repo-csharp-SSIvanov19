@@ -22,7 +22,7 @@ public class MenuOrderIM
     /// Gets or sets quantity of the menu order.
     /// </summary>
     [Required]
-    [Range(1, 10, ErrorMessage = "Количеството трябва да е в размер между 0 и 10.")]
+    [Range(1, 10, ErrorMessage = "Количеството трябва да е в размер между 1 и 10.")]
     public int Quantity { get; set; } = 0;
 
     /// <summary>

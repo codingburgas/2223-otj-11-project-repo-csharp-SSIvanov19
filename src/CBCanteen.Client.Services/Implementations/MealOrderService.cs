@@ -61,7 +61,7 @@ internal class MealOrderService : IMealOrderService
             Encoding.UTF8,
             "application/json");
 
-        await this.httpClient.PutAsync("/api/MealOrders", jsonContent);
+        await this.httpClient.PutAsync($"/api/MealOrders/{dailyOrderId}", jsonContent);
     }
 
     /// <inheritdoc/>

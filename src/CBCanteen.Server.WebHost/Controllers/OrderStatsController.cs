@@ -44,7 +44,7 @@ public class OrderStatsController : ControllerBase
     /// </summary>
     /// <param name="startTime">Start Time.</param>
     /// <param name="endTime">End Time.</param>
-    /// <returns>List with stats for each day</returns>
+    /// <returns>List with stats for each day.</returns>
     [HttpGet("meals")]
     public async Task<ActionResult<List<MealStats>>> GetMealStatsAsync(DateOnly startTime, DateOnly endTime)
     {
@@ -67,10 +67,17 @@ public class OrderStatsController : ControllerBase
             returnVal.Add(new MealStats()
             {
                 Date = startTime,
-                Meals = meals.Select(m => m.Meal).ToList(),
-                Menus = menus.Select(m => m.Menu).ToList(),
+                Meals = meals.Select(m => new SingleMealStats()
+                {
+                    Meal = m.Meal,
+                    Quantity = m.Quantity,
+                }).ToList(),
+                Menus = menus.Select(m => new SingleMenuStats()
+                {
+                    Menu = m.Menu,
+                    Quantity = m.Quantity,
+                }).ToList(),
             });
-
 
             startTime = startTime.AddDays(1);
         } while (startTime <= endTime);
@@ -110,14 +117,25 @@ public class OrderStatsController : ControllerBase
             {
                 if (orderStats.Select(os => os.UserId).Contains(menu.UserId))
                 {
-                    orderStats.Where(os => os.UserId == menu.UserId).FirstOrDefault()!.Menus.Add(menu.Menu);
+                    orderStats.First(os => os.UserId == menu.UserId).Menus.Add(new SingleMenuStats()
+                    {
+                        Menu = menu.Menu,
+                        Quantity = menu.Quantity,
+                    });
                 }
                 else
                 {
                     orderStats.Add(new UserOrderStats()
                     {
                         UserId = menu.UserId,
-                        Menus = new List<MenuVM>() { menu.Menu },
+                        Menus = new List<SingleMenuStats>()
+                        {
+                            new SingleMenuStats()
+                            {
+                                Menu = menu.Menu,
+                                Quantity = menu.Quantity,
+                            },
+                        },
                     });
                 }
             }
@@ -126,14 +144,25 @@ public class OrderStatsController : ControllerBase
             {
                 if (orderStats.Select(os => os.UserId).Contains(meal.UserId))
                 {
-                    orderStats.Where(os => os.UserId == meal.UserId).FirstOrDefault()!.Meals.Add(meal.Meal);
+                    orderStats.FirstOrDefault(os => os.UserId == meal.UserId) !.Meals.Add(new SingleMealStats()
+                    {
+                        Meal = meal.Meal,
+                        Quantity = meal.Quantity,
+                    });
                 }
                 else
                 {
                     orderStats.Add(new UserOrderStats()
                     {
                         UserId = meal.UserId,
-                        Meals = new List<MealVM>() { meal.Meal },
+                        Meals = new List<SingleMealStats>()
+                        {
+                            new SingleMealStats()
+                            {
+                                Meal = meal.Meal,
+                                Quantity = meal.Quantity,
+                            },
+                        },
                     });
                 }
             }

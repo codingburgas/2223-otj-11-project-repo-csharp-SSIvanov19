@@ -25,9 +25,20 @@
                             @{
                                 @foreach (var menu in (context as UserOrderStats)?.Menus!)
                                 {
-                                    <p>@menu.Appetizer.Name</p>
-                                    <p>@menu.MainDish.Name</p>
-                                    <p>@menu.Dessert.Name</p>
+                                    <div class="flex space-x-2">
+                                        <div class="flex items-center ">
+                                            <p>@menu.Quantity</p>
+                                        </div>
+                                        <div>
+                                            <p>@menu.Menu.Appetizer.Name</p>
+                                            <p>@menu.Menu.MainDish.Name</p>
+                                            <p>@menu.Menu.Dessert.Name</p>
+                                        </div>
+                                    </div>
+                                    @if (menu == (context as UserOrderStats)?.Menus!.Last())
+                                    {
+                                        <hr/>
+                                    }
                                 }
                             }
                         </Template>
@@ -37,7 +48,11 @@
                             @{
                                 @foreach (var meal in (context as UserOrderStats)?.Meals!)
                                 {
-                                    <p>@meal.Name</p>
+                                    <p>@meal.Quantity - @meal.Meal.Name</p>
+                                    @if (meal == (context as UserOrderStats)?.Meals!.Last())
+                                    {
+                                        <hr/>
+                                    }
                                 }
                             }
                         </Template>

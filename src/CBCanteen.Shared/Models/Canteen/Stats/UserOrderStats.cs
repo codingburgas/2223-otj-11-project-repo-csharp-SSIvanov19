@@ -25,10 +25,10 @@ public class UserOrderStats
     /// <summary>
     /// Gets or sets the list of meals ordered by the user.
     /// </summary>
-    public List<MealVM> Meals { get; set; } = new List<MealVM>();
+    public List<SingleMealStats> Meals { get; set; } = new List<SingleMealStats>();
 
     /// <summary>
     /// Gets or sets the list of menus ordered by the user.
     /// </summary>
-    public List<MenuVM> Menus { get; set; } = new List<MenuVM>();
+    public List<SingleMenuStats> Menus { get; set; } = new List<SingleMenuStats>();
 }

@@ -61,7 +61,7 @@ internal class MenuOrderService : IMenuOrderService
             Encoding.UTF8,
             "application/json");
 
-        await this.httpClient.PutAsync("/api/MenuOrders", jsonContent);
+        await this.httpClient.PutAsync($"/api/MenuOrders/{dailyOrderId}", jsonContent);
     }
 
     /// <inheritdoc/>

@@ -37,7 +37,7 @@ public class MealVM
     /// <summary>
     /// Gets or sets the quantity of the meal.
     /// </summary>
-    public int Quantity { get; set; } = 0;
+    public int Quantity { get; set; } = 1;
 
     /// <summary>
     /// Gets or sets a value indicating whether the meal is checked.
