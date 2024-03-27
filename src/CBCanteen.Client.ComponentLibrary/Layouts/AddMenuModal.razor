@@ -105,12 +105,14 @@
             return;
         }
 
+        var price = await this.menuService.GetDefaultPriceForMenuAsync();
+
         var menuOne = await menuService.CreateMenuAsync(new MenuIM
             {
                 AppetizerId = MenuOneMeals.First(m => m.Category == MealCategories.Appetizer.GetDescription()).Id,
                 MainDishId = MenuOneMeals.First(m => m.Category == MealCategories.MainDish.GetDescription()).Id,
                 DessertId = MenuOneMeals.First(m => m.Category == MealCategories.Dessert.GetDescription()).Id,
-                Price = 5.5
+                Price = price,
             });
 
         var menuTwo = await menuService.CreateMenuAsync(new MenuIM
@@ -118,7 +120,7 @@
                 AppetizerId = MenuTwoMeals.First(m => m.Category == MealCategories.Appetizer.GetDescription()).Id,
                 MainDishId = MenuTwoMeals.First(m => m.Category == MealCategories.MainDish.GetDescription()).Id,
                 DessertId = MenuTwoMeals.First(m => m.Category == MealCategories.Dessert.GetDescription()).Id,
-                Price = 5.5
+                Price = price,
             });
 
         var dailyOrder = new DailyOrderIM

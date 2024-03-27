@@ -13,7 +13,7 @@
         <p>@order.Date</p>
         @if (order.UserOrders.IsNullOrEmpty())
         {
-            <p>Няма направени пръчки за @order.Date.ToShortDateString()</p>
+            <p>Няма направени поръчки за @order.Date.ToShortDateString()</p>
         }
         else
         {
@@ -35,7 +35,7 @@
                                             <p>@menu.Menu.Dessert.Name</p>
                                         </div>
                                     </div>
-                                    @if (menu == (context as UserOrderStats)?.Menus!.Last())
+                                    @if (menu != (context as UserOrderStats)?.Menus!.Last())
                                     {
                                         <hr/>
                                     }
@@ -49,10 +49,6 @@
                                 @foreach (var meal in (context as UserOrderStats)?.Meals!)
                                 {
                                     <p>@meal.Quantity - @meal.Meal.Name</p>
-                                    @if (meal == (context as UserOrderStats)?.Meals!.Last())
-                                    {
-                                        <hr/>
-                                    }
                                 }
                             }
                         </Template>
