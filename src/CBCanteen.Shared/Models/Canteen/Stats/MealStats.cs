@@ -26,4 +26,9 @@ public class MealStats
     /// Gets or sets the list of menus for the given day.
     /// </summary>
     public List<SingleMenuStats> Menus { get; set; } = new ();
+
+    /// <summary>
+    /// Gets or sets the list of all meals for the given day.
+    /// </summary>
+    public List<SingleMealStats> AllMeals { get; set; } = new List<SingleMealStats>();
 }

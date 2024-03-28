@@ -64,20 +64,82 @@ public class OrderStatsController : ControllerBase
             var menus = await this.menuOrderService.GetMenuOrdersBetweenDates(startTime.ToDateTime(TimeOnly.MinValue), startTime.ToDateTime(TimeOnly.MinValue));
             var meals = await this.mealOrderService.GetMealOrdersBetweenDates(startTime.ToDateTime(TimeOnly.MinValue), startTime.ToDateTime(TimeOnly.MinValue));
 
-            returnVal.Add(new MealStats()
+            var mealStats = new MealStats()
             {
                 Date = startTime,
-                Meals = meals.Select(m => new SingleMealStats()
+                Meals = new (),
+                Menus = new (),
+                AllMeals = new (),
+            };
+
+            foreach (var meal in meals)
+            {
+                var mealStat = mealStats.Meals.FirstOrDefault(m => m.Meal.Id == meal.Meal.Id);
+
+                if (mealStat is not null)
                 {
-                    Meal = m.Meal,
-                    Quantity = m.Quantity,
-                }).ToList(),
-                Menus = menus.Select(m => new SingleMenuStats()
+                    mealStat.Quantity += meal.Quantity;
+                }
+                else
                 {
-                    Menu = m.Menu,
-                    Quantity = m.Quantity,
-                }).ToList(),
-            });
+                    mealStats.Meals.Add(new SingleMealStats()
+                    {
+                        Meal = meal.Meal,
+                        Quantity = meal.Quantity,
+                    });
+                }
+            }
+
+            mealStats.AllMeals = mealStats.Meals.Select(m => new SingleMealStats()
+            {
+                Meal = m.Meal,
+                Quantity = m.Quantity,
+            }).ToList();
+
+            foreach (var menu in menus)
+            {
+                var menuStat = mealStats.Menus.FirstOrDefault(m => m.Menu.Id == menu.Menu.Id);
+
+                if (menuStat is not null)
+                {
+                    menuStat.Quantity += menu.Quantity;
+                }
+                else
+                {
+                    mealStats.Menus.Add(new SingleMenuStats()
+                    {
+                        Menu = menu.Menu,
+                        Quantity = menu.Quantity,
+                    });
+                }
+
+                var menuMeals = new List<MealVM>()
+                {
+                    menu.Menu.Appetizer,
+                    menu.Menu.MainDish,
+                    menu.Menu.Dessert,
+                };
+
+                foreach (var meal in menuMeals)
+                {
+                    var mealStat = mealStats.AllMeals.FirstOrDefault(m => m.Meal.Id == meal.Id);
+
+                    if (mealStat is not null)
+                    {
+                        mealStat.Quantity += meal.Quantity * menu.Quantity;
+                    }
+                    else
+                    {
+                        mealStats.AllMeals.Add(new SingleMealStats()
+                        {
+                            Meal = meal,
+                            Quantity = meal.Quantity * menu.Quantity,
+                        });
+                    }
+                }
+            }
+
+            returnVal.Add(mealStats);
 
             startTime = startTime.AddDays(1);
         } while (startTime <= endTime);

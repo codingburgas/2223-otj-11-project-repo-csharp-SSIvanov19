@@ -35,30 +35,56 @@
                     <GridColumn Field="Meal.UnitPrice" HeaderText="Цена" Width="120"></GridColumn>
                 </GridColumns>
             </SfGrid>
+            <p>Всички ястия за @meals.Date</p>
+            <SfGrid DataSource="@meals.AllMeals" AllowSorting="true">
+                <GridColumns>
+                    <GridColumn Field=@nameof(SingleMealStats.Quantity) HeaderText="Бройка" Width="100"></GridColumn>
+                    <GridColumn Field="Meal.Name" HeaderText="Име" Width="150"></GridColumn>
+                    <GridColumn Field="Meal.Weight" HeaderText="Грамаж" Format="d" Width="130"></GridColumn>
+                    <GridColumn Field="Meal.UnitPrice" HeaderText="Цена" Width="120"></GridColumn>
+                </GridColumns>
+            </SfGrid>
         }
     }
 </div>
 
 @code{
 
-    [Parameter] public DateTime StartTime { get; set; }
+    [Parameter] 
+    public DateTime StartTime { get; set; }
 
-    [Parameter] public DateTime EndTime { get; set; }
+    [Parameter] 
+    public DateTime EndTime { get; set; }
 
-    [Parameter] public EventCallback<DateTime> StartTimeChanged { get; set; }
+    [Parameter] 
+    public EventCallback<DateTime> StartTimeChanged { get; set; }
 
-    [Parameter] public EventCallback<DateTime> EndTimeChanged { get; set; }
+    [Parameter] 
+    public EventCallback<DateTime> EndTimeChanged { get; set; }
 
     private List<MealStats> Meals { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
-        Console.WriteLine(nameof(SingleMealStats.Meal.Name));
+        await base.OnInitializedAsync();
+        
+        if (StartTime > EndTime)
+        {
+            return;
+        }
+        
         Meals = await StatsService.GetMealInRangeAsync(DateOnly.FromDateTime(StartTime), DateOnly.FromDateTime(EndTime));
     }
 
     protected override async Task OnParametersSetAsync()
     {
+        await base.OnParametersSetAsync();
+        
+        if (StartTime > EndTime)
+        {
+            return;
+        }
+        
         Meals = await StatsService.GetMealInRangeAsync(DateOnly.FromDateTime(StartTime), DateOnly.FromDateTime(EndTime));
     }
 

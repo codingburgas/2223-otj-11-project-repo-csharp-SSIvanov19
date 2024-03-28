@@ -76,13 +76,25 @@
 
     protected override async Task OnInitializedAsync()
     {
-        Orders = await StatsService.GetOrdersInRangeAsync(DateOnly.FromDateTime(StartTime), DateOnly.FromDateTime(EndTime));
         await base.OnInitializedAsync();
+        
+        if (StartTime > EndTime)
+        {
+            return;
+        }
+        
+        Orders = await StatsService.GetOrdersInRangeAsync(DateOnly.FromDateTime(StartTime), DateOnly.FromDateTime(EndTime));
     }
 
     protected override async Task OnParametersSetAsync()
     {
-        Orders = await StatsService.GetOrdersInRangeAsync(DateOnly.FromDateTime(StartTime), DateOnly.FromDateTime(EndTime));
         await base.OnParametersSetAsync();
+        
+        if (StartTime > EndTime)
+        {
+            return;
+        }
+        
+        Orders = await StatsService.GetOrdersInRangeAsync(DateOnly.FromDateTime(StartTime), DateOnly.FromDateTime(EndTime));
     }
 }
